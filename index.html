@@ -101,20 +101,103 @@
 </div>
 
 <script>
-// LINKS DAS ABAS CSV (Substitua pelos seus links do 'Publicar na Web')
 const LINKS = {
-    // Aqui estava o erro: o gid=1307801054 é onde estão a Ana, Ariana, etc.
-    atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
-    
-    // Link da aba de Jogos
+    atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv",
     jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
-    
-    // Verifique se o GID 0 é mesmo o Scout. Se não for, pegue o link correto da aba Scout
-    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
+    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1856184852&single=true&output=csv" 
 };
 
 let DB = { atletas: [], jogos: [], scout: [] };
 
+// FUNÇÃO DE INICIALIZAÇÃO
+async function loadData() {
+    try {
+        const [resA, resJ, resS] = await Promise.all([
+            fetch(LINKS.atletas).then(r => r.text()),
+            fetch(LINKS.jogos).then(r => r.text()),
+            fetch(LINKS.scout).then(r => r.text())
+        ]);
+
+        DB.atletas = parseCSV(resA);
+        DB.jogos = parseCSV(resJ);
+        DB.scout = parseCSV(resS);
+
+        console.log("Dados carregados:", DB);
+        renderAll();
+    } catch (e) {
+        console.error("Erro fatal:", e);
+        document.getElementById('listaAtletas').innerHTML = "Erro ao carregar dados. Verifique a internet ou os links.";
+    }
+}
+
+// PARSER INTELIGENTE (Lida com ; ou , e Maiúsculas/Minúsculas)
+function parseCSV(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length < 2) return [];
+    
+    const separator = text.includes(';') ? ';' : ',';
+    const headers = lines[0].split(separator).map(h => h.trim().toLowerCase().replace(/"/g, ''));
+
+    return lines.slice(1).map(line => {
+        const values = line.split(separator);
+        let obj = {};
+        headers.forEach((header, i) => {
+            let val = values[i] ? values[i].replace(/"/g, "").trim() : "";
+            // Normaliza cabeçalhos comuns
+            let key = header;
+            if (header.includes("foto")) key = "foto";
+            if (header.includes("nome")) key = "nome";
+            if (header.includes("gols") || header.includes("golos")) key = "gols";
+            obj[key] = val;
+        });
+        return obj;
+    });
+}
+
+function renderAll() {
+    renderJogos();
+    renderRanking();
+}
+
+function renderRanking() {
+    const top3Div = document.getElementById('top3');
+    const listaDiv = document.getElementById('listaAtletas');
+    
+    // Calcular Gols Totais
+    const totalGolsEquipe = DB.scout.reduce((acc, s) => acc + parseInt(s.gols || 0), 0);
+
+    let rank = DB.atletas.map(a => {
+        const scoutAtleta = DB.scout.filter(s => (s.nome || s.nome_atleta) === a.nome);
+        const totalGols = scoutAtleta.reduce((acc, s) => acc + parseInt(s.gols || 0), 0);
+        const totalJogos = scoutAtleta.filter(s => s.convocada === "Sim").length;
+        
+        return { 
+            ...a, 
+            totalGols, 
+            totalJogos, 
+            perc: totalGolsEquipe > 0 ? ((totalGols/totalGolsEquipe)*100).toFixed(1) : 0 
+        };
+    }).sort((a,b) => b.totalGols - a.totalGols);
+
+    // Render Top 3
+    top3Div.innerHTML = rank.slice(0,3).map((p, i) => `
+        <div class="eafc-card rank-${i+1}" onclick="openAtleta('${p.nome}')">
+            <div class="card-ovr">${p.totalGols}</div>
+            <img class="card-img" src="${p.foto || 'https://via.placeholder.com/70?text=EAC'}" onerror="this.src='https://via.placeholder.com/70?text=ERRO'">
+            <div class="card-name">${p.nome ? p.nome.split(' ')[0] : '---'}</div>
+        </div>
+    `).join('');
+
+    // Render Lista
+    listaDiv.innerHTML = rank.map((p, i) => `
+        <div class="item-card" onclick="openAtleta('${p.nome}')">
+            <span>${i+1}º ${p.nome}</span>
+            <strong style="color: var(--verde)">${p.totalGols} Gols</strong>
+        </div>
+    `).join('');
+}
+
+// Funções de UI (Navegação)
 function showTab(id, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-tab'));
     document.getElementById(id).classList.add('active-tab');
@@ -124,188 +207,24 @@ function showTab(id, btn) {
     }
 }
 
-function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
-
-// CÁLCULO DE IDADE AUTOMÁTICO
-function calcularIdade(dataNasc) {
-    if(!dataNasc) return "?";
-    const partes = dataNasc.split('/');
-    const nascimento = new Date(partes[2], partes[1] - 1, partes[0]);
-    const hoje = new Date();
-    let idade = hoje.getFullYear() - nascimento.getFullYear();
-    const m = hoje.getMonth() - nascimento.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) idade--;
-    return idade;
-}
-
-// LOGIN ADMIN
-function checkLogin() {
-    if(document.getElementById('user').value === 'admin' && document.getElementById('pass').value === 'admin') {
-        document.getElementById('adminLogin').style.display = 'none';
-        document.getElementById('adminArea').style.display = 'block';
-        renderAdmin();
-    } else { alert("Acesso negado!"); }
-}
-
-async function loadData() {
-    try {
-        // Carregar Aba Atletas
-        const resAtletas = await fetch(LINKS.atletas);
-        const csvAtletas = await resAtletas.text();
-        DB.atletas = parseCSV(csvAtletas);
-
-        // Carregar Aba Jogos (Garanta que o link em LINKS.jogos esteja correto)
-        const resJogos = await fetch(LINKS.jogos);
-        const csvJogos = await resJogos.text();
-        DB.jogos = parseCSV(csvJogos);
-
-        // Carregar Aba Scout (Garanta que o link em LINKS.scout esteja correto)
-        const resScout = await fetch(LINKS.scout);
-        const csvScout = await resScout.text();
-        DB.scout = parseCSV(csvScout);
-
-        renderAll();
-    } catch (e) {
-        console.error("Erro ao carregar dados da planilha:", e);
-        document.getElementById('listaAtletas').innerHTML = "Erro ao carregar dados. Verifique os links CSV.";
-    }
-}
-
-// Esta função transforma o texto do Google Sheets em dados para o site
-function parseCSV(text) {
-    const separator = text.includes(';') ? ';' : ',';
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    if (lines.length < 2) return [];
-
-    const headers = lines[0].split(separator).map(h => h.trim().replace(/"/g, ''));
-    
-    return lines.slice(1).map(line => {
-        const values = line.split(separator);
-        let obj = {};
-        headers.forEach((header, i) => {
-            let val = values[i] ? values[i].replace(/"/g, "").trim() : "";
-            obj[header] = val;
-        });
-        return obj;
-    }).filter(item => item.Nome || item.Adversário || item.Nome_Atleta);
-}
-
-function renderAll() {
-    renderJogos();
-    renderRanking();
-}
-
 function renderJogos() {
     const list = document.getElementById('listaJogos');
     list.innerHTML = DB.jogos.map(j => {
-        const win = j.gEAC > j.gADV;
+        const gEAC = parseInt(j.gols_eac || 0);
+        const gADV = parseInt(j.gols_adv || 0);
+        const win = gEAC > gADV;
         return `
-        <div class="item-card ${win ? 'game-win' : 'game-loss'}" onclick="openJogo(${j.id})">
+        <div class="item-card ${win ? 'game-win' : 'game-loss'}">
             <div>
-                <strong>EAC ${j.gEAC} x ${j.gADV} ${j.adv}</strong><br>
-                <small>${j.local} | Scout completo ⭢</small>
+                <strong>EAC ${gEAC} x ${gADV} ${j.adversário || j.adversario}</strong><br>
+                <small>${j.local || '---'}</small>
             </div>
         </div>`;
     }).join('');
 }
 
-function renderRanking() {
-    const totalGolsEquipe = DB.scout.reduce((acc, s) => acc + parseInt(s.gols), 0);
-    
-    // Agrupar gols por atleta
-    let rank = DB.atletas.map(a => {
-    // Filtra o scout pelo nome da atleta (usando 'atleta' ou 'Nome_Atleta')
-    const scoutAtleta = DB.scout.filter(s => (s.atleta || s.Nome_Atleta) === a.Nome);
-    
-    // Soma os golos garantindo que lê a coluna correta (Gols ou Golos)
-    const totalGols = scoutAtleta.reduce((acc, s) => {
-        const valorGols = s.Gols || s.gols || s.Golos || 0;
-        return acc + parseInt(valorGols);
-    }, 0);
-
-    const totalJogos = scoutAtleta.filter(s => s.Convocada === "Sim" || s.conv === "Sim").length;
-    
-    // Calcula a percentagem de golos (evita erro se total da equipe for 0)
-    const percentagem = totalGolsEquipe > 0 ? ((totalGols / totalGolsEquipe) * 100).toFixed(1) : 0;
-
-    return { 
-        ...a, 
-        totalGols, 
-        totalJogos, 
-        perc: percentagem,
-        // Garante que o nome usado no card é o 'Nome' da planilha
-        nomeExibicao: a.Nome 
-    };
-}).sort((a, b) => b.totalGols - a.totalGols);
-
-    // Top 3 EAFC
-    document.getElementById('top3').innerHTML = rank.slice(0,3).map((p, i) => `
-        <div class="eafc-card rank-${i+1}" onclick="openAtleta('${p.nome}')">
-            <div class="card-ovr">${p.totalGols}</div>
-            <img class="card-img" src="${p.foto || 'https://via.placeholder.com/70?text=EAC'}">
-            <div class="card-name">${p.nome.split(' ')[0]}</div>
-        </div>
-    `).join('');
-
-    // Lista Geral
-    document.getElementById('listaAtletas').innerHTML = rank.map((p, i) => `
-        <div class="item-card" onclick="openAtleta('${p.nome}')">
-            <span>${i+1}º ${p.nome}</span>
-            <strong style="color: var(--verde)">${p.totalGols} Gols</strong>
-        </div>
-    `).join('');
-}
-
 function openAtleta(nome) {
-    const a = DB.atletas.find(x => x.nome === nome);
-    const sAtleta = DB.scout.filter(s => s.atleta === nome);
-    const gols = sAtleta.reduce((acc, s) => acc + parseInt(s.gols), 0);
-    const jogos = sAtleta.filter(s => s.conv === "Sim").length;
-    
-    document.getElementById('detailBody').innerHTML = `
-        <div style="text-align:center">
-            <img src="${a.foto || 'https://via.placeholder.com/100'}" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--verde); object-fit:cover;">
-            <h2>${a.nome} (#${a.num})</h2>
-            <p>${a.pos} | ${calcularIdade(a.nasc)} Anos</p>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin:20px 0;">
-            <div style="background:#f1f5f9; padding:15px; border-radius:10px; text-align:center;">
-                <small>Média/Jogo</small><br><strong>${(gols/jogos || 0).toFixed(1)}</strong>
-            </div>
-            <div style="background:#f1f5f9; padding:15px; border-radius:10px; text-align:center;">
-                <small>Total Golos</small><br><strong>${gols}</strong>
-            </div>
-        </div>
-        <h4>Desempenho por Jornada</h4>
-        ${sAtleta.map(s => `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee">
-            <span>vs ${DB.jogos.find(j => j.id === s.jogoId).adv}</span>
-            <strong>${s.gols} Gols</strong>
-        </div>`).join('')}
-    `;
-    document.getElementById('detailPane').classList.add('open');
-}
-
-function openJogo(id) {
-    const j = DB.jogos.find(x => x.id == id);
-    const convocadas = DB.scout.filter(s => s.jogoId == id && s.conv === "Sim");
-
-    document.getElementById('detailBody').innerHTML = `
-        <h3>EAC ${j.gEAC} x ${j.gADV} ${j.adv}</h3>
-        <p>${j.local}</p>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:#f1f5f9; padding:15px; border-radius:10px;">
-            <div>1ª Parte: <b>${j.p1E} - ${j.p1A}</b></div>
-            <div>7m Favor: <b>${j.m7GP}/${j.m7P}</b></div>
-            <div>7m Contra: <b>${j.m7GC}/${j.m7C}</b></div>
-        </div>
-        <h4>Scout Individual do Jogo</h4>
-        ${convocadas.map(c => `
-            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee">
-                <span>${c.atleta}</span>
-                <span>${c.gols} Gols | ${c.excl}x 2min</span>
-            </div>
-        `).join('')}
-    `;
-    document.getElementById('detailPane').classList.add('open');
+    alert("Detalhes de " + nome + " em desenvolvimento...");
 }
 
 loadData();
