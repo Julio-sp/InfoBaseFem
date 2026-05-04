@@ -103,9 +103,14 @@
 <script>
 // LINKS DAS ABAS CSV (Substitua pelos seus links do 'Publicar na Web')
 const LINKS = {
-    atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
+    // Aqui estava o erro: o gid=1307801054 é onde estão a Ana, Ariana, etc.
+    atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv",
+    
+    // Link da aba de Jogos
     jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
-    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
+    
+    // Verifique se o GID 0 é mesmo o Scout. Se não for, pegue o link correto da aba Scout
+    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pubhtml?gid=1307801054&single=true"
 };
 
 let DB = { atletas: [], jogos: [], scout: [] };
@@ -209,11 +214,29 @@ function renderRanking() {
     
     // Agrupar gols por atleta
     let rank = DB.atletas.map(a => {
-        const scoutAtleta = DB.scout.filter(s => s.atleta === a.nome);
-        const totalGols = scoutAtleta.reduce((acc, s) => acc + parseInt(s.gols), 0);
-        const totalJogos = scoutAtleta.filter(s => s.conv === "Sim").length;
-        return { ...a, totalGols, totalJogos, perc: ((totalGols/totalGolsEquipe)*100).toFixed(1) };
-    }).sort((a,b) => b.totalGols - a.totalGols);
+    // Filtra o scout pelo nome da atleta (usando 'atleta' ou 'Nome_Atleta')
+    const scoutAtleta = DB.scout.filter(s => (s.atleta || s.Nome_Atleta) === a.Nome);
+    
+    // Soma os golos garantindo que lê a coluna correta (Gols ou Golos)
+    const totalGols = scoutAtleta.reduce((acc, s) => {
+        const valorGols = s.Gols || s.gols || s.Golos || 0;
+        return acc + parseInt(valorGols);
+    }, 0);
+
+    const totalJogos = scoutAtleta.filter(s => s.Convocada === "Sim" || s.conv === "Sim").length;
+    
+    // Calcula a percentagem de golos (evita erro se total da equipe for 0)
+    const percentagem = totalGolsEquipe > 0 ? ((totalGols / totalGolsEquipe) * 100).toFixed(1) : 0;
+
+    return { 
+        ...a, 
+        totalGols, 
+        totalJogos, 
+        perc: percentagem,
+        // Garante que o nome usado no card é o 'Nome' da planilha
+        nomeExibicao: a.Nome 
+    };
+}).sort((a, b) => b.totalGols - a.totalGols);
 
     // Top 3 EAFC
     document.getElementById('top3').innerHTML = rank.slice(0,3).map((p, i) => `
