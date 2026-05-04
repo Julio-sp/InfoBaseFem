@@ -4,99 +4,102 @@
 <meta charset="UTF-8">
 <title>Estarreja Andebol Pro</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-body {
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
-}
-
-header {
-  text-align:center;
-  padding:15px;
-  background:#020617;
-}
-
-header img { height:60px; }
-
-nav {
-  display:flex;
-  background:#020617;
-}
-
-nav button {
-  flex:1;
-  padding:12px;
-  border:none;
-  background:none;
-  color:white;
-  cursor:pointer;
-}
-
-nav button:hover { background:#1e293b; }
-
-.tab { display:none; padding:20px; }
-.active { display:block; }
-
-.grid {
-  display:grid;
-  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
-  gap:10px;
-}
-
-.card {
-  background:#1e293b;
-  padding:15px;
-  border-radius:12px;
-  text-align:center;
-}
-
-.big { font-size:22px; font-weight:bold; }
-
-.win { color:#22c55e; }
-.loss { color:#ef4444; }
-</style>
-</head>
-
-<body>
-
-<header>
-  <img src="logo.png">
-  <h2>Estarreja Andebol Clube</h2>
-</header>
-
-<nav>
-  <button onclick="tab('dashboard')">📊</button>
-  <button onclick="tab('players')">👤</button>
-  <button onclick="tab('games')">🏐</button>
-</nav>
-
-<div id="dashboard" class="tab active">
-
-<h2>Dashboard</h2>
-<p id="msg"></p>
-
-<div class="grid" id="stats"></div>
-
-<canvas id="goalsChart"></canvas>
-<canvas id="resultChart"></canvas>
-
-</div>
-
-<div id="players" class="tab">
-<h2>Jogadoras</h2>
-<div id="playersList"></div>
-</div>
-
-<div id="games" class="tab">
-<h2>Jogos</h2>
-<div id="gamesList"></div>
-</div>
-
 <script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Ip29SsNYoB99RLWmse4JBY9zmokOhLsr8-yZGk9J_7Z_kIi7lToM3KlFoMz7byKYkuLRPYy_TJ8S/pub?output=csv";
+
+const messages = [
+    "💚 Juntas somos imparáveis",
+    "🔥 Foco total",
+    "🏐 Uma equipa, um objetivo",
+    "⚡ Intensidade máxima",
+    "💪 Nunca desistir"
+];
+
+function tab(name){
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    document.getElementById(name).classList.add("active");
+    setMessage();
+}
+
+function setMessage(){
+    document.getElementById("msg").innerText = messages[Math.floor(Math.random()*messages.length)];
+}
+
+setMessage();
+
+fetch(SHEET_URL)
+.then(res => res.text())
+.then(csv => {
+    console.log("CSV Recebido com sucesso");
+    
+    // Tenta detectar se o separador é vírgula ou ponto e vírgula
+    const separator = csv.includes(';') ? ';' : ',';
+    const rows = csv.split("\n").map(r => r.split(separator));
+
+    // Procura a linha que contém nomes (geralmente a linha 0 ou 1)
+    // Vamos ser mais abrangentes: procurar uma linha que tenha vários nomes preenchidos
+    let namesRow = rows[0]; 
+    let goalsRow = rows[1]; // Ajuste manual conforme sua planilha
+
+    // Se a linha 0 for cabeçalho genérico, tentamos a 1
+    if(namesRow[0] && namesRow[0].includes("Data")) {
+        namesRow = rows[1];
+        goalsRow = rows[2];
+    }
+
+    let players = [];
+
+    namesRow.forEach((name, i) => {
+        let cleanName = name.replace(/"/g, "").trim(); // Remove aspas e espaços
+        if(cleanName && cleanName.length > 2 && cleanName !== "Total" && i > 0){
+            let goals = 0;
+            if(goalsRow && goalsRow[i]) {
+                goals = parseInt(goalsRow[i].replace(/[^\d]/g, "")) || 0;
+            }
+
+            players.push({
+                name: cleanName,
+                goals: goals
+            });
+        }
+    });
+
+    if(players.length === 0) {
+        document.getElementById("playersList").innerHTML = "<p>Nenhum dado encontrado. Verifique a estrutura da planilha.</p>";
+        return;
+    }
+
+    const totalGoals = players.reduce((s,p) => s + p.goals, 0);
+
+    players = players.map(p => ({
+        ...p,
+        perc: totalGoals ? ((p.goals / totalGoals) * 100).toFixed(1) : 0
+    })).sort((a,b) => b.goals - a.goals);
+
+    const div = document.getElementById("playersList");
+    div.innerHTML = "";
+
+    players.forEach((p, i) => {
+        const medal = i === 0 ? "🥇 " : i === 1 ? "🥈 " : i === 2 ? "🥉 " : "";
+        div.innerHTML += `
+            <div class="card">
+                <span class="big">${medal}${p.name}</span><br>
+                <span class="win">${p.goals} Golos</span> | ${p.perc}%
+            </div>
+        `;
+    });
+
+    // Atualiza Stats Rápidas no Dashboard
+    document.getElementById("stats").innerHTML = `
+        <div class="card"><span class="big">${totalGoals}</span><br>Golos Totais</div>
+        <div class="card"><span class="big">${players.length}</span><br>Atletas</div>
+    `;
+
+}).catch(err => {
+    console.error("Erro ao carregar planilha:", err);
+    document.getElementById("msg").innerText = "Erro ao carregar dados da nuvem.";
+});
+</script>
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Ip29SsNYoB99RLWmse4JBY9zmokOhLsr8-yZGk9J_7Z_kIi7lToM3KlFoMz7byKYkuLRPYy_TJ8S/pub?output=csv";
 
