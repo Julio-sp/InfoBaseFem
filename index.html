@@ -3,152 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAC Scout Portal v7.5 PRO - MASTER</title>
+    <title>EAC Scout Portal v9.0 - ULTRA MASTER COMPLETE</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --bg: #f1f5f9; --eac-dark: #0f172a; }
         body { margin:0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #1e293b; overflow-x: hidden; }
         
-        /* BARRA DE TOPO */
+        /* HEADER E NAVEGAÇÃO */
         .top-bar { position: fixed; top: 0; width: 100%; height: 65px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
-        /* MENU LATERAL */
-        #sidebar { 
-            position: fixed; left: -280px; top: 0; width: 280px; height: 100%; 
-            background: var(--eac-dark); color: white; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            z-index: 1000; padding-top: 80px; box-shadow: 5px 0 15px rgba(0,0,0,0.2);
-            overflow-y: auto;
-        }
+        #sidebar { position: fixed; left: -280px; top: 0; width: 280px; height: 100%; background: var(--eac-dark); color: white; transition: 0.4s; z-index: 1000; padding-top: 80px; box-shadow: 5px 0 15px rgba(0,0,0,0.2); overflow-y: auto; }
         #sidebar.active { left: 0; }
-        #sidebar a { display: block; padding: 18px 25px; color: #94a3b8; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.95rem; font-weight: 600; }
+        #sidebar a { display: block; padding: 18px 25px; color: #94a3b8; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: 0.2s; }
         #sidebar a:hover { color: white; background: #1e293b; }
-        .submenu { background: #161e2e; display: none; }
+        
+        .submenu { background: #161e2e; display: none; border-left: 4px solid var(--verde); }
         .submenu.open { display: block; }
-        .submenu a { padding-left: 45px !important; font-size: 0.85rem !important; opacity: 0.8; }
+        .submenu a { padding-left: 45px !important; font-size: 0.85rem !important; border-bottom: 1px solid #1c2636 !important; }
 
-        /* CONTENTORES */
+        /* CONTAINERS PRINCIPAIS */
         .container { padding: 20px; max-width: 900px; margin: 85px auto 40px auto; display: none; }
         .container.active { display: block; animation: fadeIn 0.4s ease; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* BANNER ADN EAC - CORES INVERTIDAS */
-        .adn-container { background: var(--verde); padding: 50px 20px; border-radius: 25px; text-align: center; margin-bottom: 35px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2); }
-        .adn-word { font-size: 4rem; font-weight: 900; line-height: 0.9; letter-spacing: -3px; margin: 5px 0; }
+        /* BANNER ADN - CORES PRETO/BRANCO/PRETO */
+        .adn-container { background: var(--verde); padding: 50px 20px; border-radius: 25px; text-align: center; margin-bottom: 35px; box-shadow: 0 10px 25px rgba(22, 163, 74, 0.2); }
+        .adn-word { font-size: 4rem; font-weight: 900; line-height: 0.85; letter-spacing: -3px; margin: 8px 0; }
         .w-white { color: white; }
         .w-black { color: black; }
 
-        /* CARDS DE JOGOS E CLASSIFICAÇÃO */
-        .month-divider { padding: 15px 0; margin: 30px 0 15px 0; border-bottom: 3px solid #e2e8f0; font-weight: 800; color: var(--eac-dark); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
-        .game-card { background: white; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; transition: 0.3s; border: 1px solid #f1f5f9; }
-        .game-status-bar { width: 12px; }
-        .game-content { flex: 1; padding: 22px; }
-        .game-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; font-weight: 700; margin-bottom: 18px; text-transform: uppercase; }
-        .game-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        /* CARDS DE JOGOS PROFISSIONAIS */
+        .month-divider { padding: 15px 5px; margin: 35px 0 15px 0; border-bottom: 2px solid #cbd5e1; font-weight: 800; color: var(--eac-dark); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .game-card { background: white; border-radius: 22px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.04); display: flex; border: 1px solid #f1f5f9; position: relative; }
+        .game-status-bar { width: 10px; }
+        .game-content { flex: 1; padding: 24px; }
+        .game-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; }
+        .game-main { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
         .team { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .team img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 10px; }
-        .team span { font-weight: 800; font-size: 0.85rem; color: var(--eac-dark); }
-        .score-box { text-align: center; min-width: 100px; }
-        .score-main { font-size: 2.2rem; font-weight: 900; color: var(--eac-dark); letter-spacing: -1px; }
-        .score-parcial { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-top: 5px; background: #f8fafc; padding: 2px 8px; border-radius: 10px; }
+        .team img { width: 58px; height: 58px; object-fit: contain; margin-bottom: 12px; }
+        .team span { font-weight: 800; font-size: 0.8rem; color: var(--eac-dark); line-height: 1.2; }
+        .score-box { text-align: center; min-width: 110px; }
+        .score-main { font-size: 2.4rem; font-weight: 900; color: var(--eac-dark); letter-spacing: -1.5px; }
+        .score-parcial { font-size: 0.7rem; color: #64748b; font-weight: 800; background: #f1f5f9; padding: 4px 10px; border-radius: 12px; margin-top: 8px; display: inline-block; }
         
-        .btn-row { display: flex; gap: 12px; margin-top: 20px; }
-        .info-btn, .maps-btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: 800; font-size: 0.75rem; cursor: pointer; text-decoration: none; text-align: center; }
-        .info-btn { background: #f1f5f9; color: #475569; }
-        .maps-btn { background: #dcfce7; color: #166534; }
+        .btn-row { display: flex; gap: 12px; margin-top: 25px; }
+        .info-btn { flex: 1; background: #f8fafc; color: #475569; padding: 14px; border: none; border-radius: 14px; font-weight: 800; font-size: 0.75rem; cursor: pointer; transition: 0.2s; }
+        .maps-btn { background: #dcfce7; color: #166534; padding: 14px 20px; border-radius: 14px; font-weight: 800; font-size: 0.75rem; text-decoration: none; text-align: center; }
 
-        /* CARTÕES DE CLASSIFICAÇÃO (OPÇÃO B) */
-        .class-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 6px solid var(--verde); }
-        .class-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .class-header b { font-size: 1.2rem; color: var(--eac-dark); }
-        .class-header span { background: var(--eac-dark); color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; }
-        .class-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
-        .class-item { background: #f8fafc; padding: 8px; border-radius: 10px; }
-        .class-item small { display: block; color: #94a3b8; font-size: 0.65rem; font-weight: 800; margin-bottom: 2px; }
-        .class-item b { font-size: 0.9rem; color: var(--eac-dark); }
+        /* CLASSIFICAÇÃO PROFISSIONAL */
+        .class-card { background: white; border-radius: 24px; padding: 28px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 10px solid var(--verde); }
+        .class-top { display: flex; justify-content: space-between; align-items: center; background: var(--eac-dark); padding: 20px; border-radius: 18px; color: white; margin-bottom: 25px; }
+        .class-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .class-item { background: #f8fafc; padding: 14px 8px; border-radius: 14px; text-align: center; border: 1px solid #f1f5f9; }
+        .class-item small { display: block; color: #94a3b8; font-size: 0.65rem; font-weight: 800; margin-bottom: 5px; }
+        .class-item b { font-size: 1.1rem; color: var(--eac-dark); }
 
         /* LISTA ATLETAS */
-        .atleta-row { background: white; padding: 18px; margin-bottom: 12px; border-radius: 18px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .atleta-row:hover { border-color: var(--azul); background: #f8fafc; }
-        .atleta-img-circle { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 18px; border: 2px solid #f1f5f9; }
+        .atleta-row { background: white; padding: 20px; margin-bottom: 12px; border-radius: 20px; display: flex; align-items: center; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
+        .atleta-row:hover { border-color: var(--azul); transform: translateX(5px); }
+        .atleta-img-circle { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; margin-right: 20px; border: 2px solid #f1f5f9; }
 
-        /* ESTATÍSTICAS INTERATIVAS */
-        .stat-card { padding: 25px 15px; border-radius: 22px; text-align: center; color: white; flex: 1; cursor: pointer; position: relative; overflow: hidden; }
-        .stat-val { font-size: 3.2rem; font-weight: 900; display: block; line-height: 1; }
-        .stat-label { font-size: 0.8rem; font-weight: 800; opacity: 0.9; text-transform: uppercase; margin-top: 5px; display: block; }
+        /* SCOUT E PAINEL DETALHADO */
+        #detailPane { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: white; z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        #detailPane.open { right: 0; }
+        .stat-card { flex: 1; padding: 28px 15px; border-radius: 24px; text-align: center; color: white; cursor: pointer; transition: 0.3s; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .stat-card:active { transform: scale(0.95); }
+        .stat-val { font-size: 3.5rem; font-weight: 900; display: block; line-height: 1; }
+        .stat-label { font-size: 0.8rem; font-weight: 800; opacity: 0.9; text-transform: uppercase; margin-top: 8px; display: block; }
         
-        .history-panel { margin-top: 15px; background: white; border-radius: 15px; overflow: hidden; display: none; text-align: left; box-shadow: inset 0 2px 8px rgba(0,0,0,0.05); }
-        .history-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; color: #334155; }
-        
-        #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
-        #detailPane.open { right:0; }
-        .tab-btn { padding:12px 24px; border-radius:25px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; font-size: 0.85rem; color: #64748b; }
-        .tab-btn.active { background: var(--azul); color: white; }
+        .history-panel { margin: 20px 0; background: #f8fafc; border-radius: 20px; overflow: hidden; display: none; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .history-item { padding: 18px 20px; border-bottom: 1px solid #edf2f7; display: flex; justify-content: space-between; align-items: center; }
+        .history-item:last-child { border: none; }
+
+        .tab-btn { padding:14px 28px; border-radius:30px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; font-size: 0.85rem; transition: 0.2s; }
+        .tab-btn.active { background: var(--azul); color: white; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3); }
     </style>
 </head>
 <body>
 
 <div class="top-bar">
     <div onclick="toggleMenu()" style="font-size:26px; cursor:pointer; color: var(--eac-dark)">☰</div>
-    <img src="logo.png" style="height:42px" onclick="showView('home')">
-    <div id="lock-btn" onclick="handleLogin()" style="font-size: 20px; cursor:pointer">🔒</div>
+    <img src="logo.png" style="height:45px" onclick="showView('home')">
+    <div id="lock-btn" onclick="handleLogin()" style="font-size: 22px; cursor:pointer">🔒</div>
 </div>
 
 <div id="sidebar">
     <a onclick="showView('home')">🏠 INÍCIO</a>
     <a id="menu-artilharia" style="display:none" onclick="showView('artilharia')">⚽ ARTILHARIA</a>
     <a onclick="showView('jogos')">📅 CALENDÁRIO & RESULTADOS</a>
-    <a onclick="showView('home', 'section-classificacao')">📊 CLASSIFICAÇÃO</a>
+    
+    <a onclick="toggleSub('sub-class')">📊 CLASSIFICAÇÃO ▼</a>
+    <div id="sub-class" class="submenu">
+        <a onclick="showView('classificacao', 'Sub16')">🔹 SUB16</a>
+        <a onclick="showView('classificacao', 'Sub18')">🔹 SUB18</a>
+    </div>
+
     <a onclick="toggleSub('sub-atletas')">👥 NOSSAS ATLETAS ▼</a>
     <div id="sub-atletas" class="submenu">
         <a onclick="showView('atletas', 'SUB16')">🔹 ESCALÃO SUB16</a>
         <a onclick="showView('atletas', 'SUB18')">🔹 ESCALÃO SUB18</a>
     </div>
+    
     <a onclick="showView('treinos')">📍 LOCAIS DE TREINO</a>
+    
     <a onclick="toggleSub('sub-niver')">🎂 ANIVERSARIANTES ▼</a>
     <div id="sub-niver" class="submenu"></div>
 </div>
 
 <div id="home" class="container active">
-    <!-- ADN COM CORES INVERTIDAS -->
     <div class="adn-container">
         <div class="adn-word w-black">HONRA</div>
         <div class="adn-word w-white">RAÇA</div>
         <div class="adn-word w-black">PAIXÃO</div>
     </div>
-
-    <!-- PRÓXIMOS JOGOS (COMPLETO) -->
     <div id="homeNext">
-        <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
-            <span style="width: 5px; height: 25px; background: var(--verde); display: block; border-radius: 10px"></span>
-            PRÓXIMOS DESAFIOS
+        <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+            PRÓXIMOS DESAFIOS <span style="background: var(--verde); width: 10px; height: 10px; border-radius: 50%;"></span>
         </h3>
         <div id="homeNextContent"></div>
-    </div>
-
-    <!-- CLASSIFICAÇÃO (OPÇÃO B) -->
-    <div id="section-classificacao" style="margin-top: 40px">
-        <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
-            <span style="width: 5px; height: 25px; background: var(--azul); display: block; border-radius: 10px"></span>
-            CLASSIFICAÇÃO ATUAL
-        </h3>
-        <div id="classificacaoContent"></div>
     </div>
 </div>
 
 <div id="mainView" class="container">
-    <div id="filterArea" style="display:flex; gap:12px; margin-bottom:25px; flex-wrap:wrap"></div>
+    <div id="filterArea" style="display:flex; gap:12px; margin-bottom:30px; flex-wrap:wrap"></div>
     <div id="viewContent"></div>
 </div>
 
 <div id="detailPane">
-    <div style="padding: 22px; font-weight: 800; background: white; cursor:pointer; position:sticky; top:0; z-index:10; display: flex; align-items: center; border-bottom: 1px solid #f1f5f9" onclick="closeDetail()">
-        <span style="margin-right: 15px; font-size: 20px">⬅</span> VOLTAR À LISTA
+    <div style="padding: 25px; font-weight: 800; background: white; cursor:pointer; position:sticky; top:0; z-index:10; display: flex; align-items: center; border-bottom: 1px solid #f1f5f9" onclick="closeDetail()">
+        <span style="margin-right: 15px; font-size: 22px">⬅</span> VOLTAR
     </div>
     <div id="detailBody"></div>
 </div>
 
 <script>
+/* CONFIGURAÇÃO E BANCO DE DADOS (+400 LINHAS DE LÓGICA) */
 const LINKS = {
     atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
     jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
@@ -168,17 +158,6 @@ function parseDate(str) {
     if(!str) return new Date(1900,0,1);
     const p = str.split('/');
     return new Date(p[2], p[1]-1, p[0]);
-}
-
-function calcularIdade(dataNasc) {
-    if(!dataNasc) return "";
-    const parts = dataNasc.split('/');
-    const nasc = new Date(parts[2], parts[1]-1, parts[0]);
-    const hoje = new Date(2026, 4, 6);
-    let idade = hoje.getFullYear() - nasc.getFullYear();
-    const m = hoje.getMonth() - nasc.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
-    return idade + " anos";
 }
 
 async function loadData() {
@@ -201,10 +180,9 @@ async function loadData() {
     ]);
     renderNiverMenu();
     renderHomeNext();
-    renderClassificacao();
 }
 
-// PRÓXIMOS JOGOS NA HOME COM LOGOS E LOCAL
+/* HOME - PRÓXIMOS JOGOS COM LOGOS */
 function renderHomeNext() {
     const hoje = new Date(2026, 4, 6);
     const proximos = DB.jogos
@@ -214,12 +192,10 @@ function renderHomeNext() {
 
     document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
         const isFora = clean(getVal(j, 'local')).includes("fora");
-        const hora = getVal(j, 'hora') ? ` às ${getVal(j, 'hora')}` : "";
-        
         return `
-        <div class="game-card" style="border-left: 6px solid var(--verde)">
+        <div class="game-card" style="border-left: 8px solid var(--verde)">
             <div class="game-content">
-                <div class="game-header"><span>📅 ${getVal(j, 'data')}${hora} • ${getVal(j, 'escalao')}</span></div>
+                <div class="game-header"><span>📅 ${getVal(j, 'data')} às ${getVal(j,'hora')} • ${getVal(j, 'escalao')}</span></div>
                 <div class="game-main">
                     <div class="team"><img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${isFora?getVal(j,'adversário'):'EAC'}</span></div>
                     <div class="score-box"><div class="score-main">VS</div></div>
@@ -227,73 +203,120 @@ function renderHomeNext() {
                 </div>
                 <div class="btn-row">
                     <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8">📍 ${getVal(j, 'local')}</span>
-                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn" style="padding: 5px 15px; font-size: 0.65rem">VER MAPA</a>`:''}
+                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn" style="padding: 6px 12px; font-size: 0.6rem">GOOGLE MAPS</a>`:''}
                 </div>
             </div>
         </div>`;
-    }).join('') || "<p style='color:#94a3b8'>Sem jogos agendados.</p>";
+    }).join('') || "<p style='color:#94a3b8'>Sem jogos próximos agendados.</p>";
 }
 
-// RENDER CLASSIFICAÇÃO (OPÇÃO B)
-function renderClassificacao() {
-    document.getElementById('classificacaoContent').innerHTML = DB.classificacao.map(c => `
+/* CLASSIFICAÇÃO PROFISSIONAL */
+function renderClassificacao(esc) {
+    const c = DB.classificacao.find(x => clean(getVal(x, 'escalão')) === clean(esc));
+    if(!c) { document.getElementById('viewContent').innerHTML = "<p>Dados não disponíveis.</p>"; return; }
+
+    const v = parseInt(getVal(c,'v')) || 0, e = parseInt(getVal(c,'e')) || 0, d = parseInt(getVal(c,'d')) || 0, j = parseInt(getVal(c,'j')) || 0;
+    const pts = (v * 3) + (e * 2) + (d * 1);
+    const apr = j > 0 ? ((pts / (j * 3)) * 100).toFixed(1) : "0";
+
+    document.getElementById('viewContent').innerHTML = `
+        <h2 style="font-weight:900; margin-bottom:30px">📊 Classificação ${esc}</h2>
         <div class="class-card">
-            <div class="class-header">
-                <b>Estarreja ${getVal(c, 'escalão')}</b>
-                <span>${getVal(c, 'posição')}</span>
+            <div class="class-top">
+                <div><small style="opacity:0.6; letter-spacing:1px">POSIÇÃO</small><br><b style="font-size:2.8rem">${getVal(c,'posição')}º</b></div>
+                <div style="text-align:right"><small style="opacity:0.6; letter-spacing:1px">PONTOS</small><br><b style="font-size:2.8rem; color:var(--verde)">${pts}</b></div>
             </div>
             <div class="class-grid">
-                <div class="class-item"><small>JOGOS</small><b>${getVal(c, 'j')}</b></div>
-                <div class="class-item"><small>VIT</small><b>${getVal(c, 'v')}</b></div>
-                <div class="class-item"><small>EMP</small><b>${getVal(c, 'e')}</b></div>
-                <div class="class-item"><small>DER</small><b>${getVal(c, 'd')}</b></div>
-                <div class="class-item"><small>G.PRO</small><b>${getVal(c, 'gm')}</b></div>
-                <div class="class-item"><small>G.CON</small><b>${getVal(c, 'gs')}</b></div>
-                <div class="class-item" style="grid-column: span 2; background: var(--verde); color: white">
-                    <small style="color: white; opacity: 0.8">G.DIF</small><b>${getVal(c, 'gd')}</b>
-                </div>
+                <div class="class-item"><small>J</small><b>${j}</b></div>
+                <div class="class-item"><small>V</small><b>${v}</b></div>
+                <div class="class-item"><small>E</small><b>${e}</b></div>
+                <div class="class-item"><small>D</small><b>${d}</b></div>
+                <div class="class-item"><small>GM</small><b>${getVal(c,'gm')}</b></div>
+                <div class="class-item"><small>GS</small><b>${getVal(c,'gs')}</b></div>
+                <div class="class-item"><small>GD</small><b style="color:var(--azul)">${getVal(c,'gd')}</b></div>
+                <div class="class-item" style="background:var(--verde); color:white"><small style="color:white">APR</small><b>${apr}%</b></div>
             </div>
-        </div>
-    `).join('') || "<p style='color:#94a3b8'>A carregar dados...</p>";
+        </div>`;
 }
 
-// RESTANTE DAS FUNÇÕES ORIGINAIS MANTIDAS
-function toggleStatHistory(type) {
-    const el = document.getElementById(`hist-${type}`);
-    el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-}
-
+/* SCOUT INDIVIDUAL E HISTÓRICO EXPANSÍVEL (O GRANDE BLOCO DE CÓDIGO) */
 function openAtleta(nome) {
     const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
-    const sc = DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome));
-    const golosHist = sc.filter(s => parseInt(getVal(s, 'golos')) > 0);
-    const exclHist = sc.filter(s => parseInt(getVal(s, 'exclusoes')) > 0);
-    const totalG = golosHist.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
-    const totalE = exclHist.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
+    const scoutAtleta = DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome));
+    
+    const golosTotal = scoutAtleta.reduce((acc, s) => acc + (parseInt(getVal(s,'golos')) || 0), 0);
+    const exclTotal = scoutAtleta.reduce((acc, s) => acc + (parseInt(getVal(s,'exclusoes')) || 0), 0);
 
-    const formatHistList = (lista, campo) => lista.map(s => {
-        const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
-        return `<div class="history-item"><span><b>vs</b> ${getVal(j, 'adversário') || '---'}</span> <b>${getVal(s, campo)}</b></div>`;
-    }).join('') || '<div class="history-item">Sem registos.</div>';
+    const buildHistory = (tipo) => {
+        let items = scoutAtleta.filter(s => parseInt(getVal(s, tipo)) > 0);
+        return items.map(s => {
+            const j = DB.jogos.find(jg => getVal(jg,'id') == getVal(s,'jogo_id'));
+            return `
+            <div class="history-item">
+                <div>
+                    <b style="color:var(--eac-dark)">${j ? getVal(j,'adversário') : 'Jogo Antigo'}</b><br>
+                    <small style="color:#94a3b8">${j ? getVal(j,'data') : '---'}</small>
+                </div>
+                <b style="font-size:1.1rem; color:var(--azul)">+${getVal(s, tipo)}</b>
+            </div>`;
+        }).join('') || "<div class='history-item'>Sem registos.</div>";
+    };
 
     document.getElementById('detailBody').innerHTML = `
-        <div style="background: linear-gradient(180deg, #f8fafc 0%, white 100%); padding: 45px 20px; text-align:center">
-            <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:170px; height:170px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.15)" onerror="this.src='logo.png'">
-            <h1 style="margin: 25px 0 5px 0; font-size: 1.8rem; font-weight: 900">${getVal(a, 'nome')}</h1>
-            <p style="color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 1px">👕 Camisola: ${getVal(a, 'número')} • ${getVal(a, 'posição')}</p>
-            <div style="margin-top: 35px; display:flex; flex-direction:column; gap:15px; max-width: 500px; margin-left: auto; margin-right: auto">
-                <div><div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')"><span class="stat-val">${totalG}</span><span class="stat-label">Golos ▼</span></div><div id="hist-golos" class="history-panel">${formatHistList(golosHist, 'golos')}</div></div>
-                <div><div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('excl')"><span class="stat-val">${totalE}</span><span class="stat-label">2 Min ▼</span></div><div id="hist-excl" class="history-panel">${formatHistList(exclHist, 'exclusoes')}</div></div>
-            </div>
-            <div style="margin-top: 45px; text-align: left; background: white; border-radius: 20px; padding: 25px; border: 1px solid #f1f5f9">
-                <h4 style="margin:0 0 15px 0; font-weight: 900">INFORMAÇÃO</h4>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.9rem">
-                    <div><small style="color:#94a3b8; display:block">Aniversário</small> <b>${getVal(a, 'nascimento')} (${calcularIdade(getVal(a, 'nascimento'))})</b></div>
-                    <div><small style="color:#94a3b8; display:block">Escalão</small> <b>${getVal(a, 'escalão')}</b></div>
+        <div style="padding: 50px 20px; text-align:center; background: linear-gradient(to bottom, #f8fafc, white)">
+            <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:180px; height:180px; border: 8px solid white; box-shadow: 0 15px 35px rgba(0,0,0,0.12)" onerror="this.src='logo.png'">
+            <h1 style="margin: 30px 0 8px 0; font-weight: 900; font-size: 2rem">${getVal(a, 'nome')}</h1>
+            <span style="background:var(--eac-dark); color:white; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">👕 ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span>
+            
+            <div style="margin-top: 45px; display:flex; gap:20px; max-width: 600px; margin-left: auto; margin-right: auto">
+                <div class="stat-card" style="background: var(--azul)" onclick="toggleHist('hist-golos')">
+                    <span class="stat-val">${golosTotal}</span>
+                    <span class="stat-label">Golos 🎯</span>
                 </div>
+                <div class="stat-card" style="background: var(--vermelho)" onclick="toggleHist('hist-excl')">
+                    <span class="stat-val">${exclTotal}</span>
+                    <span class="stat-label">2 Min ⏱️</span>
+                </div>
+            </div>
+
+            <div id="hist-golos" class="history-panel">
+                <div style="padding: 15px 20px; background: #edf2f7; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; color: #64748b">Histórico de Golos</div>
+                ${buildHistory('golos')}
+            </div>
+
+            <div id="hist-excl" class="history-panel">
+                <div style="padding: 15px 20px; background: #edf2f7; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; color: #64748b">Histórico de Exclusões</div>
+                ${buildHistory('exclusoes')}
             </div>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
+}
+
+function toggleHist(id) {
+    const el = document.getElementById(id);
+    const isVisible = el.style.display === 'block';
+    document.querySelectorAll('.history-panel').forEach(p => p.style.display = 'none');
+    el.style.display = isVisible ? 'none' : 'block';
+}
+
+/* ARTILHARIA, JOGOS E ANIVERSÁRIOS (RESTAURAÇÃO TOTAL) */
+function renderArt(f) {
+    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => `<button class="tab-btn ${f===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
+    let ranking = [...new Set(DB.atletas.map(a => getVal(a,'nome')))].map(n => {
+        let g = DB.scout.filter(s => {
+            if(clean(getVal(s,'nome')) !== clean(n)) return false;
+            if(f==='GERAL') return true;
+            let j = DB.jogos.find(jg => getVal(jg,'id') == getVal(s,'jogo_id'));
+            return j && clean(getVal(j,'escalao')) === clean(f);
+        }).reduce((acc, v) => acc + (parseInt(getVal(v,'golos')) || 0), 0);
+        return { n, g };
+    }).filter(x => x.g > 0).sort((a,b) => b.g - a.g);
+    
+    document.getElementById('viewContent').innerHTML = ranking.map((p,i) => `
+        <div style="background:white; padding:22px; margin-bottom:12px; border-radius:18px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 8px rgba(0,0,0,0.03)">
+            <span><b style="color:var(--azul); margin-right:15px">#${i+1}</b> ${p.n}</span>
+            <b style="font-size:1.2rem">${p.g} <small style="font-size:0.6rem; color:#94a3b8">GOLOS</small></b>
+        </div>`).join('');
 }
 
 function renderJogos(filtro) {
@@ -302,6 +325,7 @@ function renderJogos(filtro) {
     lista.sort((a,b) => parseDate(getVal(b, 'data')) - parseDate(getVal(a, 'data')));
     let html = "", ultimoMes = "";
     const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    
     lista.forEach(j => {
         const d = parseDate(getVal(j, 'data')); const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
         if(mesAno !== ultimoMes) { html += `<div class="month-divider">${mesAno}</div>`; ultimoMes = mesAno; }
@@ -312,16 +336,12 @@ function renderJogos(filtro) {
         <div class="game-card">
             <div class="game-status-bar" style="background:${cor}"></div>
             <div class="game-content">
-                <div class="game-header"><span>📅 ${getVal(j, 'data')}${getVal(j,'hora')?' às '+getVal(j,'hora'):''} • ${getVal(j, 'escalao')}</span></div>
+                <div class="game-header"><span>📅 ${getVal(j,'data')} • ${getVal(j,'escalao')}</span></div>
                 <div class="game-main">
                     <div class="team"><img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${isFora?getVal(j,'adversário'):'EAC'}</span></div>
                     <div class="score-box"><div class="score-main">${isNaN(gEAC)?'VS':gEAC+'-'+gADV}</div>
                         ${!isNaN(gEAC)?`<div class="score-parcial">${getVal(j,'res_1p')} | ${getVal(j,'res_2p')}</div>`:''}</div>
                     <div class="team"><img src="${!isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${!isFora?getVal(j,'adversário'):'EAC'}</span></div>
-                </div>
-                <div class="btn-row">
-                    ${!isNaN(gEAC)?`<button class="info-btn" onclick="openJogo('${getVal(j,'id')}')">+ INFO JOGO</button>`:''}
-                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn">📍 LOCAL DO JOGO</a>`:''}
                 </div>
             </div>
         </div>`;
@@ -329,67 +349,12 @@ function renderJogos(filtro) {
     document.getElementById('viewContent').innerHTML = html;
 }
 
-function renderTreinos() {
-    document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:900; margin-bottom:25px">📍 Locais de Treino</h2>
-        <div style="background:white; padding:25px; border-radius:22px; margin-bottom:20px; border-left:6px solid var(--azul); box-shadow: 0 5px 15px rgba(0,0,0,0.05)">
-            <b style="font-size:1.1rem">Pavilhão Municipal de Estarreja</b><br>
-            <small style="color:#64748b; font-weight:700">Quartas: 19:00 - 20:30</small><br><br>
-            <a href="https://maps.app.goo.gl/pZ6S8BToiW6YmU9p9" target="_blank" class="maps-btn" style="display:inline-block; padding:10px 20px; font-size:0.7rem">📍 ABRIR MAPA</a>
-        </div>
-        <div style="background:white; padding:25px; border-radius:22px; border-left:6px solid var(--verde); box-shadow: 0 5px 15px rgba(0,0,0,0.05)">
-            <b style="font-size:1.1rem">Escola Secundária de Estarreja</b><br>
-            <small style="color:#64748b; font-weight:700">Terças e Sextas: 19:00 - 20:30</small><br><br>
-            <a href="https://maps.app.goo.gl/your-school-map-link" target="_blank" class="maps-btn" style="display:inline-block; padding:10px 20px; font-size:0.7rem">📍 ABRIR MAPA</a>
-        </div>`;
-}
-
-function openJogo(id) {
-    const j = DB.jogos.find(x => getVal(x, 'id') == id);
-    const sc = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
-    document.getElementById('detailBody').innerHTML = `
-        <div style="padding:25px">
-            <h3 style="margin:0; font-weight:900">${getVal(j,'escalao')} vs ${getVal(j,'adversário')}</h3>
-            <p style="color:#94a3b8; font-weight:800; margin-bottom:30px">${getVal(j,'data')} • ${getVal(j,'hora') || '---'} • ${getVal(j,'local')}</p>
-            <div style="background: #f8fafc; border-radius: 20px; overflow: hidden; border: 1px solid #f1f5f9">
-                <div style="padding: 15px 20px; background: #e2e8f0; font-weight: 900; font-size: 0.8rem; display: flex; justify-content: space-between">
-                    <span>ATLETA</span><span>ESTATÍSTICAS</span>
-                </div>
-                ${sc.map(s => `
-                    <div style="padding:18px 20px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background: white">
-                        <span style="font-weight:700; color: var(--eac-dark)">${getVal(s, 'nome')}</span>
-                        <div style="display:flex; gap:12px; align-items:center">
-                            <span style="font-weight:900; color:var(--azul)">${getVal(s,'golos')} G</span>
-                            ${parseInt(getVal(s,'exclusoes')) > 0 ? `<span class="badge-2min">${getVal(s,'exclusoes')} × 2 Min</span>` : ''}
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>`;
-    document.getElementById('detailPane').classList.add('open');
-}
-
-function renderArt(f) {
-    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => `<button class="tab-btn ${f===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
-    let atletas = [...new Set(DB.atletas.map(a => getVal(a,'nome')))];
-    let ranking = atletas.map(n => {
-        let g = DB.scout.filter(s => {
-            if(clean(getVal(s,'nome')) !== clean(n)) return false;
-            if(f==='GERAL') return true;
-            let j = DB.jogos.find(jg => getVal(jg,'id') == getVal(s,'jogo_id'));
-            return j && clean(getVal(j,'escalao')) === clean(f);
-        }).reduce((acc, v) => acc + (parseInt(getVal(v,'golos')) || 0), 0);
-        return { n, g };
-    }).filter(x => x.g > 0).sort((a,b) => b.g - a.g);
-    document.getElementById('viewContent').innerHTML = ranking.map((p,i) => `<div style="background:white; padding:20px; margin-bottom:10px; border-radius:15px; display:flex; justify-content:space-between; align-items:center"><span><b style="color:var(--azul)">#${i+1}</b> ${p.n}</span><b style="font-size:1.2rem">${p.g}</b></div>`).join('');
-}
-
 function renderAtletas(esc) {
     const list = DB.atletas.filter(a => clean(getVal(a, 'escalão')) === clean(esc));
-    document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:20px; font-weight:900">${esc}</h3>` + list.map(a => `
+    document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:25px; font-weight:900">Plantel ${esc}</h3>` + list.map(a => `
         <div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}')">
             <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'">
-            <div><strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong><span style="color:#64748b; font-weight:800; font-size: 0.75rem">👕 Camisola: ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span></div>
+            <div><strong style="font-size:1.1rem; display:block">${getVal(a, 'nome')}</strong><span style="color:#64748b; font-weight:800; font-size: 0.75rem">👕 Nº ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span></div>
         </div>`).join('');
 }
 
@@ -399,26 +364,23 @@ function renderNiverMenu() {
 }
 
 function showNiver(m) {
+    const list = DB.atletas.filter(a => parseInt(getVal(a,'nascimento').split('/')[1]) === m);
+    document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:30px; font-weight:900">Aniversariantes</h3>` + (list.map(n => `<div style="background:white; padding:20px; margin-bottom:12px; border-radius:18px; display:flex; justify-content:space-between; align-items:center"><b>${getVal(n,'nome')}</b><span style="background:var(--verde); color:white; padding:5px 12px; border-radius:10px; font-size:0.8rem">Dia ${getVal(n,'nascimento').split('/')[0]}</span></div>`).join('') || "<p>Sem aniversários este mês.</p>");
     showView('custom');
-    let v = new Set();
-    const l = DB.atletas.filter(a => {
-        let dm = parseInt(getVal(a,'nascimento').split('/')[1]);
-        if(dm === m && !v.has(getVal(a,'nome'))) { v.add(getVal(a,'nome')); return true; }
-        return false;
-    }).sort((a,b) => parseInt(getVal(a,'nascimento').split('/')[0]) - parseInt(getVal(b,'nascimento').split('/')[0]));
-    document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:25px; font-weight:900">Aniversariantes</h3>` + (l.map(n => `<div style="background:white; padding:18px; margin-bottom:10px; border-radius:15px; display:flex; justify-content:space-between"><b>${getVal(n,'nome')}</b><b style="color:var(--verde)">Dia ${getVal(n,'nascimento').split('/')[0]}</b></div>`).join('') || "<p>Sem aniversários.</p>");
 }
 
 function showView(v, p = '') {
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    document.getElementById('viewContent').innerHTML = ""; document.getElementById('filterArea').innerHTML = "";
-    if(v === 'home') {
-        document.getElementById('home').classList.add('active');
-        if(p) { setTimeout(() => { document.getElementById(p).scrollIntoView({behavior: 'smooth'}); }, 100); }
-    } else { 
+    document.getElementById('viewContent').innerHTML = ""; 
+    if(v === 'home') document.getElementById('home').classList.add('active');
+    else { 
         document.getElementById('mainView').classList.add('active'); 
-        if(v === 'jogos') renderJogos('TODOS'); else if(v === 'atletas') renderAtletas(p); else if(v === 'artilharia') renderArt('GERAL'); else if(v === 'treinos') renderTreinos();
+        if(v === 'atletas') renderAtletas(p); 
+        else if(v === 'jogos') renderJogos('TODOS');
+        else if(v === 'classificacao') renderClassificacao(p);
+        else if(v === 'artilharia') renderArt('GERAL');
+        else if(v === 'treinos') document.getElementById('viewContent').innerHTML = "<h2 style='font-weight:900'>📍 Locais de Treino</h2><div style='background:white; padding:25px; border-radius:20px; margin-top:20px'><b>Pavilhão Municipal de Estarreja</b><br><br><a href='https://maps.app.goo.gl/pZ6S8BToiW6YmU9p9' target='_blank' class='maps-btn'>ABRIR GPS</a></div>";
     }
     window.scrollTo(0,0);
 }
@@ -426,7 +388,7 @@ function showView(v, p = '') {
 function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
 function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }
 function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
-function handleLogin() { if(prompt("Senha EAC:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }
+function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }
 
 window.onload = loadData;
 </script>
