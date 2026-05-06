@@ -2,440 +2,708 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAC Scout Portal v16.0 - Executive Version</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EAC SCOUT PORTAL | OFFICIAL DIRECTOR VERSION</title>
+    
+    <!-- Importação de Fontes e Ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        :root { 
-            --verde-medio: #2e7d32; 
-            --eac-dark: #0f172a; 
-            --verde-card: #16a34a; 
-            --vermelho: #ef4444; 
-            --azul: #1e40af; 
-            --ouro: #eab308; 
-            --branco: #ffffff;
+        :root {
+            --verde-medio: #2e7d32;
+            --verde-deep: #1b5e20;
+            --eac-dark: #0f172a;
             --preto: #000000;
+            --branco: #ffffff;
+            --vermelho-alert: #dc2626;
+            --azul-info: #2563eb;
+            --cinza-bg: #f1f5f9;
+            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        body { margin:0; font-family: 'Lexend', sans-serif; background: #f8fafc; color: #1e293b; overflow-x: hidden; }
 
-        /* HEADER & NAVIGATION */
-        .top-bar { position: fixed; top: 0; width: 100%; height: 70px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        #sidebar { position: fixed; left: -300px; top: 0; width: 300px; height: 100%; background: var(--eac-dark); color: white; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding-top: 85px; overflow-y: auto; }
+        body { 
+            font-family: 'Lexend', sans-serif; 
+            background-color: var(--cinza-bg); 
+            color: var(--eac-dark); 
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* HEADER E NAVEGAÇÃO SUPERIOR */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 75px;
+            background: var(--branco);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .menu-icon {
+            font-size: 30px;
+            cursor: pointer;
+            color: var(--verde-medio);
+            transition: var(--transition);
+        }
+
+        .main-logo {
+            height: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .main-logo:hover { transform: scale(1.05); }
+
+        /* SIDEBAR ROBUSTA */
+        #sidebar {
+            position: fixed;
+            left: -320px;
+            top: 0;
+            width: 310px;
+            height: 100%;
+            background: var(--eac-dark);
+            z-index: 1100;
+            transition: var(--transition);
+            padding: 90px 0 30px 0;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+            overflow-y: auto;
+        }
+
         #sidebar.active { left: 0; }
-        #sidebar a { display: block; padding: 18px 25px; color: #cbd5e1; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: 0.3s; text-transform: uppercase; }
-        #sidebar a:hover { background: #1e293b; color: white; padding-left: 35px; }
-        
-        .submenu { background: #161e2e; display: none; border-left: 5px solid var(--verde-medio); }
-        .submenu.open { display: block; }
 
-        /* CONTAINER DINÂMICO */
-        .container { padding: 25px; max-width: 900px; margin: 90px auto 50px auto; display: none; }
-        .container.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* NOVO BANNER HOME (PRETO, BRANCO, PRETO) */
-        .hero-banner { 
-            background: var(--verde-medio); 
-            padding: 50px 20px; 
-            border-radius: 20px; 
-            text-align: center; 
-            margin-bottom: 35px;
-            box-shadow: 0 12px 24px rgba(46, 125, 50, 0.2);
+        .nav-item {
+            display: block;
+            padding: 18px 30px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #1e293b;
+            cursor: pointer;
+            transition: var(--transition);
         }
-        .hero-text { font-size: 2.8rem; font-weight: 900; line-height: 1.1; letter-spacing: -2px; }
-        .t-preto { color: var(--preto); }
-        .t-branco { color: var(--branco); }
 
-        /* FILTROS */
-        .filter-bar { display: flex; gap: 12px; margin-bottom: 25px; overflow-x: auto; padding: 5px; }
-        .f-btn { padding: 12px 25px; border-radius: 50px; border: 2px solid #e2e8f0; background: white; font-weight: 800; cursor: pointer; transition: 0.3s; white-space: nowrap; }
-        .f-btn.active { background: var(--verde-medio); color: white; border-color: var(--verde-medio); }
+        .nav-item:hover {
+            background: #1e293b;
+            color: var(--branco);
+            padding-left: 40px;
+        }
 
-        /* CARDS DE JOGO - ROBUSTEZ TOTAL */
-        .game-card { background: white; border-radius: 22px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden; }
-        .game-header { background: #f8fafc; padding: 12px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; }
-        .game-body { padding: 25px 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-        .team { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .team img { width: 55px; height: 55px; object-fit: contain; }
-        .team span { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; }
-        .score-box { flex: 1; text-align: center; }
-        .score-num { font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; }
-        
-        .game-actions { padding: 15px 20px; display: flex; gap: 10px; background: #fafafa; border-top: 1px solid #f1f5f9; }
-        .btn-act { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 800; font-size: 0.7rem; cursor: pointer; text-decoration: none; text-align: center; transition: 0.2s; }
-        .btn-map { background: #dcfce7; color: #15803d; }
-        .btn-details { background: #f1f5f9; color: #475569; }
+        .nav-submenu {
+            background: #0a0f1d;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
 
-        /* LISTA ATLETAS */
-        .atleta-row { background: white; padding: 15px 20px; border-radius: 18px; margin-bottom: 12px; display: flex; align-items: center; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.3s; }
-        .atleta-row:hover { transform: translateX(8px); border-color: var(--verde-medio); }
-        .atleta-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #f1f5f9; margin-right: 20px; }
+        .nav-submenu.open { max-height: 500px; }
 
-        /* PAINEL DETALHE (ESTILO SANFONA COM ÁUDIO) */
-        #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:2000; transition: 0.5s; overflow-y: auto; }
-        #detailPane.open { right:0; }
-        .stat-banner { display: flex; gap: 10px; padding: 20px; }
-        .stat-box { flex:1; padding: 20px; border-radius: 18px; text-align: center; color: white; cursor: pointer; transition: 0.3s; }
-        .stat-box:active { transform: scale(0.95); }
-        .accordion-content { display: none; padding: 15px; background: #f8fafc; margin: 0 20px 20px 20px; border-radius: 15px; border: 1px solid #e2e8f0; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+        .sub-item {
+            padding: 15px 50px;
+            font-size: 0.75rem;
+            color: #64748b;
+            display: block;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .sub-item:hover { color: var(--verde-medio); }
+
+        /* OVERLAY */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1050;
+            backdrop-filter: blur(4px);
+        }
+
+        /* CONTEÚDO PRINCIPAL */
+        .main-content {
+            margin-top: 95px;
+            padding: 0 20px 50px 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: 80vh;
+        }
+
+        /* BANNER SOLICITADO: FUNDO VERDE, TEXTO PRETO/BRANCO/PRETO */
+        .hero-banner {
+            background: var(--verde-medio);
+            border-radius: 24px;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(46, 125, 50, 0.25);
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .c-black { color: var(--preto); }
+        .c-white { color: var(--branco); }
+
+        /* TÍTULOS DE SEÇÃO */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .section-header span {
+            width: 6px;
+            height: 30px;
+            background: var(--verde-medio);
+            border-radius: 10px;
+        }
+
+        .section-header h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* CARDS DE JOGO - LÓGICA DE LOCALIZAÇÃO FIXA */
+        .game-card {
+            background: var(--branco);
+            border-radius: 22px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .game-meta {
+            background: #f8fafc;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #64748b;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .game-main {
+            padding: 30px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .team-box { flex: 1; }
+        .team-logo { width: 65px; height: 65px; object-fit: contain; margin-bottom: 10px; }
+        .team-name { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; display: block; height: 35px; }
+
+        .score-display {
+            flex: 1;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--eac-dark);
+            letter-spacing: 4px;
+        }
+
+        .game-footer {
+            padding: 15px 20px;
+            background: #fafafa;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-gps { background: #dcfce7; color: #15803d; }
+        .btn-gps:hover { background: #15803d; color: white; }
+        .btn-info { background: #f1f5f9; color: #475569; }
+
+        /* LISTA DE ATLETAS */
+        .atleta-item {
+            background: var(--branco);
+            padding: 15px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .atleta-item:hover { transform: translateX(5px); border-color: var(--verde-medio); }
+        .atleta-img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 2px solid var(--cinza-bg); }
+        .atleta-info b { font-size: 1rem; color: var(--eac-dark); }
+        .atleta-info p { font-size: 0.75rem; color: var(--verde-medio); font-weight: 700; }
+
+        /* PAINEL DE DETALHES (MODAL) */
+        #detail-modal {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--branco);
+            z-index: 2000;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        #detail-modal.active { right: 0; }
+
+        .modal-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        /* ACCORDION (EFEITO SANFONA) */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .stat-card {
+            padding: 20px 10px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .stat-card:active { transform: scale(0.95); }
+        .bg-blue { background: var(--azul-info); }
+        .bg-green { background: var(--verde-medio); }
+        .bg-red { background: var(--vermelho-alert); }
+
+        .acc-body {
+            display: none;
+            margin: 0 20px 20px 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* LOCAIS DE TREINO */
-        .locais-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .local-card { background: white; border-radius: 20px; padding: 25px; border-left: 8px solid var(--verde-medio); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .training-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border-left: 8px solid var(--verde-medio);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* LOADING SPINNER */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--verde-medio);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     </style>
 </head>
 <body>
 
-<div class="top-bar">
-    <div onclick="toggleMenu()" style="font-size:28px; cursor:pointer;">☰</div>
-    <img src="logo.png" style="height:45px; cursor:pointer" onclick="showView('home')" onerror="this.src='https://raw.githubusercontent.com/seu-usuario/seu-repo/main/logo.png'">
-    <div id="lock-btn" onclick="handleLogin()" style="font-size: 22px; cursor:pointer">🔒</div>
-</div>
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top:15px; font-weight:800; color:var(--verde-medio)">CARREGANDO SCOUT EAC...</p>
+    </div>
 
-<!-- MENU LATERAL -->
-<div id="sidebar">
-    <a onclick="showView('home')">🏠 Dashboard Inicial</a>
-    <a id="menu-artilharia" style="display:none" onclick="toggleSub('sub-art')">🏆 Artilharia Geral ▼</a>
-    <div id="sub-art" class="submenu">
-        <a onclick="renderArtilharia('GERAL')">Ranking Absoluto</a>
-        <a onclick="renderArtilharia('SUB16')">Sub-16</a>
-        <a onclick="renderArtilharia('SUB18')">Sub-18</a>
-    </div>
-    <a onclick="showView('jogos')">📅 Calendário de Jogos</a>
-    <a onclick="toggleSub('sub-class')">📊 Classificação ▼</a>
-    <div id="sub-class" class="submenu">
-        <a onclick="renderClassificacao('Sub16')">Tabela Sub-16</a>
-        <a onclick="renderClassificacao('Sub18')">Tabela Sub-18</a>
-    </div>
-    <a onclick="toggleSub('sub-atletas')">👥 Elenco Atletas ▼</a>
-    <div id="sub-atletas" class="submenu">
-        <a onclick="renderAtletas('SUB16')">Equipa Sub-16</a>
-        <a onclick="renderAtletas('SUB18')">Equipa Sub-18</a>
-    </div>
-    <a onclick="showView('treinos')">📍 Horários e Locais</a>
-    <a onclick="toggleSub('sub-niver')">🎂 Aniversariantes ▼</a>
-    <div id="sub-niver" class="submenu"></div>
-</div>
+    <header>
+        <div class="menu-icon" onclick="toggleMenu()">☰</div>
+        <img src="logo.png" class="main-logo" id="headerLogo" onclick="location.reload()" onerror="handleLogoError(this)">
+        <div id="lock-btn" onclick="directorAuth()" style="font-size: 24px; cursor:pointer">🔒</div>
+    </header>
 
-<!-- PAGINA HOME -->
-<div id="home" class="container active">
-    <div class="hero-banner">
-        <div class="hero-text">
-            <span class="t-preto">ESTARREJA</span><br>
-            <span class="t-branco">ANDebol</span><br>
-            <span class="t-preto">CLUBE</span>
+    <div id="overlay" onclick="toggleMenu()"></div>
+
+    <nav id="sidebar">
+        <a class="nav-item" onclick="viewRouter('home')">🏠 Dashboard</a>
+        
+        <a class="nav-item" onclick="toggleSubmenu('sub-art')">🏆 Artilharia ▼</a>
+        <div id="sub-art" class="nav-submenu">
+            <a class="sub-item" onclick="renderArtilharia('GERAL')">Ranking Geral</a>
+            <a class="sub-item" onclick="renderArtilharia('SUB16')">Top Sub-16</a>
+            <a class="sub-item" onclick="renderArtilharia('SUB18')">Top Sub-18</a>
         </div>
-    </div>
-    <h3 style="font-weight:900; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
-        <span style="width:5px; height:25px; background:var(--verde-medio)"></span> PRÓXIMOS 2 JOGOS
-    </h3>
-    <div id="homeNext"></div>
-</div>
 
-<!-- VIEW DINAMICA -->
-<div id="mainView" class="container">
-    <div id="filterArea" class="filter-bar"></div>
-    <div id="viewContent"></div>
-</div>
+        <a class="nav-item" onclick="viewRouter('jogos')">📅 Calendário</a>
+        
+        <a class="nav-item" onclick="toggleSubmenu('sub-class')">📊 Classificação ▼</a>
+        <div id="sub-class" class="nav-submenu">
+            <a class="sub-item" onclick="renderClassificacao('Sub16')">Tabela Sub-16</a>
+            <a class="sub-item" onclick="renderClassificacao('Sub18')">Tabela Sub-18</a>
+        </div>
 
-<!-- PAINEL DETALHE ATLETA -->
-<div id="detailPane">
-    <div style="padding: 20px; font-weight: 800; border-bottom: 1px solid #eee; display:flex; align-items:center; gap:15px;" onclick="closeDetail()">
-        <span style="font-size:25px">⬅</span> VOLTAR
+        <a class="nav-item" onclick="toggleSubmenu('sub-elenco')">👥 Elenco ▼</a>
+        <div id="sub-elenco" class="nav-submenu">
+            <a class="sub-item" onclick="renderAtletas('SUB16')">Sub-16 Feminino</a>
+            <a class="sub-item" onclick="renderAtletas('SUB18')">Sub-18 Feminino</a>
+        </div>
+
+        <a class="nav-item" onclick="viewRouter('treinos')">📍 Locais de Treino</a>
+    </nav>
+
+    <main class="main-content">
+        <!-- VIEW: HOME -->
+        <div id="view-home" class="view-container">
+            <div class="hero-banner">
+                <div class="hero-title">
+                    <div class="c-black">ESTARREJA</div>
+                    <div class="c-white">ANDebol</div>
+                    <div class="c-black">CLUBE</div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <span></span>
+                <h2>PRÓXIMOS 2 JOGOS</h2>
+            </div>
+            <div id="home-games-list">
+                <!-- Injetado via JS -->
+            </div>
+        </div>
+
+        <!-- VIEW: DINAMICA (GENERICA) -->
+        <div id="view-dynamic" class="view-container" style="display:none">
+            <div id="dynamic-filters"></div>
+            <div id="dynamic-content"></div>
+        </div>
+    </main>
+
+    <!-- MODAL DETALHE ATLETA -->
+    <div id="detail-modal">
+        <div class="modal-header" onclick="closeModal()">
+            <span style="font-size:30px">←</span>
+            <span style="font-weight:900; text-transform:uppercase">Voltar ao Elenco</span>
+        </div>
+        <div id="modal-content"></div>
     </div>
-    <div id="detailBody"></div>
-</div>
+
+    <!-- AUDIOS -->
+    <audio id="sound-goal" src="https://www.myinstants.com/media/sounds/gol-gol-gol.mp3"></audio>
+    <audio id="sound-out" src="https://www.myinstants.com/media/sounds/boo-3.mp3"></audio>
 
 <script>
-// CONFIGURAÇÃO DOS LINKS - GID ATUALIZADOS
-const LINKS = {
-    atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
-    jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
-    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv",
-    classificacao: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2008001682&single=true&output=csv"
+/**
+ * EAC SISTEMA DE SCOUT V16.2
+ * DIRETOR DE DESENVOLVIMENTO: ANALISE LINHA A LINHA
+ */
+
+const CONFIG = {
+    sheets: {
+        atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
+        jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
+        scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
+    },
+    logo_fallback: "https://raw.githubusercontent.com/estarrejaandebolclube/site/main/logo.png"
 };
 
-let DB = { atletas: [], jogos: [], scout: [], classificacao: [] };
+let DATABASE = { atletas: [], jogos: [], scout: [] };
 
-// AUDIO ASSETS
-const audioGolo = new Audio('https://www.myinstants.com/media/sounds/gol-gol-gol.mp3');
-const audioExclusao = new Audio('https://www.myinstants.com/media/sounds/boo-3.mp3');
-
-// ENGINE DE BUSCA DE DADOS
-async function initApp() {
+// INICIALIZAÇÃO COM TRATAMENTO DE ERRO CRÍTICO
+async function startup() {
     try {
-        const fetchCSV = async (url) => {
-            const res = await fetch(url + "&t=" + Date.now());
+        const fetcher = async (url) => {
+            const res = await fetch(url + "&cache=" + Date.now());
             const text = await res.text();
-            const rows = text.split('\n').filter(r => r.trim() !== "");
-            const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ""));
-            return rows.slice(1).map(row => {
-                const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                let obj = {};
-                headers.forEach((h, i) => obj[h] = (values[i] || "").replace(/"/g, "").trim());
-                return obj;
-            });
+            return parseCSV(text);
         };
 
-        const [at, jg, sc, cl] = await Promise.all([
-            fetchCSV(LINKS.atletas), fetchCSV(LINKS.jogos), fetchCSV(LINKS.scout), fetchCSV(LINKS.classificacao)
+        const [at, jg, sc] = await Promise.all([
+            fetcher(CONFIG.sheets.atletas),
+            fetcher(CONFIG.sheets.jogos),
+            fetcher(CONFIG.sheets.scout)
         ]);
 
-        DB.atletas = at; DB.jogos = jg; DB.scout = sc; DB.classificacao = cl;
-        
-        renderHomeNext();
-        renderNiverMenu();
-        console.log("Sistema Diretor: OK - Atletas carregadas: " + DB.atletas.length);
-    } catch(e) {
-        console.error("Critical Failure na carga de dados", e);
+        DATABASE.atletas = at;
+        DATABASE.jogos = jg;
+        DATABASE.scout = sc;
+
+        renderHome();
+        setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 800);
+    } catch (err) {
+        console.error("ERRO DIRETOR: Falha na carga de dados.", err);
+        alert("Erro ao carregar dados. Verifique sua conexão.");
     }
 }
 
-// CORREÇÃO CRITICA: LÓGICA DE CARD DE JOGO (CASA/FORA E GPS)
-function createGameCard(j) {
-    const isPlayed = j['Gols_EAC'] !== "";
-    const onde = (j['Onde'] || "").toLowerCase();
-    const linkGPS = j['Link_GPS'] || "#"; // Puxa direto da coluna Link_GPS
+// PARSER DE CSV ROBUSTO (Lida com vírgulas dentro de aspas)
+function parseCSV(text) {
+    const lines = text.split('\n').filter(l => l.trim() !== '');
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
     
-    let timeEsq = "EAC", logoEsq = "logo.png";
-    let timeDir = j['Adversário'], logoDir = j['Logo_Adversario'];
-    let scoreEsq = j['Gols_EAC'], scoreDir = j['Gols_Adv'];
+    return lines.slice(1).map(line => {
+        const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        let obj = {};
+        headers.forEach((h, i) => {
+            obj[h] = values[i] ? values[i].trim().replace(/"/g, '') : "";
+        });
+        return obj;
+    });
+}
 
-    if(onde === 'fora') {
-        timeEsq = j['Adversário']; logoEsq = j['Logo_Adversario'];
-        timeDir = "EAC"; logoDir = "logo.png";
-        scoreEsq = j['Gols_Adv']; scoreDir = j['Gols_EAC'];
-    }
+// LOGICA DE REPRODUÇÃO DE AUDIO
+function playAudio(type) {
+    const sG = document.getElementById('sound-goal');
+    const sO = document.getElementById('sound-out');
+    if(type === 'goal') { sG.currentTime = 0; sG.play().catch(e=>{}); }
+    if(type === 'out') { sO.currentTime = 0; sO.play().catch(e=>{}); }
+}
+
+// RENDERIZAÇÃO DA HOME (APENAS 2 JOGOS)
+function renderHome() {
+    const container = document.getElementById('home-games-list');
+    // Filtra apenas jogos que ainda não aconteceram (Gols_EAC vazio)
+    const proximos = DATABASE.jogos
+        .filter(j => j['Gols_EAC'] === "")
+        .slice(0, 2);
+
+    container.innerHTML = proximos.length > 0 
+        ? proximos.map(j => cardJogoTemplate(j)).join('')
+        : `<p style="text-align:center; color:#94a3b8; padding:20px;">Nenhum jogo agendado no momento.</p>`;
+}
+
+// TEMPLATE DE CARD DE JOGO (FIXO GPS)
+function cardJogoTemplate(j) {
+    const foiJogado = j['Gols_EAC'] !== "";
+    const eFora = j['Onde'].toLowerCase() === 'fora';
+    const gpsLink = j['Link_GPS'] || "#";
 
     return `
     <div class="game-card">
-        <div class="game-header">
-            <span style="font-size:0.65rem; font-weight:800; color:var(--verde-medio)">● ${j['Escalao']}</span>
-            <span style="font-size:0.65rem; font-weight:700; color:var(--cinza)">${j['Data']} - ${j['Hora']}</span>
+        <div class="game-meta">
+            <span>● ${j['Escalao']}</span>
+            <span>${j['Data']} • ${j['Hora']}</span>
         </div>
-        <div class="game-body">
-            <div class="team">
-                <img src="${logoEsq}" onerror="this.src='https://via.placeholder.com/50'">
-                <span>${timeEsq}</span>
+        <div class="game-main">
+            <div class="team-box">
+                <img src="${eFora ? j['Logo_Adversario'] : 'logo.png'}" class="team-logo" onerror="handleLogoError(this)">
+                <span class="team-name">${eFora ? j['Adversário'] : 'EAC'}</span>
             </div>
-            <div class="score-box">
-                <div class="score-num">${isPlayed ? `${scoreEsq}:${scoreDir}` : 'VS'}</div>
+            <div class="score-display">
+                ${foiJogado ? (eFora ? `${j['Gols_Adv']}:${j['Gols_EAC']}` : `${j['Gols_EAC']}:${j['Gols_Adv']}`) : 'VS'}
             </div>
-            <div class="team">
-                <img src="${logoDir}" onerror="this.src='https://via.placeholder.com/50'">
-                <span>${timeDir}</span>
+            <div class="team-box">
+                <img src="${eFora ? 'logo.png' : j['Logo_Adversario']}" class="team-logo" onerror="handleLogoError(this)">
+                <span class="team-name">${eFora ? 'EAC' : j['Adversário']}</span>
             </div>
         </div>
-        <div class="game-actions">
-            <button class="btn-act btn-details" onclick="alert('Local: ${j['Local']}')">DETALHES</button>
-            <a href="${linkGPS}" target="_blank" class="btn-act btn-map">ABRIR GOOGLE MAPS</a>
+        <div class="game-footer">
+            <button class="btn btn-info" onclick="alert('Local: ${j['Local']}')">INFO</button>
+            <a href="${gpsLink}" target="_blank" class="btn btn-gps">ABRIR GPS</a>
         </div>
     </div>`;
 }
 
-// PAGINA INICIAL: APENAS 2 JOGOS
-function renderHomeNext() {
-    const hoje = new Date();
-    const proximos = DB.jogos.filter(j => j['Gols_EAC'] === "").slice(0, 2);
-    document.getElementById('homeNext').innerHTML = proximos.map(j => createGameCard(j)).join('');
-}
+// RENDERIZAÇÃO ELENCO (ATLETAS SUMIRAM? AQUI ESTÃO ELAS)
+function renderAtletas(escalao) {
+    viewRouter('dynamic');
+    const content = document.getElementById('dynamic-content');
+    const filtradas = DATABASE.atletas.filter(a => a['Escalão'].includes(escalao));
 
-// ATLETAS: RESTAURADO
-function renderAtletas(esc) {
-    showView('custom');
-    const filtradas = DB.atletas.filter(a => a['Escalão'].includes(esc));
+    document.getElementById('dynamic-filters').innerHTML = `<div class="section-header"><span></span><h2>ATLETAS ${escalao}</h2></div>`;
     
-    document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:900; margin-bottom:20px;">👥 Equipa ${esc}</h2>
-        ${filtradas.map(a => `
-            <div class="atleta-row" onclick="openAtleta('${a['Nome']}', '${esc}')">
-                <img src="${a['Foto']}" class="atleta-img" onerror="this.src='https://via.placeholder.com/100'">
-                <div style="flex:1">
-                    <b style="font-size:1.1rem">${a['Nome']}</b><br>
-                    <small style="color:var(--verde-medio); font-weight:800">#${a['Número']} • ${a['Posição']}</small>
-                </div>
-                <div style="color:var(--verde-medio)">➔</div>
+    content.innerHTML = filtradas.map(a => `
+        <div class="atleta-item" onclick="openAtleta('${a['Nome']}', '${escalao}')">
+            <img src="${a['Foto']}" class="atleta-img" onerror="this.src='https://via.placeholder.com/100?text=EAC'">
+            <div class="atleta-info">
+                <b>${a['Nome']}</b>
+                <p>#${a['Número']} • ${a['Posição']}</p>
             </div>
-        `).join('')}`;
+            <div style="margin-left:auto; color:var(--verde-medio); font-weight:900">→</div>
+        </div>
+    `).join('');
 }
 
-// FICHA ATLETA: ROBUSTEZ COM ÁUDIO E SANFONA
+// FICHA TÉCNICA E ACORDION COM ÁUDIO
 function openAtleta(nome, esc) {
-    const a = DB.atletas.find(at => at['Nome'] === nome);
-    const scouts = DB.scout.filter(s => {
-        const j = DB.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
-        return s['Nome'] === nome && (j && j['Escalao'] === esc);
+    const atleta = DATABASE.atletas.find(a => a['Nome'] === nome);
+    const scouts = DATABASE.scout.filter(s => {
+        const j = DATABASE.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
+        return s['Nome'] === nome && j && j['Escalao'] === esc;
     });
 
-    const tGolos = scouts.reduce((sum, s) => sum + (parseInt(s['Golos']) || 0), 0);
-    const tExcl = scouts.reduce((sum, s) => sum + (parseInt(s['Exclusoes']) || 0), 0);
-    const media = scouts.length > 0 ? (tGolos / scouts.length).toFixed(1) : 0;
+    const totalGolos = scouts.reduce((acc, s) => acc + (parseInt(s['Golos']) || 0), 0);
+    const totalExcl = scouts.reduce((acc, s) => acc + (parseInt(s['Exclusoes']) || 0), 0);
+    const media = scouts.length > 0 ? (totalGolos / scouts.length).toFixed(1) : "0.0";
 
-    document.getElementById('detailBody').innerHTML = `
-        <div style="text-align:center; padding:30px;">
-            <img src="${a['Foto']}" style="width:130px; height:130px; border-radius:50%; border:5px solid var(--verde-medio); object-fit:cover">
-            <h2 style="margin:15px 0 5px 0">${nome}</h2>
-            <p style="font-weight:800; color:var(--verde-medio)">${a['Posição']} | #${a['Número']}</p>
+    document.getElementById('modal-content').innerHTML = `
+        <div style="text-align:center; padding:40px 20px; background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);">
+            <img src="${atleta['Foto']}" style="width:140px; height:140px; border-radius:50%; object-fit:cover; border:5px solid var(--verde-medio); box-shadow: var(--shadow-soft);">
+            <h2 style="margin-top:20px; font-weight:900; font-size:1.8rem">${nome}</h2>
+            <span style="background:var(--verde-medio); color:white; padding:5px 15px; border-radius:50px; font-size:0.8rem; font-weight:700;">#${atleta['Número']} | ${atleta['Posição']}</span>
         </div>
-        
-        <div class="stat-banner">
-            <div class="stat-box" style="background:var(--azul)" onclick="toggleAccordion('golos', 'golo')">
-                <div style="font-size:1.8rem; font-weight:900">${tGolos}</div>
-                <div style="font-size:0.6rem">GOLOS</div>
+
+        <div class="stat-grid">
+            <div class="stat-card bg-blue" onclick="toggleAcc('acc-g', 'goal')">
+                <div style="font-size:1.8rem; font-weight:900">${totalGolos}</div>
+                <div style="font-size:0.6rem; font-weight:800">GOLOS</div>
             </div>
-            <div class="stat-box" style="background:var(--verde-medio)">
+            <div class="stat-card bg-green">
                 <div style="font-size:1.8rem; font-weight:900">${media}</div>
-                <div style="font-size:0.6rem">MÉDIA</div>
+                <div style="font-size:0.6rem; font-weight:800">MÉDIA</div>
             </div>
-            <div class="stat-box" style="background:var(--vermelho)" onclick="toggleAccordion('excl', 'excl')">
-                <div style="font-size:1.8rem; font-weight:900">${tExcl}</div>
-                <div style="font-size:0.6rem">2 MIN</div>
+            <div class="stat-card bg-red" onclick="toggleAcc('acc-e', 'out')">
+                <div style="font-size:1.8rem; font-weight:900">${totalExcl}</div>
+                <div style="font-size:0.6rem; font-weight:800">2 MIN</div>
             </div>
         </div>
 
-        <div id="acc-golos" class="accordion-content">
-            <h4 style="margin-top:0">⚽ Onde marcou:</h4>
+        <div id="acc-g" class="acc-body">
+            <h4 style="margin-bottom:10px; font-size:0.8rem">⚽ DETALHE DE GOLOS:</h4>
             ${scouts.filter(s => s['Golos'] > 0).map(s => {
-                const j = DB.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
-                return `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee">
-                    <span>vs ${j['Adversário']}</span> <b>${s['Golos']} Golos</b>
+                const j = DATABASE.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
+                return `<div style="display:flex; justify-content:space-between; font-size:0.8rem; padding:5px 0; border-bottom:1px solid #ddd">
+                    <span>vs ${j['Adversário']}</span> <b>${s['Golos']}</b>
                 </div>`;
-            }).join('') || 'Sem registos'}
+            }).join('') || '<small>Sem golos registrados.</small>'}
         </div>
 
-        <div id="acc-excl" class="accordion-content">
-            <h4 style="margin-top:0">⚠️ Exclusões:</h4>
+        <div id="acc-e" class="acc-body">
+            <h4 style="margin-bottom:10px; font-size:0.8rem; color:var(--vermelho-alert)">⚠️ EXCLUSÕES:</h4>
             ${scouts.filter(s => s['Exclusoes'] > 0).map(s => {
-                const j = DB.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
-                return `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee">
-                    <span>vs ${j['Adversário']}</span> <b>${s['Exclusoes']} x 2'</b>
+                const j = DATABASE.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
+                return `<div style="display:flex; justify-content:space-between; font-size:0.8rem; padding:5px 0; border-bottom:1px solid #ddd">
+                    <span>vs ${j['Adversário']}</span> <b>${s['Exclusoes']}x</b>
                 </div>`;
-            }).join('') || 'Sem registos'}
+            }).join('') || '<small>Limpa! Nenhuma exclusão.</small>'}
         </div>
-
-        <div style="margin:20px; padding:20px; background:#f1f5f9; border-radius:15px; font-size:0.8rem">
-            <b>Data de Nascimento:</b> ${a['Nascimento']}<br>
-            <b>Escalão Principal:</b> ${a['Escalão']}
-        </div>`;
-    
-    document.getElementById('detailPane').classList.add('open');
+    `;
+    document.getElementById('detail-modal').classList.add('active');
 }
 
-// LOCAIS DE TREINO: RESTAURADO
+// LOCAIS DE TREINO (RESTAURADO)
 function renderTreinos() {
-    showView('custom');
-    document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:900; margin-bottom:25px;">📍 Locais de Treino</h2>
-        <div class="locais-grid">
-            <div class="local-card">
-                <h3>Pavilhão Municipal de Estarreja</h3>
-                <p>O palco principal da nossa equipa.</p>
-                <a href="https://maps.app.goo.gl/Yp4AasH4pG2D6MhDA" target="_blank" class="btn-act btn-map" style="display:block">VER NO MAPA</a>
-            </div>
-            <div class="local-card" style="border-left-color: var(--azul)">
-                <h3>Escola Secundária de Estarreja</h3>
-                <p>Treinos de formação e desenvolvimento.</p>
-                <a href="https://maps.app.goo.gl/F6fA5Y7F3V5K7Z9L9" target="_blank" class="btn-act btn-map" style="display:block; background:#e0f2fe; color:var(--azul)">VER NO MAPA</a>
-            </div>
-        </div>`;
+    viewRouter('dynamic');
+    document.getElementById('dynamic-filters').innerHTML = `<div class="section-header"><span></span><h2>LOCAIS DE TREINO</h2></div>`;
+    document.getElementById('dynamic-content').innerHTML = `
+        <div class="training-card">
+            <h3 style="font-weight:900; color:var(--verde-medio)">PAVILHÃO MUNICIPAL</h3>
+            <p style="font-size:0.8rem; margin:10px 0;">Local principal de jogos e treinos oficiais do Estarreja AC.</p>
+            <a href="https://maps.app.goo.gl/Yp4AasH4pG2D6MhDA" target="_blank" class="btn btn-gps" style="display:block">VER NO GOOGLE MAPS</a>
+        </div>
+        <div class="training-card" style="border-left-color: var(--azul-info)">
+            <h3 style="font-weight:900; color:var(--azul-info)">ESCOLA SECUNDÁRIA</h3>
+            <p style="font-size:0.8rem; margin:10px 0;">Treinos de desenvolvimento e categorias de base.</p>
+            <a href="https://maps.app.goo.gl/F6fA5Y7F3V5K7Z9L9" target="_blank" class="btn btn-gps" style="display:block; background:#e0f2fe; color:var(--azul-info)">VER NO GOOGLE MAPS</a>
+        </div>
+    `;
 }
 
-// ARTILHARIA
-function renderArtilharia(modo) {
-    showView('custom');
-    let lista = [];
-    const nomesAtletas = [...new Set(DB.atletas.map(a => a['Nome']))];
-
-    nomesAtletas.forEach(n => {
-        const scouts = DB.scout.filter(s => {
-            if(modo === 'GERAL') return s['Nome'] === n;
-            const j = DB.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
-            return s['Nome'] === n && (j && j['Escalao'] === modo);
-        });
-        const total = scouts.reduce((sum, s) => sum + (parseInt(s['Golos']) || 0), 0);
-        if(total > 0) {
-            const a = DB.atletas.find(at => at['Nome'] === n);
-            lista.push({ nome: n, golos: total, foto: a ? a['Foto'] : '' });
-        }
-    });
-
-    lista.sort((a,b) => b.golos - a.golos);
-
-    document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:900; margin-bottom:20px;">🏆 Artilharia ${modo}</h2>
-        ${lista.map((r, i) => `
-            <div class="atleta-row">
-                <div style="width:30px; font-weight:900; font-size:1.2rem">${i+1}º</div>
-                <img src="${r.foto}" class="atleta-img">
-                <div style="flex:1"><b>${r.nome}</b></div>
-                <div style="font-size:1.5rem; font-weight:900; color:var(--verde-medio)">${r.golos}</div>
-            </div>
-        `).join('')}`;
+// UTILITÁRIOS DE INTERFACE
+function toggleMenu() {
+    const side = document.getElementById('sidebar');
+    const over = document.getElementById('overlay');
+    const isActive = side.classList.contains('active');
+    side.classList.toggle('active');
+    over.style.display = isActive ? 'none' : 'block';
 }
 
-// NAVEGAÇÃO E UTILITÁRIOS
-function showView(v) {
-    if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
-    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    
-    if(v === 'home') {
-        document.getElementById('home').classList.add('active');
-    } else {
-        document.getElementById('mainView').classList.add('active');
-        if(v === 'jogos') renderJogos('TODOS');
-        if(v === 'treinos') renderTreinos();
-    }
+function toggleSubmenu(id) {
+    document.getElementById(id).classList.toggle('open');
 }
 
-function renderJogos(filtro) {
-    const area = document.getElementById('filterArea');
-    area.innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(f => 
-        `<button class="f-btn ${filtro === f ? 'active' : ''}" onclick="renderJogos('${f}')">${f}</button>`
-    ).join('');
-
-    let filtered = DB.jogos;
-    if(filtro !== 'TODOS') filtered = DB.jogos.filter(j => j['Escalao'] === filtro);
-    
-    document.getElementById('viewContent').innerHTML = filtered.map(j => createGameCard(j)).join('');
+function viewRouter(target) {
+    toggleMenu();
+    document.getElementById('view-home').style.display = (target === 'home') ? 'block' : 'none';
+    document.getElementById('view-dynamic').style.display = (target === 'dynamic') ? 'block' : 'none';
+    if(target === 'home') renderHome();
+    if(target === 'jogos') renderJogos();
 }
 
-function toggleAccordion(id, type) {
-    const el = document.getElementById('acc-' + id);
-    const isOpen = el.style.display === 'block';
-    
-    document.querySelectorAll('.accordion-content').forEach(acc => acc.style.display = 'none');
-    
-    if(!isOpen) {
-        el.style.display = 'block';
-        if(type === 'golo') { audioGolo.currentTime = 0; audioGolo.play().catch(e=>{}); }
-        if(type === 'excl') { audioExclusao.currentTime = 0; audioExclusao.play().catch(e=>{}); }
-    }
+function renderJogos() {
+    viewRouter('dynamic');
+    document.getElementById('dynamic-filters').innerHTML = `<div class="section-header"><span></span><h2>CALENDÁRIO COMPLETO</h2></div>`;
+    const sorted = [...DATABASE.jogos].reverse(); // Recentes primeiro
+    document.getElementById('dynamic-content').innerHTML = sorted.map(j => cardJogoTemplate(j)).join('');
 }
 
-function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-function toggleSub(id) { 
+function toggleAcc(id, audio) {
     const el = document.getElementById(id);
-    el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-}
-function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
-function handleLogin() { 
-    const p = prompt("Acesso Direção:"); 
-    if(p === "eac2026") { 
-        document.getElementById('menu-artilharia').style.display='block'; 
-        document.getElementById('lock-btn').innerText="🔓"; 
-    } 
+    const isVisible = el.style.display === 'block';
+    document.querySelectorAll('.acc-body').forEach(b => b.style.display = 'none');
+    if(!isVisible) {
+        el.style.display = 'block';
+        playAudio(audio);
+    }
 }
 
-function renderNiverMenu() {
-    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-    document.getElementById('sub-niver').innerHTML = meses.map((m, i) => `<a onclick="alert('Funcionalidade em atualização para o mês de ${m}')">${m}</a>`).join('');
+function closeModal() { document.getElementById('detail-modal').classList.remove('active'); }
+
+function handleLogoError(img) {
+    img.onerror = null;
+    img.src = CONFIG.logo_fallback;
 }
 
-window.onload = initApp;
+function directorAuth() {
+    const pass = prompt("Acesso Direção EAC:");
+    if(pass === "eac2026") {
+        alert("Diretor autenticado. Scout liberado.");
+        document.getElementById('lock-btn').innerText = "🔓";
+    }
+}
+
+// INICIO DO SISTEMA
+window.onload = startup;
 </script>
 </body>
 </html>
