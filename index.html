@@ -3,136 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAC Scout Portal v15.0 - Titanium Edition</title>
+    <title>EAC Scout Portal v16.0 - Executive Version</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --cinza: #64748b; --eac-dark: #0f172a; --ouro: #eab308; }
-        body { margin:0; font-family: 'Lexend', sans-serif; background: #f1f5f9; color: #1e293b; overflow-x: hidden; }
+        :root { 
+            --verde-medio: #2e7d32; 
+            --eac-dark: #0f172a; 
+            --verde-card: #16a34a; 
+            --vermelho: #ef4444; 
+            --azul: #1e40af; 
+            --ouro: #eab308; 
+            --branco: #ffffff;
+            --preto: #000000;
+        }
         
+        body { margin:0; font-family: 'Lexend', sans-serif; background: #f8fafc; color: #1e293b; overflow-x: hidden; }
+
         /* HEADER & NAVIGATION */
-        .top-bar { position: fixed; top: 0; width: 100%; height: 65px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        #sidebar { position: fixed; left: -280px; top: 0; width: 280px; height: 100%; background: var(--eac-dark); color: white; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding-top: 80px; overflow-y: auto; }
+        .top-bar { position: fixed; top: 0; width: 100%; height: 70px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
+        
+        #sidebar { position: fixed; left: -300px; top: 0; width: 300px; height: 100%; background: var(--eac-dark); color: white; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding-top: 85px; overflow-y: auto; }
         #sidebar.active { left: 0; }
-        #sidebar a { display: block; padding: 16px 25px; color: #94a3b8; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: 0.2; }
-        #sidebar a:hover { background: #1e293b; color: white; }
-        .submenu { background: #161e2e; display: none; border-left: 4px solid var(--verde); }
+        #sidebar a { display: block; padding: 18px 25px; color: #cbd5e1; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: 0.3s; text-transform: uppercase; }
+        #sidebar a:hover { background: #1e293b; color: white; padding-left: 35px; }
+        
+        .submenu { background: #161e2e; display: none; border-left: 5px solid var(--verde-medio); }
         .submenu.open { display: block; }
 
-        /* CONTAINERS PRINCIPAIS */
-        .container { padding: 20px; max-width: 800px; margin: 85px auto 40px auto; display: none; min-height: 80vh; }
-        .container.active { display: block; animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* CONTAINER DINÂMICO */
+        .container { padding: 25px; max-width: 900px; margin: 90px auto 50px auto; display: none; }
+        .container.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* NOVO BANNER HOME (PRETO, BRANCO, PRETO) */
+        .hero-banner { 
+            background: var(--verde-medio); 
+            padding: 50px 20px; 
+            border-radius: 20px; 
+            text-align: center; 
+            margin-bottom: 35px;
+            box-shadow: 0 12px 24px rgba(46, 125, 50, 0.2);
+        }
+        .hero-text { font-size: 2.8rem; font-weight: 900; line-height: 1.1; letter-spacing: -2px; }
+        .t-preto { color: var(--preto); }
+        .t-branco { color: var(--branco); }
 
         /* FILTROS */
-        .filter-container { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; }
-        .filter-btn { padding: 10px 22px; border-radius: 25px; border: 1px solid #e2e8f0; background: white; font-weight: 800; font-size: 0.7rem; cursor: pointer; white-space: nowrap; transition: 0.3s; }
-        .filter-btn.active { background: var(--verde); color: white; border-color: var(--verde); box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3); }
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 25px; overflow-x: auto; padding: 5px; }
+        .f-btn { padding: 12px 25px; border-radius: 50px; border: 2px solid #e2e8f0; background: white; font-weight: 800; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+        .f-btn.active { background: var(--verde-medio); color: white; border-color: var(--verde-medio); }
 
-        /* CARDS DE JOGO */
-        .month-label { background: #cbd5e1; color: #334155; padding: 8px 15px; border-radius: 8px; font-weight: 800; font-size: 0.7rem; margin: 25px 0 12px 0; text-transform: uppercase; letter-spacing: 1px; }
-        .game-card { background: white; border-radius: 18px; margin-bottom: 15px; display: flex; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; position: relative; }
-        .status-sidebar { width: 8px; }
-        .game-body { flex: 1; padding: 18px; }
-        .game-info-top { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 700; color: var(--cinza); margin-bottom: 12px; }
-        .game-main-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .team-box { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
-        .team-box img { width: 45px; height: 45px; object-fit: contain; }
-        .team-box span { font-weight: 800; font-size: 0.7rem; color: var(--eac-dark); text-transform: uppercase; }
-        .score-container { flex: 1; text-align: center; background: #f8fafc; padding: 10px; border-radius: 12px; }
-        .score-main { font-size: 1.8rem; font-weight: 900; color: var(--eac-dark); line-height: 1; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .score-parts { font-size: 0.65rem; font-weight: 700; color: #94a3b8; margin-top: 6px; }
+        /* CARDS DE JOGO - ROBUSTEZ TOTAL */
+        .game-card { background: white; border-radius: 22px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden; }
+        .game-header { background: #f8fafc; padding: 12px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; }
+        .game-body { padding: 25px 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+        .team { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .team img { width: 55px; height: 55px; object-fit: contain; }
+        .team span { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; }
+        .score-box { flex: 1; text-align: center; }
+        .score-num { font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; }
         
-        .game-footer { display: flex; gap: 10px; margin-top: 18px; }
-        .btn-game { flex: 1; padding: 12px; border-radius: 12px; border: none; font-size: 0.65rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; transition: 0.2s; }
-        .btn-info { background: #f1f5f9; color: #475569; }
-        .btn-maps { background: #dcfce7; color: #15803d; }
-        .btn-game:hover { opacity: 0.8; }
+        .game-actions { padding: 15px 20px; display: flex; gap: 10px; background: #fafafa; border-top: 1px solid #f1f5f9; }
+        .btn-act { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 800; font-size: 0.7rem; cursor: pointer; text-decoration: none; text-align: center; transition: 0.2s; }
+        .btn-map { background: #dcfce7; color: #15803d; }
+        .btn-details { background: #f1f5f9; color: #475569; }
 
-        .extra-details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; font-size: 0.75rem; animation: fadeIn 0.3s ease; }
-        .scout-list-box { margin-top: 10px; background: #f8fafc; padding: 12px; border-radius: 10px; border-left: 3px solid var(--ouro); }
+        /* LISTA ATLETAS */
+        .atleta-row { background: white; padding: 15px 20px; border-radius: 18px; margin-bottom: 12px; display: flex; align-items: center; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.3s; }
+        .atleta-row:hover { transform: translateX(8px); border-color: var(--verde-medio); }
+        .atleta-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #f1f5f9; margin-right: 20px; }
 
-        /* ESTILO ATLETAS */
-        .atleta-card { background: white; padding: 15px; margin-bottom: 12px; border-radius: 18px; display: flex; align-items: center; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.3s; }
-        .atleta-card:hover { transform: translateX(5px); border-color: var(--verde); }
-        .atleta-thumb { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 3px solid #f1f5f9; }
-        
-        /* FICHA DETALHADA */
-        #detailPane { position: fixed; top:0; right:-110%; width:100%; height:100%; background:white; z-index:2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        /* PAINEL DETALHE (ESTILO SANFONA COM ÁUDIO) */
+        #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:2000; transition: 0.5s; overflow-y: auto; }
         #detailPane.open { right:0; }
-        .stat-card-row { display: flex; gap: 10px; margin: 20px 0; }
-        .stat-box { flex: 1; padding: 15px; border-radius: 15px; text-align: center; color: white; cursor: pointer; }
-        .history-section { display: none; background: #f8fafc; border-radius: 15px; margin-top: 10px; border: 1px solid #e2e8f0; overflow: hidden; }
-
-        /* CLASSIFICAÇÃO */
-        .rank-table-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .stat-banner { display: flex; gap: 10px; padding: 20px; }
+        .stat-box { flex:1; padding: 20px; border-radius: 18px; text-align: center; color: white; cursor: pointer; transition: 0.3s; }
+        .stat-box:active { transform: scale(0.95); }
+        .accordion-content { display: none; padding: 15px; background: #f8fafc; margin: 0 20px 20px 20px; border-radius: 15px; border: 1px solid #e2e8f0; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
 
         /* LOCAIS DE TREINO */
-        .treino-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border-top: 6px solid var(--verde); }
+        .locais-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .local-card { background: white; border-radius: 20px; padding: 25px; border-left: 8px solid var(--verde-medio); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
     </style>
 </head>
 <body>
 
-<!-- BARRA SUPERIOR -->
 <div class="top-bar">
-    <div onclick="toggleMenu()" style="font-size:26px; cursor:pointer; color: var(--eac-dark)">☰</div>
-    <img src="https://i.ibb.co/S769188/logo-eac.png" style="height:42px; cursor:pointer" onclick="showView('home')">
-    <div id="lock-btn" onclick="handleLogin()" style="font-size: 20px; cursor:pointer">🔒</div>
+    <div onclick="toggleMenu()" style="font-size:28px; cursor:pointer;">☰</div>
+    <img src="logo.png" style="height:45px; cursor:pointer" onclick="showView('home')" onerror="this.src='https://raw.githubusercontent.com/seu-usuario/seu-repo/main/logo.png'">
+    <div id="lock-btn" onclick="handleLogin()" style="font-size: 22px; cursor:pointer">🔒</div>
 </div>
 
 <!-- MENU LATERAL -->
 <div id="sidebar">
-    <a onclick="showView('home')">🏠 INÍCIO</a>
-    <a id="menu-artilharia" style="display:none" onclick="toggleSub('sub-artilharia')">⚽ ARTILHARIA ▼</a>
-    <div id="sub-artilharia" class="submenu">
-        <a onclick="renderArtilharia('GERAL')">🏆 RANKING GERAL</a>
-        <a onclick="renderArtilharia('SUB16')">🔹 SUB16</a>
-        <a onclick="renderArtilharia('SUB18')">🔹 SUB18</a>
+    <a onclick="showView('home')">🏠 Dashboard Inicial</a>
+    <a id="menu-artilharia" style="display:none" onclick="toggleSub('sub-art')">🏆 Artilharia Geral ▼</a>
+    <div id="sub-art" class="submenu">
+        <a onclick="renderArtilharia('GERAL')">Ranking Absoluto</a>
+        <a onclick="renderArtilharia('SUB16')">Sub-16</a>
+        <a onclick="renderArtilharia('SUB18')">Sub-18</a>
     </div>
-    <a onclick="showView('jogos')">📅 CALENDÁRIO & RESULTADOS</a>
-    <a onclick="toggleSub('sub-classificacao')">📊 CLASSIFICAÇÃO ▼</a>
-    <div id="sub-classificacao" class="submenu">
-        <a onclick="renderClassificacao('Sub16')">🔹 SUB16</a>
-        <a onclick="renderClassificacao('Sub18')">🔹 SUB18</a>
+    <a onclick="showView('jogos')">📅 Calendário de Jogos</a>
+    <a onclick="toggleSub('sub-class')">📊 Classificação ▼</a>
+    <div id="sub-class" class="submenu">
+        <a onclick="renderClassificacao('Sub16')">Tabela Sub-16</a>
+        <a onclick="renderClassificacao('Sub18')">Tabela Sub-18</a>
     </div>
-    <a onclick="toggleSub('sub-atletas')">👥 NOSSAS ATLETAS ▼</a>
+    <a onclick="toggleSub('sub-atletas')">👥 Elenco Atletas ▼</a>
     <div id="sub-atletas" class="submenu">
-        <a onclick="renderAtletasLista('SUB16')">🔹 SUB16</a>
-        <a onclick="renderAtletasLista('SUB18')">🔹 SUB18</a>
+        <a onclick="renderAtletas('SUB16')">Equipa Sub-16</a>
+        <a onclick="renderAtletas('SUB18')">Equipa Sub-18</a>
     </div>
-    <a onclick="showView('treinos')">📍 LOCAIS DE TREINO</a>
-    <a onclick="toggleSub('sub-niver')">🎂 ANIVERSARIANTES ▼</a>
+    <a onclick="showView('treinos')">📍 Horários e Locais</a>
+    <a onclick="toggleSub('sub-niver')">🎂 Aniversariantes ▼</a>
     <div id="sub-niver" class="submenu"></div>
 </div>
 
-<!-- PAGINA INICIAL -->
+<!-- PAGINA HOME -->
 <div id="home" class="container active">
-    <div style="background:linear-gradient(135deg, var(--verde), #059669); padding:45px 25px; border-radius:25px; text-align:center; color:white; margin-bottom:30px; box-shadow: 0 10px 20px rgba(5, 150, 105, 0.2);">
-        <h1 style="margin:0; font-size:2.4rem; font-weight:900; letter-spacing:-1px;">EAC SCOUT</h1>
-        <p style="opacity:0.9; font-weight:600; margin-top:5px;">Acompanha a tua equipa em tempo real</p>
+    <div class="hero-banner">
+        <div class="hero-text">
+            <span class="t-preto">ESTARREJA</span><br>
+            <span class="t-branco">ANDebol</span><br>
+            <span class="t-preto">CLUBE</span>
+        </div>
     </div>
-    <h3 style="font-weight:900; display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-        <span style="background:var(--ouro); width:8px; height:25px; border-radius:4px; display:inline-block"></span>
-        PRÓXIMOS JOGOS
+    <h3 style="font-weight:900; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+        <span style="width:5px; height:25px; background:var(--verde-medio)"></span> PRÓXIMOS 2 JOGOS
     </h3>
     <div id="homeNext"></div>
 </div>
 
-<!-- VIEW PRINCIPAL DINAMICA -->
+<!-- VIEW DINAMICA -->
 <div id="mainView" class="container">
-    <div id="filterArea" class="filter-container"></div>
+    <div id="filterArea" class="filter-bar"></div>
     <div id="viewContent"></div>
 </div>
 
-<!-- DETALHE DA ATLETA -->
+<!-- PAINEL DETALHE ATLETA -->
 <div id="detailPane">
-    <div style="padding: 20px; font-weight: 800; background: white; border-bottom: 1px solid #f1f5f9; position:sticky; top:0; z-index:10; display:flex; align-items:center; gap:15px;" onclick="closeDetail()">
-        <span style="font-size:24px">⬅</span> VOLTAR À LISTA
+    <div style="padding: 20px; font-weight: 800; border-bottom: 1px solid #eee; display:flex; align-items:center; gap:15px;" onclick="closeDetail()">
+        <span style="font-size:25px">⬅</span> VOLTAR
     </div>
     <div id="detailBody"></div>
 </div>
 
 <script>
-// LINKS DA BASE DE DADOS
+// CONFIGURAÇÃO DOS LINKS - GID ATUALIZADOS
 const LINKS = {
     atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
     jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
@@ -143,32 +162,21 @@ const LINKS = {
 let DB = { atletas: [], jogos: [], scout: [], classificacao: [] };
 
 // AUDIO ASSETS
-const sndGolo = new Audio('https://www.myinstants.com/media/sounds/gol-gol-gol.mp3');
-const sndVaia = new Audio('https://www.myinstants.com/media/sounds/boo-3.mp3');
+const audioGolo = new Audio('https://www.myinstants.com/media/sounds/gol-gol-gol.mp3');
+const audioExclusao = new Audio('https://www.myinstants.com/media/sounds/boo-3.mp3');
 
-// UTILS
-const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
-const getVal = (obj, key) => {
-    if(!obj) return "";
-    const foundKey = Object.keys(obj).find(k => clean(k) === clean(key));
-    return foundKey ? obj[foundKey].trim() : "";
-};
-
-// CARREGAMENTO DE DADOS
-async function loadData() {
+// ENGINE DE BUSCA DE DADOS
+async function initApp() {
     try {
         const fetchCSV = async (url) => {
-            const r = await fetch(url + "&t=" + Date.now());
-            const text = await r.text();
-            const lines = text.split('\n').filter(l => l.trim() !== "");
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ""));
-            return lines.slice(1).map(line => {
+            const res = await fetch(url + "&t=" + Date.now());
+            const text = await res.text();
+            const rows = text.split('\n').filter(r => r.trim() !== "");
+            const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ""));
+            return rows.slice(1).map(row => {
+                const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                 let obj = {};
-                const vals = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                headers.forEach((h, i) => {
-                    let val = vals[i] ? vals[i].replace(/"/g, "").trim() : "";
-                    obj[h] = val;
-                });
+                headers.forEach((h, i) => obj[h] = (values[i] || "").replace(/"/g, "").trim());
                 return obj;
             });
         };
@@ -179,376 +187,255 @@ async function loadData() {
 
         DB.atletas = at; DB.jogos = jg; DB.scout = sc; DB.classificacao = cl;
         
-        console.log("Dados carregados com sucesso. Jogos:", DB.jogos.length);
-        renderNiverMenu();
         renderHomeNext();
+        renderNiverMenu();
+        console.log("Sistema Diretor: OK - Atletas carregadas: " + DB.atletas.length);
     } catch(e) {
-        console.error("Falha ao carregar banco de dados:", e);
-        document.getElementById('homeNext').innerHTML = "Erro ao carregar dados. Verifique a ligação.";
+        console.error("Critical Failure na carga de dados", e);
     }
 }
 
-// LOGICA DE RENDERIZAÇÃO DE CARD (CASA/FORA)
-function renderGameCard(j) {
-    const id = getVal(j, 'id');
-    const gE = getVal(j, 'gols_eac');
-    const gA = getVal(j, 'gols_adv');
-    const isPlayed = gE !== "";
-    const localizacao = clean(getVal(j, 'onde')); // casa ou fora
+// CORREÇÃO CRITICA: LÓGICA DE CARD DE JOGO (CASA/FORA E GPS)
+function createGameCard(j) {
+    const isPlayed = j['Gols_EAC'] !== "";
+    const onde = (j['Onde'] || "").toLowerCase();
+    const linkGPS = j['Link_GPS'] || "#"; // Puxa direto da coluna Link_GPS
     
-    let color = "var(--cinza)";
-    if(isPlayed) {
-        if(parseInt(gE) > parseInt(gA)) color = "var(--verde)";
-        else if(parseInt(gE) < parseInt(gA)) color = "var(--vermelho)";
-        else color = "var(--azul)";
+    let timeEsq = "EAC", logoEsq = "logo.png";
+    let timeDir = j['Adversário'], logoDir = j['Logo_Adversario'];
+    let scoreEsq = j['Gols_EAC'], scoreDir = j['Gols_Adv'];
+
+    if(onde === 'fora') {
+        timeEsq = j['Adversário']; logoEsq = j['Logo_Adversario'];
+        timeDir = "EAC"; logoDir = "logo.png";
+        scoreEsq = j['Gols_Adv']; scoreDir = j['Gols_EAC'];
     }
-
-    const eacLogo = 'https://i.ibb.co/S769188/logo-eac.png';
-    const advLogo = getVal(j, 'logo_adversario') || 'https://via.placeholder.com/100?text=ADV';
-    const advNome = getVal(j, 'adversário');
-
-    // Ordem de exibição: Casa vs Fora
-    let tEsq, lEsq, gEsq, tDir, lDir, gDir;
-
-    if(localizacao === 'casa') {
-        tEsq = "EAC"; lEsq = eacLogo; gEsq = gE;
-        tDir = advNome; lDir = advLogo; gDir = gA;
-    } else {
-        tEsq = advNome; lEsq = advLogo; gEsq = gA;
-        tDir = "EAC"; lDir = eacLogo; gDir = gE;
-    }
-
-    const scoutJogo = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
-    const marcadoras = scoutJogo.filter(s => parseInt(getVal(s,'golos')) > 0)
-                      .map(s => `<b>${getVal(s,'nome')}</b> (${getVal(s,'golos')})`);
-
-    // Correção do link GPS: Garantir que não está vazio
-    const linkGps = getVal(j, 'link_gps') || "#";
 
     return `
     <div class="game-card">
-        <div class="status-sidebar" style="background:${color}"></div>
+        <div class="game-header">
+            <span style="font-size:0.65rem; font-weight:800; color:var(--verde-medio)">● ${j['Escalao']}</span>
+            <span style="font-size:0.65rem; font-weight:700; color:var(--cinza)">${j['Data']} - ${j['Hora']}</span>
+        </div>
         <div class="game-body">
-            <div class="game-info-top">
-                <span>📅 ${getVal(j,'data')} • ${getVal(j,'escalao')}</span>
-                <span>🕒 ${getVal(j,'hora')}</span>
+            <div class="team">
+                <img src="${logoEsq}" onerror="this.src='https://via.placeholder.com/50'">
+                <span>${timeEsq}</span>
             </div>
-            <div class="game-main-row">
-                <div class="team-box">
-                    <img src="${lEsq}" onerror="this.src='https://via.placeholder.com/50'">
-                    <span>${tEsq}</span>
-                </div>
-                <div class="score-container">
-                    <div class="score-main">${isPlayed ? `${gEsq} <span style="font-size:1rem; opacity:0.3">X</span> ${gDir}` : "VS"}</div>
-                    ${isPlayed ? `<div class="score-parts">${getVal(j,'part_1')} | ${getVal(j,'part_2')}</div>` : ''}
-                </div>
-                <div class="team-box">
-                    <img src="${lDir}" onerror="this.src='https://via.placeholder.com/50'">
-                    <span>${tDir}</span>
-                </div>
+            <div class="score-box">
+                <div class="score-num">${isPlayed ? `${scoreEsq}:${scoreDir}` : 'VS'}</div>
             </div>
-            <div class="game-footer">
-                <button class="btn-game btn-info" onclick="toggleExtra('${id}')">ℹ️ DETALHES</button>
-                <a href="${linkGps}" target="_blank" class="btn-game btn-maps">📍 VER LOCAL</a>
+            <div class="team">
+                <img src="${logoDir}" onerror="this.src='https://via.placeholder.com/50'">
+                <span>${timeDir}</span>
             </div>
-            <div id="extra-${id}" class="extra-details">
-                <p><b>📍 Pavilhão:</b> ${getVal(j, 'local')}</p>
-                <div class="scout-list-box">
-                    <p style="margin-top:0">⚽ <b>Marcadoras EAC:</b></p>
-                    ${marcadoras.length ? marcadoras.join(', ') : 'Sem golos registados ou scout indisponível.'}
-                </div>
-            </div>
+        </div>
+        <div class="game-actions">
+            <button class="btn-act btn-details" onclick="alert('Local: ${j['Local']}')">DETALHES</button>
+            <a href="${linkGPS}" target="_blank" class="btn-act btn-map">ABRIR GOOGLE MAPS</a>
         </div>
     </div>`;
 }
 
-// RESTAURAÇÃO DA LISTAGEM DE JOGOS
-function renderJogos(filtro = 'TODOS') {
-    showView('jogos');
-    const area = document.getElementById('filterArea');
-    area.innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(f => 
-        `<button class="filter-btn ${filtro === f ? 'active' : ''}" onclick="renderJogos('${f}')">${f}</button>`
-    ).join('');
-
-    let lista = DB.jogos;
-    if(filtro !== 'TODOS') {
-        lista = DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
-    }
-
-    if(lista.length === 0) {
-        document.getElementById('viewContent').innerHTML = "<p style='text-align:center; padding:40px;'>Nenhum jogo encontrado para este filtro.</p>";
-        return;
-    }
-
-    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-    let html = ""; let lastM = "";
-
-    // Ordenar por data decrescente
-    const ordenada = [...lista].sort((a,b) => {
-        const pA = getVal(a,'data').split('/'); const pB = getVal(b,'data').split('/');
-        return new Date(pB[2], pB[1]-1, pB[0]) - new Date(pA[2], pA[1]-1, pA[0]);
-    });
-
-    ordenada.forEach(j => {
-        const m = meses[parseInt(getVal(j,'data').split('/')[1]) - 1];
-        if(m !== lastM) { html += `<div class="month-label">${m}</div>`; lastM = m; }
-        html += renderGameCard(j);
-    });
-    document.getElementById('viewContent').innerHTML = html;
+// PAGINA INICIAL: APENAS 2 JOGOS
+function renderHomeNext() {
+    const hoje = new Date();
+    const proximos = DB.jogos.filter(j => j['Gols_EAC'] === "").slice(0, 2);
+    document.getElementById('homeNext').innerHTML = proximos.map(j => createGameCard(j)).join('');
 }
 
-// RESTAURAÇÃO COMPLETA DAS ATLETAS
-function renderAtletasLista(esc) {
+// ATLETAS: RESTAURADO
+function renderAtletas(esc) {
     showView('custom');
-    const filtradas = DB.atletas.filter(a => getVal(a, 'escalão').includes(esc));
+    const filtradas = DB.atletas.filter(a => a['Escalão'].includes(esc));
     
     document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:900; margin-bottom:20px;">👥 Atletas ${esc}</h2>
-        <div id="listaAtletas">
-            ${filtradas.map(a => `
-                <div class="atleta-card" onclick="openAtleta('${getVal(a,'nome')}', '${esc}')">
-                    <img src="${getVal(a,'foto')}" class="atleta-thumb" onerror="this.src='https://via.placeholder.com/100'">
-                    <div style="flex:1">
-                        <b style="font-size:1rem">${getVal(a,'nome')}</b><br>
-                        <small style="color:var(--cinza); font-weight:700">👕 Nº ${getVal(a,'número')} • ${getVal(a,'posição')}</small>
-                    </div>
-                    <div style="font-size:20px; color:var(--verde)">➜</div>
+        <h2 style="font-weight:900; margin-bottom:20px;">👥 Equipa ${esc}</h2>
+        ${filtradas.map(a => `
+            <div class="atleta-row" onclick="openAtleta('${a['Nome']}', '${esc}')">
+                <img src="${a['Foto']}" class="atleta-img" onerror="this.src='https://via.placeholder.com/100'">
+                <div style="flex:1">
+                    <b style="font-size:1.1rem">${a['Nome']}</b><br>
+                    <small style="color:var(--verde-medio); font-weight:800">#${a['Número']} • ${a['Posição']}</small>
                 </div>
-            `).join('')}
-        </div>`;
+                <div style="color:var(--verde-medio)">➔</div>
+            </div>
+        `).join('')}`;
 }
 
-// FICHA DA ATLETA ROBUSTA
-function openAtleta(nome, escContexto) {
-    const a = DB.atletas.find(at => getVal(at, 'nome') === nome);
-    if(!a) return;
-
-    const scoutAtleta = DB.scout.filter(s => {
-        const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
-        return getVal(s, 'nome') === nome && getVal(j, 'escalao') === escContexto;
+// FICHA ATLETA: ROBUSTEZ COM ÁUDIO E SANFONA
+function openAtleta(nome, esc) {
+    const a = DB.atletas.find(at => at['Nome'] === nome);
+    const scouts = DB.scout.filter(s => {
+        const j = DB.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
+        return s['Nome'] === nome && (j && j['Escalao'] === esc);
     });
 
-    const gTotal = scoutAtleta.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
-    const eTotal = scoutAtleta.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
-    const media = scoutAtleta.length > 0 ? (gTotal / scoutAtleta.length).toFixed(2) : "0.00";
-
-    const pNasc = getVal(a,'nascimento').split('/');
-    const idade = Math.floor((new Date() - new Date(pNasc[2], pNasc[1]-1, pNasc[0])) / 31557600000);
+    const tGolos = scouts.reduce((sum, s) => sum + (parseInt(s['Golos']) || 0), 0);
+    const tExcl = scouts.reduce((sum, s) => sum + (parseInt(s['Exclusoes']) || 0), 0);
+    const media = scouts.length > 0 ? (tGolos / scouts.length).toFixed(1) : 0;
 
     document.getElementById('detailBody').innerHTML = `
-        <div style="padding:30px; text-align:center">
-            <div style="position:relative; display:inline-block">
-                <img src="${getVal(a, 'foto')}" style="width:140px; height:140px; border-radius:50%; border:5px solid var(--verde); object-fit:cover" onerror="this.src='https://via.placeholder.com/150'">
-                <div style="position:absolute; bottom:5px; right:5px; background:var(--eac-dark); color:white; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; border:3px solid white">
-                    ${getVal(a,'número')}
-                </div>
+        <div style="text-align:center; padding:30px;">
+            <img src="${a['Foto']}" style="width:130px; height:130px; border-radius:50%; border:5px solid var(--verde-medio); object-fit:cover">
+            <h2 style="margin:15px 0 5px 0">${nome}</h2>
+            <p style="font-weight:800; color:var(--verde-medio)">${a['Posição']} | #${a['Número']}</p>
+        </div>
+        
+        <div class="stat-banner">
+            <div class="stat-box" style="background:var(--azul)" onclick="toggleAccordion('golos', 'golo')">
+                <div style="font-size:1.8rem; font-weight:900">${tGolos}</div>
+                <div style="font-size:0.6rem">GOLOS</div>
             </div>
-            
-            <h2 style="margin:20px 0 5px 0; font-size:1.6rem">${nome}</h2>
-            <p style="color:var(--cinza); font-weight:800; text-transform:uppercase; font-size:0.8rem; letter-spacing:1px">${getVal(a,'posição')}</p>
-            
-            <div class="stat-card-row">
-                <div class="stat-box" style="background:var(--azul)" onclick="toggleHistAtleta('g')">
-                    <div style="font-size:1.8rem; font-weight:900">${gTotal}</div>
-                    <div style="font-size:0.6rem; font-weight:800">GOLOS</div>
-                </div>
-                <div class="stat-box" style="background:var(--verde)">
-                    <div style="font-size:1.8rem; font-weight:900">${media}</div>
-                    <div style="font-size:0.6rem; font-weight:800">MÉDIA</div>
-                </div>
-                <div class="stat-box" style="background:var(--vermelho)" onclick="toggleHistAtleta('e')">
-                    <div style="font-size:1.8rem; font-weight:900">${eTotal}</div>
-                    <div style="font-size:0.6rem; font-weight:800">2 MIN</div>
-                </div>
+            <div class="stat-box" style="background:var(--verde-medio)">
+                <div style="font-size:1.8rem; font-weight:900">${media}</div>
+                <div style="font-size:0.6rem">MÉDIA</div>
             </div>
+            <div class="stat-box" style="background:var(--vermelho)" onclick="toggleAccordion('excl', 'excl')">
+                <div style="font-size:1.8rem; font-weight:900">${tExcl}</div>
+                <div style="font-size:0.6rem">2 MIN</div>
+            </div>
+        </div>
 
-            <div id="at-hist-g" class="history-section">
-                <div style="padding:12px; font-weight:900; background:#e0f2fe; color:var(--azul); font-size:0.7rem">HISTÓRICO GOLOS (${escContexto})</div>
-                ${scoutAtleta.filter(s => parseInt(getVal(s,'golos')) > 0).map(s => {
-                    const j = DB.jogos.find(jg => getVal(jg,'id') == getVal(s,'jogo_id'));
-                    return `<div style="padding:12px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; font-size:0.8rem">
-                        <span>vs ${getVal(j,'adversário')}</span> <b>${getVal(s,'golos')}</b>
-                    </div>`;
-                }).join('') || '<div style="padding:15px; font-size:0.7rem">Nenhum golo neste escalão.</div>'}
-            </div>
+        <div id="acc-golos" class="accordion-content">
+            <h4 style="margin-top:0">⚽ Onde marcou:</h4>
+            ${scouts.filter(s => s['Golos'] > 0).map(s => {
+                const j = DB.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
+                return `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee">
+                    <span>vs ${j['Adversário']}</span> <b>${s['Golos']} Golos</b>
+                </div>`;
+            }).join('') || 'Sem registos'}
+        </div>
 
-            <div id="at-hist-e" class="history-section">
-                <div style="padding:12px; font-weight:900; background:#fee2e2; color:var(--vermelho); font-size:0.7rem">HISTÓRICO EXCLUSÕES (${escContexto})</div>
-                ${scoutAtleta.filter(s => parseInt(getVal(s,'exclusoes')) > 0).map(s => {
-                    const j = DB.jogos.find(jg => getVal(jg,'id') == getVal(s,'jogo_id'));
-                    return `<div style="padding:12px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; font-size:0.8rem">
-                        <span>vs ${getVal(j,'adversário')}</span> <b>${getVal(s,'exclusoes')}</b>
-                    </div>`;
-                }).join('') || '<div style="padding:15px; font-size:0.7rem">Nenhuma exclusão registada.</div>'}
-            </div>
+        <div id="acc-excl" class="accordion-content">
+            <h4 style="margin-top:0">⚠️ Exclusões:</h4>
+            ${scouts.filter(s => s['Exclusoes'] > 0).map(s => {
+                const j = DB.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
+                return `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee">
+                    <span>vs ${j['Adversário']}</span> <b>${s['Exclusoes']} x 2'</b>
+                </div>`;
+            }).join('') || 'Sem registos'}
+        </div>
 
-            <div style="text-align:left; margin-top:30px; background:#f1f5f9; padding:20px; border-radius:20px;">
-                <p style="margin:5px 0"><b>🎂 Idade:</b> ${idade} anos</p>
-                <p style="margin:5px 0"><b>📅 Nascimento:</b> ${getVal(a, 'nascimento')}</p>
-                <p style="margin:5px 0"><b>📈 Jogos Scoutados:</b> ${scoutAtleta.length}</p>
+        <div style="margin:20px; padding:20px; background:#f1f5f9; border-radius:15px; font-size:0.8rem">
+            <b>Data de Nascimento:</b> ${a['Nascimento']}<br>
+            <b>Escalão Principal:</b> ${a['Escalão']}
+        </div>`;
+    
+    document.getElementById('detailPane').classList.add('open');
+}
+
+// LOCAIS DE TREINO: RESTAURADO
+function renderTreinos() {
+    showView('custom');
+    document.getElementById('viewContent').innerHTML = `
+        <h2 style="font-weight:900; margin-bottom:25px;">📍 Locais de Treino</h2>
+        <div class="locais-grid">
+            <div class="local-card">
+                <h3>Pavilhão Municipal de Estarreja</h3>
+                <p>O palco principal da nossa equipa.</p>
+                <a href="https://maps.app.goo.gl/Yp4AasH4pG2D6MhDA" target="_blank" class="btn-act btn-map" style="display:block">VER NO MAPA</a>
+            </div>
+            <div class="local-card" style="border-left-color: var(--azul)">
+                <h3>Escola Secundária de Estarreja</h3>
+                <p>Treinos de formação e desenvolvimento.</p>
+                <a href="https://maps.app.goo.gl/F6fA5Y7F3V5K7Z9L9" target="_blank" class="btn-act btn-map" style="display:block; background:#e0f2fe; color:var(--azul)">VER NO MAPA</a>
             </div>
         </div>`;
-    document.getElementById('detailPane').classList.add('open');
 }
 
 // ARTILHARIA
 function renderArtilharia(modo) {
     showView('custom');
-    let ranking = [];
-    const nomes = [...new Set(DB.atletas.map(a => getVal(a, 'nome')))];
+    let lista = [];
+    const nomesAtletas = [...new Set(DB.atletas.map(a => a['Nome']))];
 
-    nomes.forEach(n => {
-        const dados = DB.atletas.find(at => getVal(at, 'nome') === n);
+    nomesAtletas.forEach(n => {
         const scouts = DB.scout.filter(s => {
-            if(modo === 'GERAL') return getVal(s, 'nome') === n;
-            const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
-            return getVal(s, 'nome') === n && clean(getVal(j, 'escalao')) === clean(modo);
+            if(modo === 'GERAL') return s['Nome'] === n;
+            const j = DB.jogos.find(jg => jg['ID'] == s['Jogo_ID']);
+            return s['Nome'] === n && (j && j['Escalao'] === modo);
         });
-
-        const total = scouts.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
-        if(total > 0) ranking.push({ nome: n, golos: total, foto: getVal(dados, 'foto'), esc: getVal(dados, 'escalão') });
+        const total = scouts.reduce((sum, s) => sum + (parseInt(s['Golos']) || 0), 0);
+        if(total > 0) {
+            const a = DB.atletas.find(at => at['Nome'] === n);
+            lista.push({ nome: n, golos: total, foto: a ? a['Foto'] : '' });
+        }
     });
 
-    ranking.sort((a,b) => b.golos - a.golos);
+    lista.sort((a,b) => b.golos - a.golos);
 
     document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:900; margin-bottom:20px;">⚽ Artilharia ${modo}</h2>
-        ${ranking.map((r, i) => `
-            <div class="atleta-card">
-                <div style="width:35px; font-weight:900; color:var(--ouro); font-size:1.1rem">${i+1}º</div>
-                <img src="${r.foto}" class="atleta-thumb" onerror="this.src='https://via.placeholder.com/100'">
-                <div style="flex:1"><b>${r.nome}</b><br><small>${r.esc}</small></div>
-                <div style="font-size:1.5rem; font-weight:900; color:var(--verde)">${r.golos}</div>
+        <h2 style="font-weight:900; margin-bottom:20px;">🏆 Artilharia ${modo}</h2>
+        ${lista.map((r, i) => `
+            <div class="atleta-row">
+                <div style="width:30px; font-weight:900; font-size:1.2rem">${i+1}º</div>
+                <img src="${r.foto}" class="atleta-img">
+                <div style="flex:1"><b>${r.nome}</b></div>
+                <div style="font-size:1.5rem; font-weight:900; color:var(--verde-medio)">${r.golos}</div>
             </div>
         `).join('')}`;
 }
 
-// CLASSIFICAÇÃO
-function renderClassificacao(esc) {
-    showView('custom');
-    const d = DB.classificacao.find(c => clean(getVal(c, 'escalão')) === clean(esc));
-    if(!d) {
-        document.getElementById('viewContent').innerHTML = "Dados de classificação não disponíveis.";
-        return;
-    }
-
-    document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:900; margin-bottom:20px;">📊 Classificação ${esc}</h2>
-        <div class="rank-table-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px">
-                <span style="font-weight:800; color:var(--cinza)">POSIÇÃO NO CAMPEONATO</span>
-                <span style="font-size:3rem; font-weight:900; color:var(--verde)">${getVal(d,'posição')}º</span>
-            </div>
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; text-align:center">
-                <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0"><b>${getVal(d,'j')}</b><br><small>JOGOS</small></div>
-                <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0"><b>${getVal(d,'v')}</b><br><small>VIT</small></div>
-                <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0"><b>${getVal(d,'e')}</b><br><small>EMP</small></div>
-                <div style="background:#f8fafc; padding:15px; border-radius:15px; border:1px solid #e2e8f0"><b>${getVal(d,'d')}</b><br><small>DER</small></div>
-            </div>
-            <div style="margin-top:20px; padding-top:20px; border-top:1px solid #f1f5f9; display:flex; justify-content:space-between">
-                <span><b>Golos:</b> ${getVal(d,'gm')}:${getVal(d,'gs')}</span>
-                <span style="color:var(--verde); font-weight:900">PONTOS: ${getVal(d,'pts')}</span>
-            </div>
-        </div>`;
-}
-
-// LOCAIS DE TREINO
-function renderTreinos() {
-    showView('custom');
-    document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:900; margin-bottom:20px;">📍 Locais de Treino</h2>
-        <div class="treino-card">
-            <h3 style="margin:0 0 10px 0; color:var(--eac-dark)">Pavilhão Municipal de Estarreja</h3>
-            <p style="font-size:0.85rem; color:var(--cinza); margin-bottom:15px">Recinto Principal para competições e treinos intensivos.</p>
-            <div style="display:flex; gap:10px; font-size:0.75rem; margin-bottom:15px">
-                <span style="background:#f1f5f9; padding:5px 10px; border-radius:5px"><b>TER:</b> 19:00h</span>
-                <span style="background:#f1f5f9; padding:5px 10px; border-radius:5px"><b>QUI:</b> 19:00h</span>
-            </div>
-            <a href="https://www.google.com/maps/search/?api=1&query=Pavilhão+Municipal+Estarreja" target="_blank" class="btn-game btn-maps">ABRIR NO GOOGLE MAPS</a>
-        </div>
-        <div class="treino-card" style="border-top-color: var(--azul)">
-            <h3 style="margin:0 0 10px 0; color:var(--eac-dark)">Escola Secundária de Estarreja</h3>
-            <p style="font-size:0.85rem; color:var(--cinza); margin-bottom:15px">Treinos de desenvolvimento e escalões de formação.</p>
-            <div style="display:flex; gap:10px; font-size:0.75rem; margin-bottom:15px">
-                <span style="background:#f1f5f9; padding:5px 10px; border-radius:5px"><b>SEG:</b> 18:30h</span>
-                <span style="background:#f1f5f9; padding:5px 10px; border-radius:5px"><b>QUA:</b> 18:30h</span>
-            </div>
-            <a href="https://www.google.com/maps/search/?api=1&query=Escola+Secundária+Estarreja" target="_blank" class="btn-game btn-maps" style="background:#e0f2fe; color:var(--azul)">ABRIR NO GOOGLE MAPS</a>
-        </div>`;
-}
-
-// ANIVERSARIANTES
-function renderNiverMenu() {
-    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-    document.getElementById('sub-niver').innerHTML = meses.map((m, i) => `<a onclick="showNiversMes(${i+1})">${m}</a>`).join('');
-}
-
-function showNiversMes(mes) {
-    showView('custom');
-    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-    const unicas = [...new Set(DB.atletas.map(a => getVal(a,'nome')))];
-    const lista = unicas.map(n => DB.atletas.find(at => getVal(at,'nome') === n))
-        .filter(a => parseInt(getVal(a,'nascimento').split('/')[1]) === mes)
-        .sort((a,b) => a.nascimento.split('/')[0] - b.nascimento.split('/')[0]);
-
-    document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:900; margin-bottom:20px;">🎂 Aniversários de ${meses[mes-1]}</h2>
-        ${lista.length ? lista.map(a => `
-            <div class="atleta-card">
-                <div style="font-weight:900; color:var(--verde); font-size:1.3rem; width:50px">${getVal(a,'nascimento').split('/')[0]}</div>
-                <div style="flex:1"><b>${getVal(a,'nome')}</b><br><small>${getVal(a,'escalão')}</small></div>
-            </div>`).join('') : "<p style='padding:20px; text-align:center'>Nenhum aniversariante este mês.</p>"}
-    `;
-}
-
-// NAVEGAÇÃO
-function renderHomeNext() {
-    // Pegar os 3 jogos mais recentes que ainda não aconteceram
-    const agora = new Date();
-    const prox = DB.jogos.filter(j => !getVal(j, 'gols_eac')).slice(0, 3);
-    document.getElementById('homeNext').innerHTML = prox.length ? prox.map(j => renderGameCard(j)).join('') : "<p>Sem jogos agendados no momento.</p>";
-}
-
+// NAVEGAÇÃO E UTILITÁRIOS
 function showView(v) {
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
     
     if(v === 'home') {
         document.getElementById('home').classList.add('active');
-        renderHomeNext();
     } else {
         document.getElementById('mainView').classList.add('active');
         if(v === 'jogos') renderJogos('TODOS');
+        if(v === 'treinos') renderTreinos();
+    }
+}
+
+function renderJogos(filtro) {
+    const area = document.getElementById('filterArea');
+    area.innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(f => 
+        `<button class="f-btn ${filtro === f ? 'active' : ''}" onclick="renderJogos('${f}')">${f}</button>`
+    ).join('');
+
+    let filtered = DB.jogos;
+    if(filtro !== 'TODOS') filtered = DB.jogos.filter(j => j['Escalao'] === filtro);
+    
+    document.getElementById('viewContent').innerHTML = filtered.map(j => createGameCard(j)).join('');
+}
+
+function toggleAccordion(id, type) {
+    const el = document.getElementById('acc-' + id);
+    const isOpen = el.style.display === 'block';
+    
+    document.querySelectorAll('.accordion-content').forEach(acc => acc.style.display = 'none');
+    
+    if(!isOpen) {
+        el.style.display = 'block';
+        if(type === 'golo') { audioGolo.currentTime = 0; audioGolo.play().catch(e=>{}); }
+        if(type === 'excl') { audioExclusao.currentTime = 0; audioExclusao.play().catch(e=>{}); }
     }
 }
 
 function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
 function toggleSub(id) { 
     const el = document.getElementById(id);
-    el.style.display = el.style.display === 'block' ? 'none' : 'block';
-}
-function toggleExtra(id) {
-    const el = document.getElementById(`extra-${id}`);
-    el.style.display = el.style.display === 'block' ? 'none' : 'block';
-}
-function toggleHistAtleta(t) {
-    const el = document.getElementById(`at-hist-${t}`);
-    const isOpening = el.style.display !== 'block';
-    el.style.display = isOpening ? 'block' : 'none';
-    if(isOpening) {
-        if(t === 'g') { sndGolo.currentTime = 0; sndGolo.play().catch(e=>{}); }
-        else { sndVaia.currentTime = 0; sndVaia.play().catch(e=>{}); }
-    }
+    el.style.display = (el.style.display === 'block') ? 'none' : 'block';
 }
 function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
 function handleLogin() { 
-    if(prompt("Código EAC:") === "eac2026") { 
+    const p = prompt("Acesso Direção:"); 
+    if(p === "eac2026") { 
         document.getElementById('menu-artilharia').style.display='block'; 
         document.getElementById('lock-btn').innerText="🔓"; 
     } 
 }
 
-window.onload = loadData;
+function renderNiverMenu() {
+    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    document.getElementById('sub-niver').innerHTML = meses.map((m, i) => `<a onclick="alert('Funcionalidade em atualização para o mês de ${m}')">${m}</a>`).join('');
+}
+
+window.onload = initApp;
 </script>
 </body>
 </html>
