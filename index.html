@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAC Scout Portal v9.3 - Final</title>
+    <title>EAC Scout Portal v9.4</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --bg: #f1f5f9;
-            --eac-dark: #0f172a;
-        }
+        :root { --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --bg: #f1f5f9; --eac-dark: #0f172a; }
         body { margin:0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #1e293b; }
         
-        /* Layout Base */
         .top-bar { position: fixed; top: 0; width: 100%; height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         #sidebar { position: fixed; left: -260px; top: 0; width: 260px; height: 100%; background: var(--eac-dark); color: white; transition: 0.3s; z-index: 1000; padding-top: 70px; overflow-y: auto; }
         #sidebar.active { left: 0; }
@@ -23,30 +19,29 @@
         .container { padding: 20px; max-width: 800px; margin: 70px auto 20px auto; display: none; }
         .container.active { display: block; }
 
-        /* Estilo Jogos Versão 7.5 */
-        .game-card { background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; }
+        /* Estilo JOGOS 7.5 */
+        .game-card { background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; }
         .game-status-bar { width: 8px; }
         .game-content { flex: 1; padding: 15px; }
-        .game-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; margin-bottom: 10px; text-transform: uppercase; font-weight: 600; }
-        .game-main { display: flex; align-items: center; justify-content: space-around; text-align: center; }
-        .team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .team img { width: 45px; height: 45px; object-fit: contain; }
-        .team span { font-weight: 800; font-size: 0.85rem; }
-        .score { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; min-width: 80px; }
-        .info-btn { width: 100%; margin-top: 15px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem; color: var(--eac-dark); }
+        .game-header { display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8; font-weight: 800; margin-bottom: 10px; }
+        .game-main { display: flex; align-items: center; justify-content: space-between; text-align: center; }
+        .team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .team img { width: 50px; height: 50px; object-fit: contain; }
+        .team span { font-weight: 800; font-size: 0.8rem; text-transform: uppercase; }
+        .score { font-size: 2rem; font-weight: 900; min-width: 90px; }
+        .info-btn { width: 100%; margin-top: 15px; padding: 12px; background: #f1f5f9; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; color: #475569; font-size: 0.7rem; }
 
-        /* Treinos */
-        .treino-box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid var(--azul); }
-        .btn-maps { display: inline-block; margin-top: 10px; padding: 8px 16px; background: var(--azul); color: white; text-decoration: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+        /* Tabelas no Detalhe */
+        .scout-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .scout-table th { text-align: left; font-size: 0.7rem; color: #94a3b8; padding: 10px; border-bottom: 2px solid #f1f5f9; }
+        .scout-table td { padding: 12px 10px; border-bottom: 1px solid #f8fafc; font-size: 0.85rem; }
 
-        /* Utilitários */
-        .tab-group { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { padding: 8px 15px; border: none; border-radius: 20px; background: #e2e8f0; font-weight: bold; cursor: pointer; white-space: nowrap; font-size: 0.8rem; }
+        .parciais-box { display: flex; justify-content: center; gap: 20px; background: #f8fafc; padding: 10px; border-radius: 10px; margin: 15px 0; font-size: 0.8rem; font-weight: 700; }
+        
+        .tab-btn { padding: 8px 15px; border: none; border-radius: 20px; background: #e2e8f0; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
         .tab-btn.active { background: var(--eac-dark); color: white; }
-
         #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:2000; transition: 0.3s; overflow-y: auto; }
         #detailPane.open { right:0; }
-        .player-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -71,38 +66,30 @@
     <div id="sub-niver" class="submenu"></div>
 </div>
 
-<!-- Vistas -->
 <div id="home" class="container active" style="text-align:center">
-    <h1 style="font-weight: 800; margin-bottom: 5px;">ESTARREJA AC</h1>
-    <p style="color:#64748b; margin-bottom: 25px;">Portal de Scouting & Competição</p>
-    <img src="equipa.jpg" style="width:100%; border-radius:15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);" onerror="this.src='https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=800'">
+    <h1 style="font-weight: 800;">ESTARREJA AC</h1>
+    <img src="equipa.jpg" style="width:100%; border-radius:15px;" onerror="this.src='logo.png'">
 </div>
 
 <div id="viewTreinos" class="container">
-    <h2 style="margin-bottom: 20px;">Horários de Treino</h2>
-    <div class="treino-box">
-        <strong>Quarta-feira</strong><br>
-        <small>19:00 às 20:30</small><br>
-        <span>Pavilhão Municipal de Estarreja</span><br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Pavilhão+Municipal+de+Estarreja" target="_blank" class="btn-maps">VER LOCAL</a>
+    <h2>Horários de Treino</h2>
+    <div style="background:white; padding:20px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--azul)">
+        <strong>Quarta-feira (19:00 - 20:30)</strong><br>Pavilhão Municipal de Estarreja<br>
+        <a href="https://www.google.com/maps/search/?api=1&query=Pavilhão+Municipal+de+Estarreja" target="_blank" style="color:var(--azul); font-weight:bold; font-size:0.8rem">VER LOCAL</a>
     </div>
-    <div class="treino-box">
-        <strong>Terça e Sexta-feira</strong><br>
-        <small>19:00 às 20:30</small><br>
-        <span>Escola Secundária de Estarreja</span><br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Escola+Secundária+de+Estarreja" target="_blank" class="btn-maps">VER LOCAL</a>
+    <div style="background:white; padding:20px; border-radius:12px; border-left:4px solid var(--azul)">
+        <strong>Terça e Sexta (19:00 - 20:30)</strong><br>Escola Secundária de Estarreja<br>
+        <a href="https://www.google.com/maps/search/?api=1&query=Escola+Secundária+de+Estarreja" target="_blank" style="color:var(--azul); font-weight:bold; font-size:0.8rem">VER LOCAL</a>
     </div>
 </div>
 
 <div id="mainView" class="container">
-    <div id="filterArea" class="tab-group"></div>
+    <div id="filterArea" style="display:flex; gap:10px; margin-bottom:15px"></div>
     <div id="viewContent"></div>
 </div>
 
 <div id="detailPane">
-    <div style="padding: 20px; font-weight: 800; background: #f8fafc; display: flex; align-items: center; gap: 10px;" onclick="closeDetail()">
-        <span>⬅</span> VOLTAR
-    </div>
+    <div style="padding: 20px; font-weight: 800; background: #f8fafc; cursor:pointer" onclick="closeDetail()">⬅ VOLTAR</div>
     <div id="detailBody"></div>
 </div>
 
@@ -114,7 +101,6 @@ const LINKS = {
 };
 
 let DB = { atletas: [], jogos: [], scout: [] };
-let isLogged = false;
 
 const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
 const getVal = (obj, key) => {
@@ -123,29 +109,25 @@ const getVal = (obj, key) => {
 };
 
 async function loadData() {
-    try {
-        const fetchCSV = async (url) => {
-            const r = await fetch(url + "&t=" + Date.now());
-            const text = await r.text();
-            const lines = text.split('\n').filter(l => l.trim() !== "");
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ""));
-            return lines.slice(1).map(line => {
-                let obj = {};
-                const vals = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                headers.forEach((h, i) => obj[h] = vals[i] ? vals[i].replace(/"/g, "").trim() : "");
-                return obj;
-            });
-        };
-        [DB.atletas, DB.jogos, DB.scout] = await Promise.all([fetchCSV(LINKS.atletas), fetchCSV(LINKS.jogos), fetchCSV(LINKS.scout)]);
-        renderNiverMenu();
-    } catch (e) { console.error("Erro ao carregar dados."); }
+    const fetchCSV = async (url) => {
+        const r = await fetch(url + "&t=" + Date.now());
+        const text = await r.text();
+        const lines = text.split('\n').filter(l => l.trim() !== "");
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ""));
+        return lines.slice(1).map(line => {
+            let obj = {};
+            const vals = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            headers.forEach((h, i) => obj[h] = vals[i] ? vals[i].replace(/"/g, "").trim() : "");
+            return obj;
+        });
+    };
+    [DB.atletas, DB.jogos, DB.scout] = await Promise.all([fetchCSV(LINKS.atletas), fetchCSV(LINKS.jogos), fetchCSV(LINKS.scout)]);
+    renderNiverMenu();
 }
 
 function handleLogin() {
-    const p = prompt("Acesso Restrito:");
-    if(p === "eac2026") {
-        isLogged = true;
-        document.getElementById('menu-artilharia').style.display = 'block';
+    if(prompt("Acesso:") === "eac2026") { 
+        document.getElementById('menu-artilharia').style.display = 'block'; 
         document.getElementById('lock-btn').innerText = "🔓";
     }
 }
@@ -180,8 +162,9 @@ function renderJogos(f, btn) {
         const gEAC = parseInt(getVal(j, 'gols_eac'));
         const gADV = parseInt(getVal(j, 'gols_adv'));
         const isF = getVal(j, 'local').toLowerCase().includes("fora");
+        const advNome = getVal(j, 'adversário');
         
-        let cor = "#cbd5e1"; // Cinza (Próximo)
+        let cor = "#cbd5e1";
         if(!isNaN(gEAC)) {
             if(gEAC > gADV) cor = "var(--verde)";
             else if(gEAC < gADV) cor = "var(--vermelho)";
@@ -192,47 +175,47 @@ function renderJogos(f, btn) {
         <div class="game-card">
             <div class="game-status-bar" style="background:${cor}"></div>
             <div class="game-content">
-                <div class="game-header">
-                    <span>${getVal(j, 'data')} - ${getVal(j, 'hora')}</span>
-                    <span>${getVal(j, 'escalão')}</span>
-                </div>
+                <div class="game-header"><span>${getVal(j, 'data')} • ${getVal(j, 'hora')}</span><span>${getVal(j, 'escalão')}</span></div>
                 <div class="game-main">
                     <div class="team">
-                        <img src="${isF ? 'adversario.png' : 'logo.png'}" onerror="this.src='logo.png'">
-                        <span>${isF ? getVal(j, 'adversário') : 'EAC'}</span>
+                        <img src="${isF ? 'fotos/'+advNome+'.png' : 'logo.png'}" onerror="this.src='logo.png'">
+                        <span>${isF ? advNome : 'EAC'}</span>
                     </div>
                     <div class="score">${isNaN(gEAC) ? 'VS' : gEAC + ' - ' + gADV}</div>
                     <div class="team">
-                        <img src="${!isF ? 'adversario.png' : 'logo.png'}" onerror="this.src='logo.png'">
-                        <span>${!isF ? getVal(j, 'adversário') : 'EAC'}</span>
+                        <img src="${!isF ? 'fotos/'+advNome+'.png' : 'logo.png'}" onerror="this.src='logo.png'">
+                        <span>${!isF ? advNome : 'EAC'}</span>
                     </div>
                 </div>
                 ${!isNaN(gEAC) ? `<button class="info-btn" onclick="openJogo('${getVal(j, 'id')}')">+ INFORMAÇÕES</button>` : ''}
             </div>
         </div>`;
     });
-    document.getElementById('viewContent').innerHTML = html || "<p>Sem jogos registados.</p>";
+    document.getElementById('viewContent').innerHTML = html;
 }
 
 function openJogo(id) {
-    const sc = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
     const j = DB.jogos.find(x => getVal(x, 'id') == id);
+    const sc = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
+    
     document.getElementById('detailBody').innerHTML = `
         <div style="padding:20px">
-            <h3 style="margin-top:0">Resumo da Partida</h3>
-            <p style="color:#64748b; font-size:0.8rem">${getVal(j, 'escalão')} vs ${getVal(j, 'adversário')}</p>
-            <div style="background:#f8fafc; border-radius:10px; margin-top:20px">
-                <div style="display:flex; justify-content:space-between; padding:10px; font-weight:800; border-bottom:1px solid #e2e8f0; font-size:0.7rem">
-                    <span>JOGADORA</span>
-                    <span>GOLOS / 2MIN</span>
-                </div>
-                ${sc.map(s => `
-                    <div class="player-row" onclick="closeDetail(); openAtleta('${getVal(s, 'nome')}', '${getVal(j, 'escalão')}')">
-                        <span>${getVal(s, 'nome')}</span>
-                        <span><b>${getVal(s, 'golos')}</b> / <small style="color:red">${getVal(s, 'exclusoes')}</small></span>
-                    </div>
-                `).join('')}
+            <h3 style="margin:0">${getVal(j, 'escalão')} vs ${getVal(j, 'adversário')}</h3>
+            <div class="parciais-box">
+                <span>1ª PARTE: ${getVal(j, '1a_parte') || '-'}</span>
+                <span>2ª PARTE: ${getVal(j, '2a_parte') || '-'}</span>
             </div>
+            <table class="scout-table">
+                <thead><tr><th>JOGADORA</th><th style="text-align:center">GOLOS</th><th style="text-align:center">2 MIN</th></tr></thead>
+                <tbody>
+                    ${sc.map(s => `
+                    <tr onclick="closeDetail(); openAtleta('${getVal(s, 'nome')}', '${getVal(j, 'escalão')}')">
+                        <td><strong>${getVal(s, 'nome')}</strong></td>
+                        <td style="text-align:center; font-weight:800">${getVal(s, 'golos')}</td>
+                        <td style="text-align:center; color:red">${getVal(s, 'exclusoes')}</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
 }
@@ -242,44 +225,41 @@ function renderAtletas(esc) {
     document.getElementById('viewContent').innerHTML = list.map(a => `
         <div style="background:white; padding:15px; margin-bottom:10px; border-radius:12px; display:flex; align-items:center" onclick="openAtleta('${getVal(a, 'nome')}', '${esc}')">
             <img src="fotos/${getVal(a, 'nome')}.jpg" style="width:45px; height:45px; border-radius:50%; margin-right:15px" onerror="this.src='logo.png'">
-            <div><strong>${getVal(a, 'nome')}</strong><br><small>${getVal(a, 'posição')} | № ${getVal(a, 'número')}</small></div>
+            <div><strong>${getVal(a, 'nome')}</strong><br><small>${getVal(a, 'posição')}</small></div>
         </div>`).join('');
 }
 
 function openAtleta(nome, esc) {
     const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
-    const s = getStats(nome, 'GERAL');
-    const nasc = getVal(a, 'nascimento').split('/');
-    const idade = new Date().getFullYear() - nasc[2] - (new Date() < new Date(new Date().getFullYear(), nasc[1]-1, nasc[0]) ? 1 : 0);
-    
+    const s = { 
+        g: DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome)).reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0),
+        ex: DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome)).reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0)
+    };
     document.getElementById('detailBody').innerHTML = `
         <div style="padding:40px; text-align:center">
             <img src="fotos/${getVal(a, 'nome')}.jpg" style="width:120px; border-radius:50%" onerror="this.src='logo.png'">
             <h2>${getVal(a, 'nome')}</h2>
-            <p>${getVal(a, 'posição')} | № ${getVal(a, 'número')}</p>
-            <p>🎂 ${getVal(a, 'nascimento')} (${idade} anos)</p>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px">
-                <div style="background:#f1f5f9; padding:20px; border-radius:15px">GOLOS<br><b style="font-size:2rem; color:var(--verde)">${s.g}</b></div>
-                <div style="background:#f1f5f9; padding:20px; border-radius:15px">2 MIN<br><b style="font-size:2rem; color:var(--vermelho)">${s.ex}</b></div>
+            <div style="display:flex; justify-content:center; gap:20px; margin-top:20px">
+                <div style="background:#f1f5f9; padding:15px; border-radius:10px; flex:1">GOLOS<br><b>${s.g}</b></div>
+                <div style="background:#f1f5f9; padding:15px; border-radius:10px; flex:1">2 MIN<br><b>${s.ex}</b></div>
             </div>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
 }
 
-function getStats(nome, esc) {
-    let sc = DB.scout.filter(s => clean(getVal(s, 'nome')) === clean(nome));
-    if(esc !== 'GERAL') {
-        const idsEsc = DB.jogos.filter(j => clean(getVal(j, 'escalão')) === clean(esc)).map(j => getVal(j, 'id'));
-        sc = sc.filter(s => idsEsc.includes(getVal(s, 'jogo_id')));
-    }
-    return { g: sc.reduce((sum, s) => sum + (parseInt(getVal(s, 'golos')) || 0), 0), ex: sc.reduce((sum, s) => sum + (parseInt(getVal(s, 'exclusoes')) || 0), 0) };
-}
-
 function renderArt(mode, btn) {
     if(btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-    let nomesUnicos = [...new Set(DB.atletas.map(a => getVal(a, 'nome')))];
-    let rank = nomesUnicos.map(nome => ({ nome, total: getStats(nome, mode).g })).filter(a => a.total > 0).sort((a,b) => b.total - a.total);
-    document.getElementById('viewContent').innerHTML = rank.map((p, idx) => `<div style="background:white; padding:12px; margin-bottom:5px; border-radius:10px; display:flex; justify-content:space-between"><span><b>${idx+1}º</b> ${p.nome}</span><b>${p.total} GOLOS</b></div>`).join('');
+    let nomes = [...new Set(DB.atletas.map(a => getVal(a, 'nome')))];
+    let rank = nomes.map(nome => {
+        let sc = DB.scout.filter(s => clean(getVal(s, 'nome')) === clean(nome));
+        if(mode !== 'GERAL') {
+            const ids = DB.jogos.filter(j => clean(getVal(j, 'escalão')) === clean(mode)).map(j => getVal(j, 'id'));
+            sc = sc.filter(s => ids.includes(getVal(s, 'jogo_id')));
+        }
+        return { nome, g: sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0) };
+    }).filter(x => x.g > 0).sort((a,b) => b.g - a.g);
+    
+    document.getElementById('viewContent').innerHTML = rank.map((p, i) => `<div style="background:white; padding:12px; margin-bottom:5px; border-radius:10px; display:flex; justify-content:space-between"><span><b>${i+1}º</b> ${p.nome}</span><b>${p.g} GOLOS</b></div>`).join('');
 }
 
 function renderNiverMenu() {
@@ -290,22 +270,14 @@ function renderNiverMenu() {
 function showNiver(mes) {
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
     document.getElementById('mainView').classList.add('active');
-    
-    // LÓGICA DE UNICIDADE: Usamos um Set para não repetir nomes
     let nomesVistos = new Set();
     const nivers = DB.atletas.filter(a => {
-        const parts = getVal(a, 'nascimento').split('/');
-        const m = parseInt(parts[1]);
+        const m = parseInt(getVal(a, 'nascimento').split('/')[1]);
         const nome = getVal(a, 'nome');
-        if(m === mes && !nomesVistos.has(nome)) {
-            nomesVistos.add(nome);
-            return true;
-        }
+        if(m === mes && !nomesVistos.has(nome)) { nomesVistos.add(nome); return true; }
         return false;
     }).sort((a,b) => parseInt(getVal(a, 'nascimento').split('/')[0]) - parseInt(getVal(b, 'nascimento').split('/')[0]));
-    
-    document.getElementById('viewContent').innerHTML = `<h3>Aniversariantes do Mês 🎂</h3>` + 
-        nivers.map(n => `<div style="background:white; padding:15px; margin-bottom:8px; border-radius:12px; display:flex; justify-content:space-between"><span><strong>${getVal(n, 'nome')}</strong></span><b>Dia ${getVal(n, 'nascimento').split('/')[0]}</b></div>`).join('') || "<p>Nenhum aniversário este mês.</p>";
+    document.getElementById('viewContent').innerHTML = `<h3>Aniversariantes 🎂</h3>` + nivers.map(n => `<div style="background:white; padding:15px; margin-bottom:8px; border-radius:12px; display:flex; justify-content:space-between"><span><strong>${getVal(n, 'nome')}</strong></span><b>Dia ${getVal(n, 'nascimento').split('/')[0]}</b></div>`).join('');
 }
 
 function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
