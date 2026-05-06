@@ -1,283 +1,399 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EAC SCOUT v21.0</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAC Scout Portal v7.5 PRO - MASTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --bg: #f1f5f9; --eac-dark: #0f172a; }
+        body { margin:0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #1e293b; overflow-x: hidden; }
+        
+        /* BARRA DE TOPO */
+        .top-bar { position: fixed; top: 0; width: 100%; height: 65px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        /* MENU LATERAL COM SCROLL CORRIGIDO */
+        #sidebar { 
+            position: fixed; left: -280px; top: 0; width: 280px; height: 100%; 
+            background: var(--eac-dark); color: white; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 1000; padding-top: 80px; box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+            overflow-y: auto; /* Permite descer no menu */
+        }
+        #sidebar.active { left: 0; }
+        #sidebar a { display: block; padding: 18px 25px; color: #94a3b8; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.95rem; font-weight: 600; }
+        #sidebar a:hover { color: white; background: #1e293b; }
+        .submenu { background: #161e2e; display: none; }
+        .submenu.open { display: block; }
+        .submenu a { padding-left: 45px !important; font-size: 0.85rem !important; opacity: 0.8; }
 
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
+        /* CONTENTORES */
+        .container { padding: 20px; max-width: 900px; margin: 85px auto 40px auto; display: none; }
+        .container.active { display: block; animation: fadeIn 0.4s ease; }
 
-<style>
-:root { --verde:#2e7d32; --dark:#0f172a; --bg:#f1f5f9; --white:#fff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Lexend',sans-serif;}
-body{background:var(--bg);color:var(--dark);overflow-x:hidden;}
+        /* BANNER ADN EAC ORIGINAL */
+        .adn-container { background: var(--verde); padding: 50px 20px; border-radius: 25px; text-align: center; margin-bottom: 35px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2); }
+        .adn-word { font-size: 4rem; font-weight: 900; line-height: 0.9; letter-spacing: -3px; margin: 5px 0; }
+        .w-white { color: white; }
+        .w-black { color: black; }
 
-img{max-width:100%;}
+        /* CARDS DE JOGOS ROBUSTOS */
+        .month-divider { padding: 15px 0; margin: 30px 0 15px 0; border-bottom: 3px solid #e2e8f0; font-weight: 800; color: var(--eac-dark); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .game-card { background: white; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; transition: 0.3s; border: 1px solid #f1f5f9; }
+        .game-status-bar { width: 12px; }
+        .game-content { flex: 1; padding: 22px; }
+        .game-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; font-weight: 700; margin-bottom: 18px; text-transform: uppercase; }
+        .game-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .team { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .team img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 10px; }
+        .team span { font-weight: 800; font-size: 0.85rem; color: var(--eac-dark); }
+        .score-box { text-align: center; min-width: 100px; }
+        .score-main { font-size: 2.2rem; font-weight: 900; color: var(--eac-dark); letter-spacing: -1px; }
+        .score-parcial { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-top: 5px; background: #f8fafc; padding: 2px 8px; border-radius: 10px; }
+        
+        .btn-row { display: flex; gap: 12px; margin-top: 20px; }
+        .info-btn, .maps-btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: 800; font-size: 0.75rem; cursor: pointer; text-decoration: none; text-align: center; }
+        .info-btn { background: #f1f5f9; color: #475569; }
+        .maps-btn { background: #dcfce7; color: #166534; }
 
-/* HEADER */
-header{position:fixed;top:0;width:100%;height:70px;background:#fff;
-display:flex;align-items:center;justify-content:space-between;padding:0 20px;
-z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,.1);}
-.menu-btn{font-size:28px;cursor:pointer;color:var(--verde);}
-.logo{height:45px;cursor:pointer}
+        /* LISTA ATLETAS */
+        .atleta-row { background: white; padding: 18px; margin-bottom: 12px; border-radius: 18px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+        .atleta-row:hover { border-color: var(--azul); background: #f8fafc; }
+        .atleta-img-circle { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 18px; border: 2px solid #f1f5f9; }
 
-/* SIDEBAR */
-#sidebar{position:fixed;left:-280px;top:0;width:280px;height:100%;
-background:var(--dark);z-index:1100;transition:.3s;padding-top:80px;}
-#sidebar.active{left:0;}
-#sidebar a{display:block;padding:15px 25px;color:#cbd5e1;text-decoration:none;
-border-bottom:1px solid #1e293b;font-size:.8rem;font-weight:700;text-transform:uppercase;}
-.submenu{background:#0a0f1d;display:none;}
-.submenu a{padding-left:45px;font-size:.75rem;color:#94a3b8}
+        /* ESTATÍSTICAS INTERATIVAS (HISTÓRICO) */
+        .stat-card { padding: 25px 15px; border-radius: 22px; text-align: center; color: white; flex: 1; cursor: pointer; position: relative; overflow: hidden; }
+        .stat-val { font-size: 3.2rem; font-weight: 900; display: block; line-height: 1; }
+        .stat-label { font-size: 0.8rem; font-weight: 800; opacity: 0.9; text-transform: uppercase; margin-top: 5px; display: block; }
+        
+        .history-panel { margin-top: 15px; background: white; border-radius: 15px; overflow: hidden; display: none; text-align: left; box-shadow: inset 0 2px 8px rgba(0,0,0,0.05); }
+        .history-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; color: #334155; }
+        .history-item:last-child { border-bottom: none; }
+        .history-item b { color: var(--eac-dark); }
 
-/* HERO */
-.hero{background:var(--verde);padding:50px 20px;border-radius:20px;
-text-align:center;margin:90px 20px 30px;box-shadow:0 10px 30px rgba(0,0,0,.2);}
-.hero h1{font-size:2.2rem;font-weight:900}
-.txt-black{color:#000}.txt-white{color:#fff}
+        /* PAINEL DE DETALHE */
+        #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        #detailPane.open { right:0; }
+        
+        /* TAB BUTTONS */
+        .tab-btn { padding:12px 24px; border-radius:25px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; font-size: 0.85rem; color: #64748b; }
+        .tab-btn.active { background: var(--azul); color: white; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3); }
 
-/* CONTAINER */
-.container{padding:0 20px 100px;max-width:800px;margin:auto}
-.section-title{display:flex;gap:10px;margin-bottom:20px;font-weight:900;text-transform:uppercase}
-.section-title::before{content:'';width:6px;height:25px;background:var(--verde)}
-
-/* CARDS */
-.card{background:#fff;border-radius:20px;padding:20px;margin-bottom:20px;
-box-shadow:0 4px 6px rgba(0,0,0,.05)}
-.game-grid{display:flex;justify-content:space-between;text-align:center;margin:15px 0}
-.team img{width:50px;height:50px;object-fit:contain}
-.team span{font-size:.7rem;font-weight:800;margin-top:5px}
-.score{font-size:2rem;font-weight:900}
-
-.btn-row{display:flex;gap:10px}
-.btn{flex:1;padding:12px;border-radius:12px;border:none;font-size:.7rem;font-weight:800;cursor:pointer;text-align:center}
-.btn-gps{background:#dcfce7;color:#15803d}
-.btn-info{background:#f1f5f9;color:#475569}
-
-/* TABELA */
-.table-res{width:100%;border-collapse:collapse;background:#fff;border-radius:15px;overflow:hidden}
-.table-res th{background:var(--verde);color:#fff;padding:12px}
-.table-res td{padding:12px;border-bottom:1px solid #eee}
-.pos-eac{background:#f0fdf4;font-weight:900}
-
-/* ATLETAS */
-.atleta-row{background:#fff;padding:12px;border-radius:15px;margin-bottom:10px;
-display:flex;align-items:center;cursor:pointer}
-.atleta-img{width:50px;height:50px;border-radius:50%;margin-right:15px}
-
-/* MODAL */
-#modal{position:fixed;top:0;right:-100%;width:100%;height:100%;
-background:#fff;z-index:2000;transition:.4s;overflow:auto}
-#modal.active{right:0}
-
-.stats-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:20px}
-.stat-item{padding:15px;border-radius:15px;text-align:center;color:#fff;cursor:pointer}
-.acc-content{display:none;padding:15px;background:#f8fafc;margin:10px;border-radius:12px}
-
-/* LOADER */
-#loader{position:fixed;inset:0;background:#fff;z-index:3000;
-display:flex;flex-direction:column;align-items:center;justify-content:center}
-</style>
+        /* BADGES */
+        .badge-2min { background: var(--vermelho); color: white; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; }
+    </style>
 </head>
-
 <body>
 
-<div id="loader">
-<p>CONECTANDO...</p>
-<div id="diag"></div>
+<div class="top-bar">
+    <div onclick="toggleMenu()" style="font-size:26px; cursor:pointer; color: var(--eac-dark)">☰</div>
+    <img src="logo.png" style="height:42px" onclick="showView('home')">
+    <div id="lock-btn" onclick="handleLogin()" style="font-size: 20px; cursor:pointer">🔒</div>
 </div>
-
-<header>
-<div class="menu-btn" onclick="toggleMenu()">☰</div>
-<img src="logo.png" class="logo" onclick="location.reload()">
-<div onclick="location.reload()">🔄</div>
-</header>
 
 <div id="sidebar">
-<a onclick="showView('home')">Início</a>
-<a onclick="toggleSub('sub')">Elenco</a>
-<div id="sub" class="submenu">
-<a onclick="renderElenco('SUB16')">Sub-16</a>
-<a onclick="renderElenco('SUB18')">Sub-18</a>
-</div>
-<a onclick="renderCalendario()">Calendário</a>
-<a onclick="renderClassificacao()">Classificação</a>
-</div>
-
-<main id="main-content">
-
-<div id="page-home">
-<div class="hero">
-<h1>
-<div class="txt-black">ESTARREJA</div>
-<div class="txt-white">ANDEBOL</div>
-</h1>
+    <a onclick="showView('home')">🏠 INÍCIO</a>
+    <a id="menu-artilharia" style="display:none" onclick="showView('artilharia')">⚽ ARTILHARIA</a>
+    <a onclick="showView('jogos')">📅 CALENDÁRIO & RESULTADOS</a>
+    <a onclick="toggleSub('sub-atletas')">👥 NOSSAS ATLETAS ▼</a>
+    <div id="sub-atletas" class="submenu">
+        <a onclick="showView('atletas', 'SUB16')">🔹 ESCALÃO SUB16</a>
+        <a onclick="showView('atletas', 'SUB18')">🔹 ESCALÃO SUB18</a>
+    </div>
+    <a onclick="showView('treinos')">📍 LOCAIS DE TREINO</a>
+    <a onclick="toggleSub('sub-niver')">🎂 ANIVERSARIANTES ▼</a>
+    <div id="sub-niver" class="submenu"></div>
 </div>
 
-<div class="container">
-<div class="section-title">Jogos</div>
-<div id="home-games"></div>
-</div>
+<div id="home" class="container active">
+    <div class="adn-container">
+        <div class="adn-word w-white">HONRA</div>
+        <div class="adn-word w-black">RAÇA</div>
+        <div class="adn-word w-white">PAIXÃO</div>
+    </div>
+    <div id="homeNext">
+        <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
+            <span style="width: 5px; height: 25px; background: var(--verde); display: block; border-radius: 10px"></span>
+            PRÓXIMOS DESAFIOS
+        </h3>
+        <div id="homeNextContent"></div>
+    </div>
 </div>
 
-<div id="page-dynamic" class="container" style="display:none;margin-top:90px;">
-<div id="dynamic-title" class="section-title"></div>
-<div id="dynamic-body"></div>
+<div id="mainView" class="container">
+    <div id="filterArea" style="display:flex; gap:12px; margin-bottom:25px; flex-wrap:wrap"></div>
+    <div id="viewContent"></div>
 </div>
 
-</main>
-
-<div id="modal">
-<div onclick="closeModal()">⬅ VOLTAR</div>
-<div id="modal-body"></div>
+<div id="detailPane">
+    <div style="padding: 22px; font-weight: 800; background: white; cursor:pointer; position:sticky; top:0; z-index:10; display: flex; align-items: center; border-bottom: 1px solid #f1f5f9" onclick="closeDetail()">
+        <span style="margin-right: 15px; font-size: 20px">⬅</span> VOLTAR À LISTA
+    </div>
+    <div id="detailBody"></div>
 </div>
 
 <script>
-
-/* LINKS */
-const SHEETS={
-at:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&output=csv",
-jg:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&output=csv",
-sc:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&output=csv",
-cl:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2008001682&output=csv"
+const LINKS = {
+    atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
+    jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
+    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
 };
 
-let DB={atletas:[],jogos:[],scout:[],class:[]};
+let DB = { atletas: [], jogos: [], scout: [] };
 
-/* SAFE */
-function safe(t){
-return String(t||"").replace(/[&<>"']/g,m=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-})[m]);
+// UTILITÁRIOS DE BUSCA ROBUSTA
+const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+const getVal = (obj, key) => {
+    const foundKey = Object.keys(obj).find(k => clean(k) === clean(key));
+    return foundKey ? obj[foundKey] : "";
+};
+
+function parseDate(str) {
+    if(!str) return new Date(1900,0,1);
+    const p = str.split('/');
+    return new Date(p[2], p[1]-1, p[0]);
 }
 
-/* CSV */
-function parseCSV(text){
-const rows=text.split('\n').filter(r=>r.trim());
-const headers=rows[0].split(',');
-return rows.slice(1).map(r=>{
-const cols=r.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)||[];
-let obj={};
-headers.forEach((h,i)=>obj[h]=cols[i]?.replace(/"/g,'').trim()||"");
-return obj;
-});
+// CARREGAMENTO COMPLETO
+async function loadData() {
+    const fetchCSV = async (url) => {
+        try {
+            const r = await fetch(url + "&t=" + Date.now());
+            const text = await r.text();
+            const lines = text.split('\n').filter(l => l.trim() !== "");
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ""));
+            return lines.slice(1).map(line => {
+                let obj = {};
+                const vals = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                headers.forEach((h, i) => obj[h] = vals[i] ? vals[i].replace(/"/g, "").trim() : "");
+                return obj;
+            });
+        } catch(e) { return []; }
+    };
+
+    [DB.atletas, DB.jogos, DB.scout] = await Promise.all([fetchCSV(LINKS.atletas), fetchCSV(LINKS.jogos), fetchCSV(LINKS.scout)]);
+    renderNiverMenu();
+    renderHomeNext();
 }
 
-/* INIT */
-async function init(){
-const diag=document.getElementById('diag');
-try{
-const [at,jg,sc,cl]=await Promise.all([
-fetch(SHEETS.at).then(r=>r.text()),
-fetch(SHEETS.jg).then(r=>r.text()),
-fetch(SHEETS.sc).then(r=>r.text()),
-fetch(SHEETS.cl).then(r=>r.text())
-]);
-
-DB.atletas=parseCSV(at);
-DB.jogos=parseCSV(jg);
-DB.scout=parseCSV(sc);
-DB.class=parseCSV(cl);
-
-if(!DB.jogos.length) throw "Dados inválidos";
-
-renderHome();
-document.getElementById('loader').style.display='none';
-
-}catch(e){
-diag.innerHTML="<b>ERRO AO CARREGAR</b>";
-}
+// TOGGLE HISTÓRICO EXPANSÍVEL
+function toggleStatHistory(type) {
+    const el = document.getElementById(`hist-${type}`);
+    const isVisible = el.style.display === 'block';
+    el.style.display = isVisible ? 'none' : 'block';
 }
 
-/* HOME */
-function renderHome(){
-const jogos=DB.jogos.slice(0,2);
-document.getElementById('home-games').innerHTML=jogos.map(gameCard).join('');
+// PERFIL DA ATLETA COM HISTÓRICO "OPÇÃO A"
+function openAtleta(nome) {
+    const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
+    const sc = DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome));
+    
+    // Filtrar dados para histórico
+    const golosHist = sc.filter(s => parseInt(getVal(s, 'golos')) > 0);
+    const exclHist = sc.filter(s => parseInt(getVal(s, 'exclusoes')) > 0);
+
+    const totalG = golosHist.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
+    const totalE = exclHist.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
+
+    const formatHistList = (lista, campo) => lista.map(s => {
+        const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
+        return `<div class="history-item"><span><b>vs</b> ${getVal(j, 'adversário') || 'Desconhecido'}</span> <b>${getVal(s, campo)}</b></div>`;
+    }).join('') || '<div class="history-item">Sem registos.</div>';
+
+    document.getElementById('detailBody').innerHTML = `
+        <div style="background: linear-gradient(180deg, #f8fafc 0%, white 100%); padding: 45px 20px; text-align:center">
+            <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:170px; height:170px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.15)" onerror="this.src='logo.png'">
+            <h1 style="margin: 25px 0 5px 0; font-size: 1.8rem; font-weight: 900">${getVal(a, 'nome')}</h1>
+            <p style="color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 1px">№ ${getVal(a, 'número')} • ${getVal(a, 'posição')}</p>
+            
+            <div style="margin-top: 35px; display:flex; flex-direction:column; gap:15px; max-width: 500px; margin-left: auto; margin-right: auto">
+                <div>
+                    <div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')">
+                        <span class="stat-val">${totalG}</span>
+                        <span class="stat-label">Golos ▼</span>
+                    </div>
+                    <div id="hist-golos" class="history-panel">${formatHistList(golosHist, 'golos')}</div>
+                </div>
+                <div>
+                    <div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('excl')">
+                        <span class="stat-val">${totalE}</span>
+                        <span class="stat-label">2 Min ▼</span>
+                    </div>
+                    <div id="hist-excl" class="history-panel">${formatHistList(exclHist, 'exclusoes')}</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 45px; text-align: left; background: white; border-radius: 20px; padding: 25px; border: 1px solid #f1f5f9">
+                <h4 style="margin:0 0 15px 0; font-weight: 900">INFORMAÇÃO</h4>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.9rem">
+                    <div><small style="color:#94a3b8; display:block">Aniversário</small> <b>${getVal(a, 'nascimento')}</b></div>
+                    <div><small style="color:#94a3b8; display:block">Escalão</small> <b>${getVal(a, 'escalão')}</b></div>
+                </div>
+            </div>
+        </div>`;
+    document.getElementById('detailPane').classList.add('open');
 }
 
-/* CARD */
-function gameCard(j){
-const fora=(j.Onde||"").toLowerCase()==='fora';
-return `
-<div class="card">
-<div>${safe(j.Data)}</div>
-<div class="game-grid">
-<div>${safe(j.Adversário||"EAC")}</div>
-<div class="score">${j.Gols_EAC||"VS"}</div>
-<div>EAC</div>
-</div>
-</div>`;
+// LISTA DE JOGOS COM LOGOS E PARCIAIS ORIGINAIS
+function renderJogos(filtro) {
+    document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
+        `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
+
+    let lista = (filtro === 'TODOS') ? [...DB.jogos] : DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
+    lista.sort((a,b) => parseDate(getVal(b, 'data')) - parseDate(getVal(a, 'data')));
+
+    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    let html = "", ultimoMes = "";
+
+    lista.forEach(j => {
+        const d = parseDate(getVal(j, 'data'));
+        const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
+        if(mesAno !== ultimoMes) { html += `<div class="month-divider">${mesAno}</div>`; ultimoMes = mesAno; }
+
+        const gEAC = parseInt(getVal(j, 'gols_eac')), gADV = parseInt(getVal(j, 'gols_adv'));
+        const isFora = clean(getVal(j, 'local')).includes("fora");
+        const cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : (isNaN(gEAC) ? "#cbd5e1" : "var(--azul)");
+
+        html += `
+        <div class="game-card">
+            <div class="game-status-bar" style="background:${cor}"></div>
+            <div class="game-content">
+                <div class="game-header"><span>${getVal(j, 'data')} • ${getVal(j, 'escalao')}</span></div>
+                <div class="game-main">
+                    <div class="team">
+                        <img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'">
+                        <span>${isFora?getVal(j,'adversário'):'EAC'}</span>
+                    </div>
+                    <div class="score-box">
+                        <div class="score-main">${isNaN(gEAC)?'VS':gEAC+'-'+gADV}</div>
+                        ${!isNaN(gEAC)?`<div class="score-parcial">${getVal(j,'res_1p')} | ${getVal(j,'res_2p')}</div>`:''}
+                    </div>
+                    <div class="team">
+                        <img src="${!isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'">
+                        <span>${!isFora?getVal(j,'adversário'):'EAC'}</span>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    ${!isNaN(gEAC)?`<button class="info-btn" onclick="openJogo('${getVal(j,'id')}')">+ INFO JOGO</button>`:''}
+                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn">📍 VER LOCAL</a>`:''}
+                </div>
+            </div>
+        </div>`;
+    });
+    document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
 }
 
-/* ELENCO */
-function renderElenco(esc){
-showView('dynamic');
-document.getElementById('dynamic-title').innerText=esc;
+// PRÓXIMOS JOGOS NA HOME (RECUPERADO)
+function renderHomeNext() {
+    const hoje = new Date(2026, 4, 6);
+    const proximos = DB.jogos
+        .filter(j => parseDate(getVal(j, 'data')) >= hoje && !getVal(j, 'gols_eac'))
+        .sort((a,b) => parseDate(getVal(a, 'data')) - parseDate(getVal(b, 'data')))
+        .slice(0, 2);
 
-const lista=DB.atletas.filter(a=>(a.Escalão||"").includes(esc));
-
-document.getElementById('dynamic-body').innerHTML=lista.map(a=>`
-<div class="atleta-row" onclick="openAtleta('${safe(a.Nome)}')">
-<img src="${a.Foto}" class="atleta-img">
-<div>${safe(a.Nome)}</div>
-</div>`).join('');
+    document.getElementById('homeNextContent').innerHTML = proximos.map(j => `
+        <div style="background:white; padding:22px; border-radius:18px; margin-bottom:12px; border-left:6px solid var(--azul); display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 12px rgba(0,0,0,0.06)">
+            <div>
+                <b style="font-size: 1.1rem; display: block; color: var(--eac-dark)">${getVal(j, 'data')}</b>
+                <span style="color:#64748b; font-weight:800; font-size:0.75rem; text-transform:uppercase">${getVal(j, 'escalao')}</span>
+            </div>
+            <div style="text-align:right; font-weight:900; color: var(--eac-dark)">vs ${getVal(j, 'adversário')}</div>
+        </div>`).join('') || "<p style='color:#94a3b8'>Calendário concluído.</p>";
 }
 
-/* ATLETA */
-function openAtleta(nome){
-const a=DB.atletas.find(x=>x.Nome===nome);
-if(!a){alert("Erro atleta");return;}
-
-document.getElementById('modal-body').innerHTML=`
-<h2>${safe(a.Nome)}</h2>
-`;
-
-document.getElementById('modal').classList.add('active');
+// INFO DO JOGO COM NOMES ORIGINAIS (RECUPERADO)
+function openJogo(id) {
+    const j = DB.jogos.find(x => getVal(x, 'id') == id);
+    const sc = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
+    document.getElementById('detailBody').innerHTML = `
+        <div style="padding:25px">
+            <h3 style="margin:0; font-weight:900">${getVal(j,'escalao')} vs ${getVal(j,'adversário')}</h3>
+            <p style="color:#94a3b8; font-weight:800; margin-bottom:30px">${getVal(j,'data')} • ${getVal(j,'local')}</p>
+            
+            <div style="background: #f8fafc; border-radius: 20px; overflow: hidden; border: 1px solid #f1f5f9">
+                <div style="padding: 15px 20px; background: #e2e8f0; font-weight: 900; font-size: 0.8rem; display: flex; justify-content: space-between">
+                    <span>ATLETA</span>
+                    <span>ESTATÍSTICAS</span>
+                </div>
+                ${sc.map(s => `
+                    <div style="padding:18px 20px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background: white">
+                        <span style="font-weight:700; color: var(--eac-dark)">${getVal(s, 'nome')}</span>
+                        <div style="display:flex; gap:12px; align-items:center">
+                            <span style="font-weight:900; color:var(--azul)">${getVal(s,'golos')} G</span>
+                            ${parseInt(getVal(s,'exclusoes')) > 0 ? `<span class="badge-2min">${getVal(s,'exclusoes')} × 2 Min</span>` : ''}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    document.getElementById('detailPane').classList.add('open');
 }
 
-/* CLASS */
-function renderClassificacao(){
-showView('dynamic');
-let html=`<table class="table-res"><tr><th>POS</th><th>EQUIPA</th></tr>`;
-DB.class.forEach(c=>{
-html+=`<tr><td>${c.Pos}</td><td>${safe(c.Equipa)}</td></tr>`;
-});
-html+="</table>";
-document.getElementById('dynamic-body').innerHTML=html;
+// RESTANTE DAS FUNÇÕES (ARTILHARIA, NIVER, TREINOS)
+function renderArt(f) {
+    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => `<button class="tab-btn ${f===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
+    let atletas = [...new Set(DB.atletas.map(a => getVal(a,'nome')))];
+    let ranking = atletas.map(n => {
+        let g = DB.scout.filter(s => {
+            if(clean(getVal(s,'nome')) !== clean(n)) return false;
+            if(f==='GERAL') return true;
+            let j = DB.jogos.find(jg => getVal(jg,'id') == getVal(s,'jogo_id'));
+            return j && clean(getVal(j,'escalao')) === clean(f);
+        }).reduce((acc, v) => acc + (parseInt(getVal(v,'golos')) || 0), 0);
+        return { n, g };
+    }).filter(x => x.g > 0).sort((a,b) => b.g - a.g);
+    document.getElementById('viewContent').innerHTML = ranking.map((p,i) => `<div style="background:white; padding:20px; margin-bottom:10px; border-radius:15px; display:flex; justify-content:space-between; align-items:center"><span><b style="color:var(--azul)">#${i+1}</b> ${p.n}</span><b style="font-size:1.2rem">${p.g}</b></div>`).join('');
 }
 
-/* CAL */
-function renderCalendario(){
-showView('dynamic');
-document.getElementById('dynamic-body').innerHTML=DB.jogos.map(gameCard).join('');
+function renderAtletas(esc) {
+    const list = DB.atletas.filter(a => clean(getVal(a, 'escalão')) === clean(esc));
+    document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:20px; font-weight:900">${esc}</h3>` + list.map(a => `
+        <div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}')">
+            <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'">
+            <div><strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong><span style="color:#64748b; font-weight:800; font-size: 0.75rem">${getVal(a, 'posição')}</span></div>
+        </div>`).join('');
 }
 
-/* UI */
-function showView(v){
-document.getElementById('page-home').style.display=v==='home'?'block':'none';
-document.getElementById('page-dynamic').style.display=v==='dynamic'?'block':'none';
-toggleMenu(false);
+function renderTreinos() {
+    document.getElementById('viewContent').innerHTML = `<h2 style="font-weight:900; margin-bottom:25px">Locais de Treino</h2>
+        <div style="background:white; padding:25px; border-radius:22px; margin-bottom:20px; border-left:6px solid var(--azul)"><b>Pavilhão Municipal</b><br><small>Quarta: 19:00 - 20:30</small></div>
+        <div style="background:white; padding:25px; border-radius:22px; border-left:6px solid var(--azul)"><b>Escola Secundária</b><br><small>Terça/Sexta: 19:00 - 20:30</small></div>`;
 }
 
-function toggleMenu(force){
-const el=document.getElementById('sidebar');
-if(force===false) el.classList.remove('active');
-else el.classList.toggle('active');
+function renderNiverMenu() { 
+    const mNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    document.getElementById('sub-niver').innerHTML = mNames.map((m, i) => `<a onclick="showNiver(${i+1})">${m}</a>`).join(''); 
 }
 
-function toggleSub(id){
-const el=document.getElementById(id);
-el.style.display=el.style.display==='block'?'none':'block';
+function showNiver(m) {
+    showView('custom');
+    let v = new Set();
+    const l = DB.atletas.filter(a => {
+        let dm = parseInt(getVal(a,'nascimento').split('/')[1]);
+        if(dm === m && !v.has(getVal(a,'nome'))) { v.add(getVal(a,'nome')); return true; }
+        return false;
+    }).sort((a,b) => parseInt(getVal(a,'nascimento').split('/')[0]) - parseInt(getVal(b,'nascimento').split('/')[0]));
+    document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:25px; font-weight:900">Aniversariantes</h3>` + (l.map(n => `<div style="background:white; padding:18px; margin-bottom:10px; border-radius:15px; display:flex; justify-content:space-between"><b>${getVal(n,'nome')}</b><b style="color:var(--verde)">Dia ${getVal(n,'nascimento').split('/')[0]}</b></div>`).join('') || "<p>Sem aniversários.</p>");
 }
 
-function closeModal(){
-document.getElementById('modal').classList.remove('active');
+function showView(v, p = '') {
+    if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
+    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+    document.getElementById('viewContent').innerHTML = ""; document.getElementById('filterArea').innerHTML = "";
+    if(v === 'home') document.getElementById('home').classList.add('active');
+    else { document.getElementById('mainView').classList.add('active'); 
+        if(v === 'jogos') renderJogos('TODOS'); else if(v === 'atletas') renderAtletas(p); else if(v === 'artilharia') renderArt('GERAL'); else if(v === 'treinos') renderTreinos();
+    }
+    window.scrollTo(0,0);
 }
 
-/* INIT */
-window.onload=init;
+function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }
+function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
+function handleLogin() { if(prompt("Senha EAC:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }
 
+window.onload = loadData;
 </script>
 </body>
 </html>
