@@ -12,7 +12,7 @@
         /* BARRA DE TOPO */
         .top-bar { position: fixed; top: 0; width: 100%; height: 65px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
-        /* MENU LATERAL COM SCROLL */
+        /* MENU LATERAL */
         #sidebar { 
             position: fixed; left: -280px; top: 0; width: 280px; height: 100%; 
             background: var(--eac-dark); color: white; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -32,13 +32,13 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* BANNER ADN EAC */
+        /* BANNER ADN EAC - CORES INVERTIDAS */
         .adn-container { background: var(--verde); padding: 50px 20px; border-radius: 25px; text-align: center; margin-bottom: 35px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2); }
         .adn-word { font-size: 4rem; font-weight: 900; line-height: 0.9; letter-spacing: -3px; margin: 5px 0; }
         .w-white { color: white; }
         .w-black { color: black; }
 
-        /* CARDS DE JOGOS */
+        /* CARDS DE JOGOS E CLASSIFICAÇÃO */
         .month-divider { padding: 15px 0; margin: 30px 0 15px 0; border-bottom: 3px solid #e2e8f0; font-weight: 800; color: var(--eac-dark); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
         .game-card { background: white; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; transition: 0.3s; border: 1px solid #f1f5f9; }
         .game-status-bar { width: 12px; }
@@ -57,6 +57,16 @@
         .info-btn { background: #f1f5f9; color: #475569; }
         .maps-btn { background: #dcfce7; color: #166534; }
 
+        /* CARTÕES DE CLASSIFICAÇÃO (OPÇÃO B) */
+        .class-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 6px solid var(--verde); }
+        .class-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .class-header b { font-size: 1.2rem; color: var(--eac-dark); }
+        .class-header span { background: var(--eac-dark); color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; }
+        .class-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
+        .class-item { background: #f8fafc; padding: 8px; border-radius: 10px; }
+        .class-item small { display: block; color: #94a3b8; font-size: 0.65rem; font-weight: 800; margin-bottom: 2px; }
+        .class-item b { font-size: 0.9rem; color: var(--eac-dark); }
+
         /* LISTA ATLETAS */
         .atleta-row { background: white; padding: 18px; margin-bottom: 12px; border-radius: 18px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
         .atleta-row:hover { border-color: var(--azul); background: #f8fafc; }
@@ -69,17 +79,11 @@
         
         .history-panel { margin-top: 15px; background: white; border-radius: 15px; overflow: hidden; display: none; text-align: left; box-shadow: inset 0 2px 8px rgba(0,0,0,0.05); }
         .history-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; color: #334155; }
-        .history-item:last-child { border-bottom: none; }
-        .history-item b { color: var(--eac-dark); }
-
-        /* DETALHE */
+        
         #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
         #detailPane.open { right:0; }
-        
         .tab-btn { padding:12px 24px; border-radius:25px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; font-size: 0.85rem; color: #64748b; }
-        .tab-btn.active { background: var(--azul); color: white; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3); }
-
-        .badge-2min { background: var(--vermelho); color: white; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; }
+        .tab-btn.active { background: var(--azul); color: white; }
     </style>
 </head>
 <body>
@@ -94,6 +98,7 @@
     <a onclick="showView('home')">🏠 INÍCIO</a>
     <a id="menu-artilharia" style="display:none" onclick="showView('artilharia')">⚽ ARTILHARIA</a>
     <a onclick="showView('jogos')">📅 CALENDÁRIO & RESULTADOS</a>
+    <a onclick="showView('home', 'section-classificacao')">📊 CLASSIFICAÇÃO</a>
     <a onclick="toggleSub('sub-atletas')">👥 NOSSAS ATLETAS ▼</a>
     <div id="sub-atletas" class="submenu">
         <a onclick="showView('atletas', 'SUB16')">🔹 ESCALÃO SUB16</a>
@@ -105,17 +110,29 @@
 </div>
 
 <div id="home" class="container active">
+    <!-- ADN COM CORES INVERTIDAS -->
     <div class="adn-container">
-        <div class="adn-word w-white">HONRA</div>
-        <div class="adn-word w-black">RAÇA</div>
-        <div class="adn-word w-white">PAIXÃO</div>
+        <div class="adn-word w-black">HONRA</div>
+        <div class="adn-word w-white">RAÇA</div>
+        <div class="adn-word w-black">PAIXÃO</div>
     </div>
+
+    <!-- PRÓXIMOS JOGOS (COMPLETO) -->
     <div id="homeNext">
         <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
             <span style="width: 5px; height: 25px; background: var(--verde); display: block; border-radius: 10px"></span>
             PRÓXIMOS DESAFIOS
         </h3>
         <div id="homeNextContent"></div>
+    </div>
+
+    <!-- CLASSIFICAÇÃO (OPÇÃO B) -->
+    <div id="section-classificacao" style="margin-top: 40px">
+        <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
+            <span style="width: 5px; height: 25px; background: var(--azul); display: block; border-radius: 10px"></span>
+            CLASSIFICAÇÃO ATUAL
+        </h3>
+        <div id="classificacaoContent"></div>
     </div>
 </div>
 
@@ -135,10 +152,11 @@
 const LINKS = {
     atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
     jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
-    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
+    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv",
+    classificacao: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2008001682&single=true&output=csv"
 };
 
-let DB = { atletas: [], jogos: [], scout: [] };
+let DB = { atletas: [], jogos: [], scout: [], classificacao: [] };
 
 const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
 const getVal = (obj, key) => {
@@ -152,12 +170,11 @@ function parseDate(str) {
     return new Date(p[2], p[1]-1, p[0]);
 }
 
-// CÁLCULO DE IDADE 🎂
 function calcularIdade(dataNasc) {
     if(!dataNasc) return "";
     const parts = dataNasc.split('/');
     const nasc = new Date(parts[2], parts[1]-1, parts[0]);
-    const hoje = new Date(2026, 4, 6); // Data do sistema
+    const hoje = new Date(2026, 4, 6);
     let idade = hoje.getFullYear() - nasc.getFullYear();
     const m = hoje.getMonth() - nasc.getMonth();
     if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
@@ -173,23 +190,79 @@ async function loadData() {
             const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ""));
             return lines.slice(1).map(line => {
                 let obj = {};
-                const vals = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                const vals = line.split(/,(?=(?:(?:[^"]*"){2})*[^3]*$)/);
                 headers.forEach((h, i) => obj[h] = vals[i] ? vals[i].replace(/"/g, "").trim() : "");
                 return obj;
             });
         } catch(e) { return []; }
     };
-    [DB.atletas, DB.jogos, DB.scout] = await Promise.all([fetchCSV(LINKS.atletas), fetchCSV(LINKS.jogos), fetchCSV(LINKS.scout)]);
+    [DB.atletas, DB.jogos, DB.scout, DB.classificacao] = await Promise.all([
+        fetchCSV(LINKS.atletas), fetchCSV(LINKS.jogos), fetchCSV(LINKS.scout), fetchCSV(LINKS.classificacao)
+    ]);
     renderNiverMenu();
     renderHomeNext();
+    renderClassificacao();
 }
 
+// PRÓXIMOS JOGOS NA HOME COM LOGOS E LOCAL
+function renderHomeNext() {
+    const hoje = new Date(2026, 4, 6);
+    const proximos = DB.jogos
+        .filter(j => parseDate(getVal(j, 'data')) >= hoje && !getVal(j, 'gols_eac'))
+        .sort((a,b) => parseDate(getVal(a, 'data')) - parseDate(getVal(b, 'data')))
+        .slice(0, 2);
+
+    document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
+        const isFora = clean(getVal(j, 'local')).includes("fora");
+        const hora = getVal(j, 'hora') ? ` às ${getVal(j, 'hora')}` : "";
+        
+        return `
+        <div class="game-card" style="border-left: 6px solid var(--verde)">
+            <div class="game-content">
+                <div class="game-header"><span>📅 ${getVal(j, 'data')}${hora} • ${getVal(j, 'escalao')}</span></div>
+                <div class="game-main">
+                    <div class="team"><img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${isFora?getVal(j,'adversário'):'EAC'}</span></div>
+                    <div class="score-box"><div class="score-main">VS</div></div>
+                    <div class="team"><img src="${!isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${!isFora?getVal(j,'adversário'):'EAC'}</span></div>
+                </div>
+                <div class="btn-row">
+                    <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8">📍 ${getVal(j, 'local')}</span>
+                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn" style="padding: 5px 15px; font-size: 0.65rem">VER MAPA</a>`:''}
+                </div>
+            </div>
+        </div>`;
+    }).join('') || "<p style='color:#94a3b8'>Sem jogos agendados.</p>";
+}
+
+// RENDER CLASSIFICAÇÃO (OPÇÃO B)
+function renderClassificacao() {
+    document.getElementById('classificacaoContent').innerHTML = DB.classificacao.map(c => `
+        <div class="class-card">
+            <div class="class-header">
+                <b>Estarreja ${getVal(c, 'escalão')}</b>
+                <span>${getVal(c, 'posição')}</span>
+            </div>
+            <div class="class-grid">
+                <div class="class-item"><small>JOGOS</small><b>${getVal(c, 'j')}</b></div>
+                <div class="class-item"><small>VIT</small><b>${getVal(c, 'v')}</b></div>
+                <div class="class-item"><small>EMP</small><b>${getVal(c, 'e')}</b></div>
+                <div class="class-item"><small>DER</small><b>${getVal(c, 'd')}</b></div>
+                <div class="class-item"><small>G.PRO</small><b>${getVal(c, 'gm')}</b></div>
+                <div class="class-item"><small>G.CON</small><b>${getVal(c, 'gs')}</b></div>
+                <div class="class-item" style="grid-column: span 2; background: var(--verde); color: white">
+                    <small style="color: white; opacity: 0.8">G.DIF</small><b>${getVal(c, 'gd')}</b>
+                </div>
+            </div>
+        </div>
+    `).join('') || "<p style='color:#94a3b8'>A carregar dados...</p>";
+}
+
+// RESTANTE DAS FUNÇÕES ORIGINAIS MANTIDAS
 function toggleStatHistory(type) {
     const el = document.getElementById(`hist-${type}`);
     el.style.display = (el.style.display === 'block') ? 'none' : 'block';
 }
 
-// PERFIL COM IDADE E CAMISOLA 👕
 function openAtleta(nome) {
     const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
     const sc = DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome));
@@ -208,24 +281,10 @@ function openAtleta(nome) {
             <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:170px; height:170px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.15)" onerror="this.src='logo.png'">
             <h1 style="margin: 25px 0 5px 0; font-size: 1.8rem; font-weight: 900">${getVal(a, 'nome')}</h1>
             <p style="color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 1px">👕 Camisola: ${getVal(a, 'número')} • ${getVal(a, 'posição')}</p>
-            
             <div style="margin-top: 35px; display:flex; flex-direction:column; gap:15px; max-width: 500px; margin-left: auto; margin-right: auto">
-                <div>
-                    <div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')">
-                        <span class="stat-val">${totalG}</span>
-                        <span class="stat-label">Golos ▼</span>
-                    </div>
-                    <div id="hist-golos" class="history-panel">${formatHistList(golosHist, 'golos')}</div>
-                </div>
-                <div>
-                    <div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('excl')">
-                        <span class="stat-val">${totalE}</span>
-                        <span class="stat-label">2 Min ▼</span>
-                    </div>
-                    <div id="hist-excl" class="history-panel">${formatHistList(exclHist, 'exclusoes')}</div>
-                </div>
+                <div><div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')"><span class="stat-val">${totalG}</span><span class="stat-label">Golos ▼</span></div><div id="hist-golos" class="history-panel">${formatHistList(golosHist, 'golos')}</div></div>
+                <div><div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('excl')"><span class="stat-val">${totalE}</span><span class="stat-label">2 Min ▼</span></div><div id="hist-excl" class="history-panel">${formatHistList(exclHist, 'exclusoes')}</div></div>
             </div>
-
             <div style="margin-top: 45px; text-align: left; background: white; border-radius: 20px; padding: 25px; border: 1px solid #f1f5f9">
                 <h4 style="margin:0 0 15px 0; font-weight: 900">INFORMAÇÃO</h4>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.9rem">
@@ -237,29 +296,23 @@ function openAtleta(nome) {
     document.getElementById('detailPane').classList.add('open');
 }
 
-// JOGOS COM HORA (COLUNA C) ⏰
 function renderJogos(filtro) {
-    document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
-        `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
+    document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
     let lista = (filtro === 'TODOS') ? [...DB.jogos] : DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
     lista.sort((a,b) => parseDate(getVal(b, 'data')) - parseDate(getVal(a, 'data')));
-    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     let html = "", ultimoMes = "";
-
+    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     lista.forEach(j => {
-        const d = parseDate(getVal(j, 'data'));
-        const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
+        const d = parseDate(getVal(j, 'data')); const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
         if(mesAno !== ultimoMes) { html += `<div class="month-divider">${mesAno}</div>`; ultimoMes = mesAno; }
         const gEAC = parseInt(getVal(j, 'gols_eac')), gADV = parseInt(getVal(j, 'gols_adv'));
         const isFora = clean(getVal(j, 'local')).includes("fora");
         const cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : (isNaN(gEAC) ? "#cbd5e1" : "var(--azul)");
-        const hora = getVal(j, 'hora') ? ` às ${getVal(j, 'hora')}` : "";
-
         html += `
         <div class="game-card">
             <div class="game-status-bar" style="background:${cor}"></div>
             <div class="game-content">
-                <div class="game-header"><span>📅 ${getVal(j, 'data')}${hora} • ${getVal(j, 'escalao')}</span></div>
+                <div class="game-header"><span>📅 ${getVal(j, 'data')}${getVal(j,'hora')?' às '+getVal(j,'hora'):''} • ${getVal(j, 'escalao')}</span></div>
                 <div class="game-main">
                     <div class="team"><img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${isFora?getVal(j,'adversário'):'EAC'}</span></div>
                     <div class="score-box"><div class="score-main">${isNaN(gEAC)?'VS':gEAC+'-'+gADV}</div>
@@ -273,26 +326,9 @@ function renderJogos(filtro) {
             </div>
         </div>`;
     });
-    document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos.</p>";
+    document.getElementById('viewContent').innerHTML = html;
 }
 
-function renderHomeNext() {
-    const hoje = new Date(2026, 4, 6);
-    const proximos = DB.jogos
-        .filter(j => parseDate(getVal(j, 'data')) >= hoje && !getVal(j, 'gols_eac'))
-        .sort((a,b) => parseDate(getVal(a, 'data')) - parseDate(getVal(b, 'data')))
-        .slice(0, 2);
-    document.getElementById('homeNextContent').innerHTML = proximos.map(j => `
-        <div style="background:white; padding:22px; border-radius:18px; margin-bottom:12px; border-left:6px solid var(--azul); display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 12px rgba(0,0,0,0.06)">
-            <div>
-                <b style="font-size: 1.1rem; display: block; color: var(--eac-dark)">${getVal(j, 'data')} ${getVal(j, 'hora')?' - '+getVal(j, 'hora'):''}</b>
-                <span style="color:#64748b; font-weight:800; font-size:0.75rem; text-transform:uppercase">${getVal(j, 'escalao')}</span>
-            </div>
-            <div style="text-align:right; font-weight:900; color: var(--eac-dark)">vs ${getVal(j, 'adversário')}</div>
-        </div>`).join('') || "<p style='color:#94a3b8'>Calendário concluído.</p>";
-}
-
-// LOCAIS DE TREINO PROFISSIONAIS 📍
 function renderTreinos() {
     document.getElementById('viewContent').innerHTML = `
         <h2 style="font-weight:900; margin-bottom:25px">📍 Locais de Treino</h2>
@@ -377,8 +413,11 @@ function showView(v, p = '') {
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
     document.getElementById('viewContent').innerHTML = ""; document.getElementById('filterArea').innerHTML = "";
-    if(v === 'home') document.getElementById('home').classList.add('active');
-    else { document.getElementById('mainView').classList.add('active'); 
+    if(v === 'home') {
+        document.getElementById('home').classList.add('active');
+        if(p) { setTimeout(() => { document.getElementById(p).scrollIntoView({behavior: 'smooth'}); }, 100); }
+    } else { 
+        document.getElementById('mainView').classList.add('active'); 
         if(v === 'jogos') renderJogos('TODOS'); else if(v === 'atletas') renderAtletas(p); else if(v === 'artilharia') renderArt('GERAL'); else if(v === 'treinos') renderTreinos();
     }
     window.scrollTo(0,0);
