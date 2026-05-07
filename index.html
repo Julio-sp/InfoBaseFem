@@ -68,65 +68,66 @@
         
         .treino-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border-left: 6px solid var(--azul); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-        /* --- ESTILOS DO CAMPO TÁTICO --- */
+        /* --- ESTILOS DO CAMPO TÁTICO HORIZONTAL (ALTERADO) --- */
         .tactical-container { margin-top: 25px; border-top: 2px dashed #e2e8f0; padding-top: 20px; }
         .tactical-title { font-size: 0.75rem; font-weight: 800; color: var(--azul); letter-spacing: 1px; margin-bottom: 15px; display: block; text-transform: uppercase; }
         
         .handball-field { 
             background: #1e3a8a; 
             width: 100%; 
-            aspect-ratio: 1 / 0.6; /* Aumentado em 50% conforme pedido */
-            border: 3px solid white; 
-            border-radius: 20px; 
+            aspect-ratio: 1.6 / 1; /* Proporção horizontal */
+            border: 2px solid white; 
+            border-radius: 10px; 
             position: relative; 
             overflow: hidden;
             box-shadow: inset 0 0 100px rgba(0,0,0,0.2);
         }
-        
-        /* Linhas do Campo de Andebol */
-        .field-area { position: absolute; top: -15%; left: 10%; right: 10%; height: 50%; border: 2px solid rgba(255,255,255,0.6); border-radius: 0 0 120px 120px; }
+
+        /* Linhas e Áreas do Campo Horizontal */
+        .area-left { position: absolute; left: -20px; top: 15%; bottom: 15%; width: 70px; border: 2px solid white; border-radius: 0 100px 100px 0; }
+        .field-line-center { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.4); }
 
         .player-node { 
             position: absolute; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            width: 80px; 
-            transform: translateX(-50%); 
-            transition: 0.3s;
+            width: 90px; 
+            transform: translate(-50%, -50%); 
+            z-index: 5;
         }
-        .node-circle { 
-            width: 24px; 
-            height: 24px; 
-            background: var(--verde); 
-            border: 2px solid white; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 10px; 
-            color: white; 
-            font-weight: 800; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .node-name { 
-            font-size: 8px; 
-            font-weight: 700; 
-            color: white; 
-            text-shadow: 1px 1px 3px black; 
-            margin-top: 2px; 
-            text-align: center;
-            line-height: 1.1;
+        
+        .node-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            align-items: center;
         }
 
-        /* Coordenadas do Andebol Invertidas Lateralmente conforme solicitado */
-        .pos-GL  { top: 5%;   left: 50%; }
-        .pos-PD  { top: 25%;  left: 15%; } /* PD agora na Esquerda */
-        .pos-LD  { top: 55%;  left: 30%; } /* LD agora na Esquerda interna */
-        .pos-CEN { top: 75%;  left: 50%; }
-        .pos-LE  { top: 55%;  left: 70%; } /* LE agora na Direita interna */
-        .pos-PE  { top: 25%;  left: 85%; } /* PE agora na Direita */
-        .pos-PIV { top: 38%;  left: 50%; }
+        .node-player-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(22, 163, 74, 0.95); 
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid white;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .node-num { font-size: 9px; font-weight: 800; color: #fff; background: rgba(0,0,0,0.3); padding: 0 3px; border-radius: 2px; }
+        .node-name { font-size: 8.5px; font-weight: 700; color: white; text-transform: uppercase; }
+
+        /* COORDENADAS HORIZONTAIS CONFORME SOLICITADO */
+        .pos-GL  { top: 50%;  left: 10%; } /* Goleira na linha de fundo esquerda */
+        .pos-PD  { top: 20%;  left: 28%; } /* Superior Esquerda */
+        .pos-LD  { top: 35%;  left: 55%; } /* Superior Direita interna */
+        .pos-CEN { top: 50%;  left: 80%; } /* Centralizado no ataque */
+        .pos-LE  { top: 65%;  left: 55%; } /* Inferior Direita interna */
+        .pos-PE  { top: 80%;  left: 28%; } /* Inferior Esquerda */
+        .pos-PIV { top: 50%;  left: 45%; } /* Pivô entre a defesa e o centro */
+
     </style>
 </head>
 <body>
@@ -243,6 +244,7 @@ async function loadData() {
     renderNiverMenu();
 }
 
+/* --- FUNÇÃO DE CAMPO TÁTICO MANTIDA COM LÓGICA DE NOMES E POSIÇÕES --- */
 function buildTacticalField(idJogo) {
     const convocadas = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
     if (convocadas.length === 0) return "";
@@ -253,29 +255,25 @@ function buildTacticalField(idJogo) {
         if(!grupos[pos]) grupos[pos] = [];
         
         const info = DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome')));
-        
-        // Lógica de nome: Prioriza nome_exibicao, senão primeiro nome
-        let nomeParaMostrar = getVal(c, 'nome_exibicao');
-        if(!nomeParaMostrar) {
-            nomeParaMostrar = getVal(c, 'nome').split(' ')[0];
-        }
-
         grupos[pos].push({
-            nome: nomeParaMostrar,
+            nome: getVal(c, 'nome').split(' ')[0],
             num: info ? getVal(info, 'número') : "?"
         });
     });
 
     let playersHTML = "";
     Object.keys(grupos).forEach(pos => {
-        const atletas = grupos[pos];
-        const nomesUnidos = atletas.map(a => a.nome).join(' - ');
-        const numsUnidos = atletas.map(a => a.num).join('/');
+        const atletasPos = grupos[pos];
+        let itemsHTML = atletasPos.map(a => `
+            <div class="node-player-item">
+                <span class="node-name">${a.nome}</span>
+                <span class="node-num">${a.num}</span>
+            </div>
+        `).join('');
 
         playersHTML += `
             <div class="player-node pos-${pos}">
-                <div class="node-circle">${numsUnidos}</div>
-                <div class="node-name">${nomesUnidos}</div>
+                <div class="node-list">${itemsHTML}</div>
             </div>`;
     });
 
@@ -283,7 +281,8 @@ function buildTacticalField(idJogo) {
         <div class="tactical-container">
             <span class="tactical-title">📋 Convocatória</span>
             <div class="handball-field">
-                <div class="field-area"></div>
+                <div class="area-left"></div>
+                <div class="field-line-center"></div>
                 ${playersHTML}
             </div>
         </div>`;
