@@ -17,7 +17,7 @@
             position: fixed; left: -280px; top: 0; width: 280px; height: 100%; 
             background: var(--eac-dark); color: white; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
             z-index: 1000; padding-top: 80px; box-shadow: 5px 0 15px rgba(0,0,0,0.2);
-            overflow-y: auto; /* Permite descer no menu */
+            overflow-y: auto;
         }
         #sidebar.active { left: 0; }
         #sidebar a { display: block; padding: 18px 25px; color: #94a3b8; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.95rem; font-weight: 600; }
@@ -62,7 +62,7 @@
         .atleta-row:hover { border-color: var(--azul); background: #f8fafc; }
         .atleta-img-circle { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 18px; border: 2px solid #f1f5f9; }
 
-        /* ESTATÍSTICAS INTERATIVAS (HISTÓRICO) */
+        /* ESTATÍSTICAS INTERATIVAS */
         .stat-card { padding: 25px 15px; border-radius: 22px; text-align: center; color: white; flex: 1; cursor: pointer; position: relative; overflow: hidden; }
         .stat-val { font-size: 3.2rem; font-weight: 900; display: block; line-height: 1; }
         .stat-label { font-size: 0.8rem; font-weight: 800; opacity: 0.9; text-transform: uppercase; margin-top: 5px; display: block; }
@@ -175,7 +175,6 @@ async function loadData() {
     renderHomeNext();
 }
 
-// Lógica de inversão de parcial baseada no local
 function formatParcial(stringParcial, isFora) {
     if(!stringParcial || !stringParcial.includes("-")) return stringParcial;
     if(!isFora) return stringParcial;
@@ -300,6 +299,8 @@ function renderHomeNext() {
     document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
         const isFora = clean(getVal(j, 'local')).includes("fora");
         const hora = getVal(j, 'hora');
+        const mapsUrl = getVal(j, 'Link_maps');
+        
         return `
         <div class="game-card" style="margin-bottom: 15px; border-left: 6px solid var(--azul);">
             <div class="game-content" style="padding: 15px;">
@@ -321,9 +322,12 @@ function renderHomeNext() {
                     </div>
                 </div>
                 <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #f1f5f9; text-align: center;">
-                    <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">
-                        📍 ${getVal(j, 'local')}
-                    </span>
+                    ${mapsUrl ? 
+                        `<a href="${mapsUrl}" target="_blank" style="text-decoration:none; font-size: 0.7rem; color: #166534; font-weight: 700; text-transform: uppercase; background:#dcfce7; padding:5px 10px; border-radius:8px">
+                            📍 ${getVal(j, 'local')}
+                        </a>` : 
+                        `<span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">📍 ${getVal(j, 'local')}</span>`
+                    }
                 </div>
             </div>
         </div>`;
@@ -382,9 +386,24 @@ function renderAtletas(esc) {
 }
 
 function renderTreinos() {
-    document.getElementById('viewContent').innerHTML = `<h2 style="font-weight:900; margin-bottom:25px">Locais de Treino</h2>
-        <div style="background:white; padding:25px; border-radius:22px; margin-bottom:20px; border-left:6px solid var(--azul)"><b>Pavilhão Municipal</b><br><small>Quarta: 19:00 - 20:30</small></div>
-        <div style="background:white; padding:25px; border-radius:22px; border-left:6px solid var(--azul)"><b>Escola Secundária</b><br><small>Terça/Sexta: 19:00 - 20:30</small></div>`;
+    document.getElementById('viewContent').innerHTML = `
+        <h2 style="font-weight:900; margin-bottom:25px">Locais de Treino</h2>
+        <a href="https://www.google.com/maps/search/?api=1&query=Pavilhão+Municipal+Estarreja" target="_blank" style="text-decoration:none; color:inherit">
+            <div style="background:white; padding:25px; border-radius:22px; margin-bottom:20px; border-left:6px solid var(--azul)">
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                    <div><b>Pavilhão Municipal</b><br><small>Quarta: 19:00 - 20:30</small></div>
+                    <span style="font-size:1.2rem">📍</span>
+                </div>
+            </div>
+        </a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Escola+Secundária+Estarreja" target="_blank" style="text-decoration:none; color:inherit">
+            <div style="background:white; padding:25px; border-radius:22px; border-left:6px solid var(--azul)">
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                    <div><b>Escola Secundária</b><br><small>Terça/Sexta: 19:00 - 20:30</small></div>
+                    <span style="font-size:1.2rem">📍</span>
+                </div>
+            </div>
+        </a>`;
 }
 
 function renderNiverMenu() { 
