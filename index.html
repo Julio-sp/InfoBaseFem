@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MENINAS SUB16 e SUB18</title>
+    <title>EAC Scout Portal v7.8 PRO - MASTER</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --bg: #f1f5f9; --eac-dark: #0f172a; }
@@ -102,7 +102,7 @@
     <div id="homeNext">
         <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
             <span style="width: 5px; height: 25px; background: var(--verde); display: block; border-radius: 10px"></span>
-            <span id="nextTitle">PRÓXIMOS JOGOS</span>
+            <span id="nextTitle">PRÓXIMOS DESAFIOS</span>
         </h3>
         <div id="homeNextContent"></div>
     </div>
@@ -449,22 +449,7 @@ function showView(v, p = '') {
     window.scrollTo(0,0);
 }
 
-function toggleStatHistory(type) { 
-    const el = document.getElementById(`hist-${type}`); 
-    const isOpening = el.style.display !== 'block';
-    
-    if(isOpening) {
-        // Lógica de Som
-        if(type === 'golos') {
-            new Audio('https://www.myinstants.com/media/sounds/gol-da-globo-curto.mp3').play();
-        } else if(type === 'excl') {
-            new Audio('https://www.myinstants.com/media/sounds/boo-63678.mp3').play();
-        }
-    }
-    
-    el.style.display = isOpening ? 'block' : 'none'; 
-}
-
+function toggleStatHistory(type) { const el = document.getElementById(`hist-${type}`); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
 function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
 function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }
 function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
