@@ -68,127 +68,67 @@
         
         .treino-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border-left: 6px solid var(--azul); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-       <style>
-    /* ... (Mantenha os estilos anteriores e substitua apenas os abaixo) ... */
+        /* --- ESTILOS DO CAMPO TÁTICO HORIZONTAL (ALTERADO) --- */
+        .tactical-container { margin-top: 25px; border-top: 2px dashed #e2e8f0; padding-top: 20px; }
+        .tactical-title { font-size: 0.75rem; font-weight: 800; color: var(--azul); letter-spacing: 1px; margin-bottom: 15px; display: block; text-transform: uppercase; }
+        
+        .handball-field { 
+            background: #1e3a8a; 
+            width: 100%; 
+            aspect-ratio: 1.6 / 1; /* Proporção horizontal */
+            border: 2px solid white; 
+            border-radius: 10px; 
+            position: relative; 
+            overflow: hidden;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.2);
+        }
 
-    /* --- CAMPO TÁTICO HORIZONTAL (ESTILO FOTO) --- */
-    .tactical-container { 
-        margin-top: 25px; 
-        border-top: 2px dashed #e2e8f0; 
-        padding-top: 20px; 
-        width: 100%; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-    }
-    
-    .tactical-title { 
-        font-size: 0.75rem; 
-        font-weight: 800; 
-        color: var(--azul); 
-        letter-spacing: 1px; 
-        margin-bottom: 15px; 
-        display: block; 
-        text-transform: uppercase; 
-    }
-    
-    .handball-field { 
-        background: #1e40af; /* Fundo Azul conforme solicitado */
-        width: 100%; 
-        max-width: 500px;
-        aspect-ratio: 1.8 / 1; /* Horizontal */
-        border: 3px solid white; 
-        border-radius: 5px; 
-        position: relative; 
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
+        /* Linhas e Áreas do Campo Horizontal */
+        .area-left { position: absolute; left: -20px; top: 15%; bottom: 15%; width: 70px; border: 2px solid white; border-radius: 0 100px 100px 0; }
+        .field-line-center { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.4); }
 
-    /* Linhas do Campo Horizontal */
-    .field-mid { position: absolute; left: 50%; height: 100%; width: 2px; background: white; }
-    .field-circle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; border: 2px solid white; border-radius: 50%; }
-    
-    /* Áreas de Goleiro (Semicírculos) */
-    .field-area-left { position: absolute; left: -2px; top: 50%; transform: translateY(-50%); width: 70px; height: 120px; border: 2px solid white; border-radius: 0 100px 100px 0; }
-    .field-area-right { position: absolute; right: -2px; top: 50%; transform: translateY(-50%); width: 70px; height: 120px; border: 2px solid white; border-radius: 100px 0 0 100px; }
-    
-    /* Balizas (Traves) */
-    .goal-line-left { position: absolute; left: 10px; top: 40%; height: 20%; width: 4px; background: black; }
-    .goal-line-right { position: absolute; right: 10px; top: 40%; height: 20%; width: 4px; background: black; }
+        .player-node { 
+            position: absolute; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 90px; 
+            transform: translate(-50%, -50%); 
+            z-index: 5;
+        }
+        
+        .node-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            align-items: center;
+        }
 
-    /* Jogadoras */
-    .player-node { 
-        position: absolute; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        width: 70px; 
-        transform: translate(-50%, -50%); 
-        z-index: 5;
-    }
-    
-    .node-player-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 3px;
-    }
+        .node-player-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(22, 163, 74, 0.95); 
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid white;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
 
-    /* Círculo Verde, Letras Pretas */
-    .node-icon { 
-        width: 28px; 
-        height: 28px; 
-        background: #22c55e; /* Fundo Verde */
-        border-radius: 50%; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        font-weight: 800; 
-        font-size: 12px; 
-        color: black; /* Número Preto */
-        border: 1px solid rgba(0,0,0,0.1);
-    }
-    
-    .node-name { 
-        font-size: 9px; 
-        color: black; /* Nome Preto */
-        background: rgba(34, 197, 94, 0.9); /* Fundo verde suave para leitura no azul */
-        padding: 1px 4px;
-        border-radius: 4px;
-        text-align: center; 
-        margin-top: 2px; 
-        font-weight: 700; 
-        white-space: nowrap; 
-    }
+        .node-num { font-size: 9px; font-weight: 800; color: #fff; background: rgba(0,0,0,0.3); padding: 0 3px; border-radius: 2px; }
+        .node-name { font-size: 8.5px; font-weight: 700; color: white; text-transform: uppercase; }
 
-    /* COORDENADAS BASEADAS NA IMAGEM (HORIZONTAL) */
-    .pos-GL  { left: 12%;  top: 50%; }
-    .pos-PE  { left: 22%;  top: 15%; }
-    .pos-PD  { left: 22%;  top: 85%; }
-    .pos-LE  { left: 45%;  top: 30%; }
-    .pos-LD  { left: 45%;  top: 70%; }
-    .pos-CEN { left: 62%;  top: 50%; }
-    .pos-PIV { left: 82%;  top: 50%; }
-</style>
+        /* COORDENADAS HORIZONTAIS CONFORME SOLICITADO */
+        .pos-GL  { top: 50%;  left: 10%; } /* Goleira na linha de fundo esquerda */
+        .pos-PD  { top: 20%;  left: 28%; } /* Superior Esquerda */
+        .pos-LD  { top: 35%;  left: 55%; } /* Superior Direita interna */
+        .pos-CEN { top: 50%;  left: 80%; } /* Centralizado no ataque */
+        .pos-LE  { top: 65%;  left: 55%; } /* Inferior Direita interna */
+        .pos-PE  { top: 80%;  left: 28%; } /* Inferior Esquerda */
+        .pos-PIV { top: 50%;  left: 45%; } /* Pivô entre a defesa e o centro */
 
-<script>
-/* ... (Dentro da função buildTacticalField, substitua apenas o retorno do HTML do campo) ... */
-
-    return `
-        <div class="tactical-container">
-            <span class="tactical-title">📋 Disposição em Campo</span>
-            <div class="handball-field">
-                <div class="field-area-left"></div>
-                <div class="field-area-right"></div>
-                <div class="goal-line-left"></div>
-                <div class="goal-line-right"></div>
-                <div class="field-mid"></div>
-                <div class="field-circle"></div>
-                ${playersHTML}
-            </div>
-        </div>`;
-}
-</script>
+    </style>
 </head>
 <body>
 
@@ -304,55 +244,45 @@ async function loadData() {
     renderNiverMenu();
 }
 
-/* --- FUNÇÃO DE CAMPO TÁTICO ATUALIZADA (VERTICAL + NOME_EXIBICAO) --- */
+/* --- FUNÇÃO DE CAMPO TÁTICO MANTIDA COM LÓGICA DE NOMES E POSIÇÕES --- */
 function buildTacticalField(idJogo) {
     const convocadas = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
     if (convocadas.length === 0) return "";
 
     const grupos = {};
-    const siglasPos = { 'GL': 'GL', 'PE': 'PE', 'PD': 'PD', 'LE': 'LE', 'LD': 'LD', 'CEN': 'CEN', 'PIV': 'PIV' };
-
     convocadas.forEach(c => {
         const pos = getVal(c, 'posicao_campo').toUpperCase();
         if(!grupos[pos]) grupos[pos] = [];
         
         const info = DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome')));
-        
-        // BUSCA COLUNA E (nome_exibicao) - Ajustado para row[4] ou nome da chave
-        const nExibicao = getVal(c, 'nome_exibicao'); 
-        
         grupos[pos].push({
-            nome: nExibicao || getVal(c, 'nome').split(' ')[0],
-            num: info ? getVal(info, 'número') : "?",
-            sigla: pos
+            nome: getVal(c, 'nome').split(' ')[0],
+            num: info ? getVal(info, 'número') : "?"
         });
     });
 
     let playersHTML = "";
     Object.keys(grupos).forEach(pos => {
         const atletasPos = grupos[pos];
-        let itemsHTML = atletasPos.map((a, idx) => `
-            <div class="node-player-item" style="${idx > 0 ? 'margin-top: 5px;' : ''}">
-                <div class="node-sigla">${a.sigla}</div>
-                <div class="node-icon">${a.num}</div>
-                <div class="node-name">${a.nome}</div>
+        let itemsHTML = atletasPos.map(a => `
+            <div class="node-player-item">
+                <span class="node-name">${a.nome}</span>
+                <span class="node-num">${a.num}</span>
             </div>
         `).join('');
 
         playersHTML += `
             <div class="player-node pos-${pos}">
-                ${itemsHTML}
+                <div class="node-list">${itemsHTML}</div>
             </div>`;
     });
 
     return `
         <div class="tactical-container">
-            <span class="tactical-title">📋 Campo Tático</span>
+            <span class="tactical-title">📋 Convocatória</span>
             <div class="handball-field">
-                <div class="field-semi-def"></div>
-                <div class="field-mid"></div>
-                <div class="field-circle"></div>
-                <div class="field-semi-atk"></div>
+                <div class="area-left"></div>
+                <div class="field-line-center"></div>
                 ${playersHTML}
             </div>
         </div>`;
