@@ -313,15 +313,32 @@ function renderArt(filtro) {
     document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
     
-    let ranking = DB.atletas.map(atleta => {
+    // Criamos um Map para agrupar atletas pelo nome e evitar duplicados na listagem
+    let atletasUnicos = new Map();
+    DB.atletas.forEach(atleta => {
         const nome = getVal(atleta, 'nome');
+        const nomeChave = clean(nome);
+        if (!atletasUnicos.has(nomeChave)) {
+            atletasUnicos.set(nomeChave, {
+                nome: nome,
+                foto: getVal(atleta, 'foto'),
+                num: getVal(atleta, 'número')
+            });
+        }
+    });
+
+    let ranking = Array.from(atletasUnicos.values()).map(atleta => {
+        const nome = atleta.nome;
         const golos = DB.scout.filter(s => {
             if (clean(getVal(s, 'nome')) !== clean(nome)) return false;
             if (filtro === 'GERAL') return true;
+            
+            // Filtra o golo apenas se o jogo pertencer ao escalão selecionado
             const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
             return j && clean(getVal(j, 'escalao')) === clean(filtro);
         }).reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
-        return { nome, golos, foto: getVal(atleta, 'foto'), num: getVal(atleta, 'número') };
+
+        return { ...atleta, golos };
     }).filter(x => x.golos > 0).sort((a,b) => b.golos - a.golos);
 
     document.getElementById('viewContent').innerHTML = ranking.map((p, i) => `
