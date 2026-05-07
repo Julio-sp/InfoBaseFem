@@ -259,9 +259,19 @@ function openJogo(id) {
     document.getElementById('detailPane').classList.add('open');
 }
 
-function openAtleta(nome) {
+function openAtleta(nome, escalaoFiltro = '') {
     const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
-    const sc = DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome));
+    
+    // Filtramos o scout pelo nome e, se houver um escalão definido, pelo escalão do jogo
+    const sc = DB.scout.filter(s => {
+        const matchesNome = clean(getVal(s, 'nome')) === clean(nome);
+        if (!matchesNome) return false;
+        if (!escalaoFiltro) return true;
+        
+        const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
+        return jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
+    });
+
     const totalG = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
     const totalE = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
 
@@ -276,7 +286,7 @@ function openAtleta(nome) {
             <h1 style="margin: 20px 0 5px 0; font-size: 1.6rem; font-weight: 900">${getVal(a, 'nome')}</h1>
             <div style="margin-bottom: 25px">
                 <span class="info-pill">🎂 ${getVal(a, 'nascimento')} (${calcularIdade(getVal(a, 'nascimento'))})</span>
-                <span class="info-pill">🏆 ${getVal(a, 'escalão')}</span>
+                <span class="info-pill">🏆 ${escalaoFiltro || getVal(a, 'escalão')}</span>
                 <span class="info-pill">🎽 Nº ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span>
             </div>
             <div style="display:flex; gap:15px; max-width: 450px; margin: 0 auto">
@@ -315,7 +325,7 @@ function renderArt(filtro) {
     }).filter(x => x.golos > 0).sort((a,b) => b.golos - a.golos);
 
     document.getElementById('viewContent').innerHTML = ranking.map((p, i) => `
-        <div class="atleta-row" onclick="openAtleta('${p.nome}')">
+        <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro === 'GERAL' ? '' : filtro}')">
             <div style="font-weight:900; font-size:1.2rem; margin-right:15px; color:var(--azul)">${i+1}º</div>
             <img src="${p.foto || 'logo.png'}" class="atleta-img-circle" style="width:45px; height:45px" onerror="this.src='logo.png'">
             <div style="flex:1">
@@ -350,7 +360,7 @@ function renderTreinos() {
 function renderAtletas(esc) {
     const list = DB.atletas.filter(a => clean(getVal(a, 'escalão')) === clean(esc));
     document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:20px; font-weight:900">${esc}</h3>` + 
-    list.map(a => `<div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}')"><img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'"><div><strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong><span style="color:#64748b; font-weight:800; font-size: 0.75rem">🎽 ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span></div></div>`).join('');
+    list.map(a => `<div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}', '${esc}')"><img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'"><div><strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong><span style="color:#64748b; font-weight:800; font-size: 0.75rem">🎽 ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span></div></div>`).join('');
 }
 
 function renderHomeNext() {
