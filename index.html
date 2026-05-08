@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sub16 e Sub18 FEM</title>
+    <title>EAC - Sub16 e Sub18 FEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --bg: #f1f5f9; --eac-dark: #0f172a; }
@@ -47,15 +47,16 @@
         .info-btn { background: #f1f5f9; color: #475569; }
         .maps-btn { background: #dcfce7; color: #166534; }
 
+        /* --- NOVO ESTILO DA CONVOCATÓRIA EM LISTA (SUBSTITUI CAMPO TÁTICO) --- */
+        .conv-container { margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .conv-title { font-size: 0.75rem; font-weight: 800; color: var(--azul); letter-spacing: 1px; margin-bottom: 10px; display: block; text-transform: uppercase; }
+        .conv-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .conv-item { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .conv-num { font-size: 0.7rem; font-weight: 900; background: var(--eac-dark); color: white; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+        .conv-nome { font-size: 0.75rem; font-weight: 700; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
         .atleta-row { background: white; padding: 18px; margin-bottom: 12px; border-radius: 18px; display: flex; align-items: center; cursor: pointer; border: 1px solid transparent; }
         .atleta-img-circle { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 18px; border: 2px solid #f1f5f9; }
-
-        .stat-card { padding: 25px 15px; border-radius: 22px; text-align: center; color: white; flex: 1; cursor: pointer; position: relative; }
-        .stat-val { font-size: 3.2rem; font-weight: 900; display: block; line-height: 1; }
-        .stat-label { font-size: 0.8rem; font-weight: 800; opacity: 0.9; text-transform: uppercase; margin-top: 5px; display: block; }
-        
-        .history-panel { margin-top: 15px; background: white; border-radius: 15px; overflow: hidden; display: none; text-align: left; }
-        .history-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
 
         #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
         #detailPane.open { right:0; }
@@ -67,67 +68,6 @@
         .info-pill { background: #f1f5f9; padding: 10px 15px; border-radius: 12px; font-size: 0.8rem; color: #475569; font-weight: 600; display: inline-block; margin: 5px; }
         
         .treino-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border-left: 6px solid var(--azul); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-
-        /* --- ESTILOS DO CAMPO TÁTICO HORIZONTAL (ALTERADO) --- */
-        .tactical-container { margin-top: 25px; border-top: 2px dashed #e2e8f0; padding-top: 20px; }
-        .tactical-title { font-size: 0.75rem; font-weight: 800; color: var(--azul); letter-spacing: 1px; margin-bottom: 15px; display: block; text-transform: uppercase; }
-        
-        .handball-field { 
-            background: #1e3a8a; 
-            width: 100%; 
-            aspect-ratio: 1.6 / 1; /* Proporção horizontal */
-            border: 2px solid white; 
-            border-radius: 10px; 
-            position: relative; 
-            overflow: hidden;
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.2);
-        }
-
-        /* Linhas e Áreas do Campo Horizontal */
-        .area-left { position: absolute; left: -20px; top: 15%; bottom: 15%; width: 70px; border: 2px solid white; border-radius: 0 100px 100px 0; }
-        .field-line-center { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.4); }
-
-        .player-node { 
-            position: absolute; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            width: 90px; 
-            transform: translate(-50%, -50%); 
-            z-index: 5;
-        }
-        
-        .node-list {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            align-items: center;
-        }
-
-        .node-player-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(22, 163, 74, 0.95); 
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid white;
-            white-space: nowrap;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .node-num { font-size: 9px; font-weight: 800; color: #fff; background: rgba(0,0,0,0.3); padding: 0 3px; border-radius: 2px; }
-        .node-name { font-size: 8.5px; font-weight: 700; color: white; text-transform: uppercase; }
-
-        /* COORDENADAS HORIZONTAIS CONFORME SOLICITADO */
-        .pos-GL  { top: 50%;  left: 10%; } /* Goleira na linha de fundo esquerda */
-        .pos-PD  { top: 20%;  left: 28%; } /* Superior Esquerda */
-        .pos-LD  { top: 35%;  left: 55%; } /* Superior Direita interna */
-        .pos-CEN { top: 50%;  left: 80%; } /* Centralizado no ataque */
-        .pos-LE  { top: 65%;  left: 55%; } /* Inferior Direita interna */
-        .pos-PE  { top: 80%;  left: 28%; } /* Inferior Esquerda */
-        .pos-PIV { top: 50%;  left: 45%; } /* Pivô entre a defesa e o centro */
-
     </style>
 </head>
 <body>
@@ -244,47 +184,32 @@ async function loadData() {
     renderNiverMenu();
 }
 
-/* --- FUNÇÃO DE CAMPO TÁTICO MANTIDA COM LÓGICA DE NOMES E POSIÇÕES --- */
-function buildTacticalField(idJogo) {
-    const convocadas = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
-    if (convocadas.length === 0) return "";
+/* --- NOVA FUNÇÃO DE CONVOCATÓRIA: LISTA ROBUSTA POR NÚMERO --- */
+function buildConvocatoriaList(idJogo) {
+    const convocadasRaw = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
+    if (convocadasRaw.length === 0) return "";
 
-    const grupos = {};
-    convocadas.forEach(c => {
-        const pos = getVal(c, 'posicao_campo').toUpperCase();
-        if(!grupos[pos]) grupos[pos] = [];
-        
+    let listaFinal = convocadasRaw.map(c => {
         const info = DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome')));
-        grupos[pos].push({
-            nome: getVal(c, 'nome').split(' ')[0],
-            num: info ? getVal(info, 'número') : "?"
-        });
+        return {
+            nome: getVal(c, 'nome_exibicao') || getVal(c, 'nome').split(' ')[0],
+            num: info ? parseInt(getVal(info, 'número')) : 999
+        };
     });
 
-    let playersHTML = "";
-    Object.keys(grupos).forEach(pos => {
-        const atletasPos = grupos[pos];
-        let itemsHTML = atletasPos.map(a => `
-            <div class="node-player-item">
-                <span class="node-name">${a.nome}</span>
-                <span class="node-num">${a.num}</span>
-            </div>
-        `).join('');
+    listaFinal.sort((a, b) => a.num - b.num);
 
-        playersHTML += `
-            <div class="player-node pos-${pos}">
-                <div class="node-list">${itemsHTML}</div>
-            </div>`;
-    });
+    const itemsHTML = listaFinal.map(a => `
+        <div class="conv-item">
+            <span class="conv-num">${a.num === 999 ? '?' : a.num}</span>
+            <span class="conv-nome">${a.nome}</span>
+        </div>
+    `).join('');
 
     return `
-        <div class="tactical-container">
-            <span class="tactical-title">📋 Convocatória</span>
-            <div class="handball-field">
-                <div class="area-left"></div>
-                <div class="field-line-center"></div>
-                ${playersHTML}
-            </div>
+        <div class="conv-container">
+            <span class="conv-title">📋 Convocadas</span>
+            <div class="conv-list">${itemsHTML}</div>
         </div>`;
 }
 
@@ -415,8 +340,8 @@ function renderArt(filtro) {
 function renderTreinos() {
     document.getElementById('viewContent').innerHTML = `
         <h2 style="font-weight:900; margin-bottom:25px">📍 Locais de Treino</h2>
-        <div class="treino-card"><b style="display:block; font-size:1.1rem; color:var(--azul)">🏟️ Pavilhão Municipal de Estarreja</b><p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Quarta: 19:00 - 20:30</p><a href="#" target="_blank" class="maps-btn">VER NO MAPA</a></div>
-        <div class="treino-card" style="border-left-color: var(--verde)"><b style="display:block; font-size:1.1rem; color:var(--verde)">🏟️ Pavilhão Escola Secundária</b><p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Terça e Sexta: 19:00 - 20:30</p><a href="#" target="_blank" class="maps-btn">VER NO MAPA</a></div>`;
+        <div class="treino-card"><b style="display:block; font-size:1.1rem; color:var(--azul)">🏟️ Pavilhão Municipal de Estarreja</b><p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Quarta: 19:00 - 20:30</p><a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a></div>
+        <div class="treino-card" style="border-left-color: var(--verde)"><b style="display:block; font-size:1.1rem; color:var(--verde)">🏟️ Pavilhão Escola Secundária</b><p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Terça e Sexta: 19:00 - 20:30</p><a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a></div>`;
 }
 
 function renderAtletas(esc) {
@@ -434,6 +359,7 @@ function renderHomeNext() {
 
     document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
         const isFora = clean(getVal(j, 'local')).includes("fora");
+        const mapsLink = getVal(j, 'Link_maps');
         return `
         <div class="game-card" style="border-left: 6px solid var(--azul); flex-direction:column">
             <div class="game-content" style="padding: 15px;">
@@ -443,8 +369,11 @@ function renderHomeNext() {
                     <div class="score-box"><div class="score-main" style="font-size: 1.2rem; color: #94a3b8;">VS</div></div>
                     <div class="team"><img src="${!isFora ? getVal(j, 'logo_adversario') : 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px;"><span>${!isFora ? getVal(j, 'adversário') : 'EAC'}</span></div>
                 </div>
-                <div style="margin-top: 10px;"><span style="font-size: 0.75rem; color: #64748b; font-weight: 700;">📍 ${getVal(j, 'local')}</span></div>
-                ${buildTacticalField(getVal(j, 'id'))}
+                <div style="margin-top: 10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 700;">📍 ${getVal(j, 'local')}</span>
+                    ${mapsLink ? `<a href="${mapsLink}" target="_blank" style="font-size:0.7rem; color:var(--verde); font-weight:800; text-decoration:none">VER NO MAPA ↗</a>` : ''}
+                </div>
+                ${buildConvocatoriaList(getVal(j, 'id'))}
             </div>
         </div>`;
     }).join('') || "<p style='color:#94a3b8; text-align:center;'>Sem jogos marcados.</p>";
