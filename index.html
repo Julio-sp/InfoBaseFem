@@ -29,7 +29,10 @@
         .adn-word { font-size: 4rem; font-weight: 900; line-height: 0.9; letter-spacing: -3px; margin: 5px 0; }
         .w-white { color: white; } .w-black { color: black; }
 
-        .month-divider { padding: 15px 0; margin: 30px 0 15px 0; border-bottom: 3px solid #e2e8f0; font-weight: 800; color: var(--eac-dark); font-size: 1rem; text-transform: uppercase; }
+        .month-divider { padding: 15px 20px; margin: 15px 0 5px 0; background: white; border-radius: 15px; font-weight: 800; color: var(--eac-dark); font-size: 1rem; text-transform: uppercase; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
+        .month-content { display: none; margin-bottom: 20px; }
+        .month-content.open { display: block; }
+
         .game-card { background: white; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; border: 1px solid #f1f5f9; }
         .game-status-bar { width: 12px; }
         .game-content { flex: 1; padding: 22px; }
@@ -63,7 +66,6 @@
         .tab-btn { padding:12px 24px; border-radius:25px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; font-size: 0.85rem; }
         .tab-btn.active { background: var(--azul); color: white; }
 
-        /* --- CORREÇÃO DOS BOTÕES DE ESTATÍSTICA --- */
         .stat-card { padding: 15px; border-radius: 15px; color: white; cursor: pointer; transition: 0.3s; }
         .stat-card:active { transform: scale(0.95); }
         .stat-val { display: block; font-size: 1.8rem; font-weight: 900; }
@@ -72,7 +74,6 @@
         .history-panel { display: none; background: #f8fafc; margin-top: 10px; border-radius: 12px; padding: 10px; text-align: left; border: 1px solid #e2e8f0; }
         .history-item { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
         .history-item:last-child { border: none; }
-        /* ------------------------------------------ */
 
         .badge-2min { background: var(--vermelho); color: white; padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 0.75rem; }
         .info-pill { background: #f1f5f9; padding: 10px 15px; border-radius: 12px; font-size: 0.8rem; color: #475569; font-weight: 600; display: inline-block; margin: 5px; }
@@ -221,18 +222,35 @@ function buildConvocatoriaList(idJogo) {
 function renderJogos(filtro) {
     document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
+    
     let lista = (filtro === 'TODOS') ? [...DB.jogos] : DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
     lista.sort((a,b) => parseDate(getVal(b, 'data')) - parseDate(getVal(a, 'data')));
+    
     const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     let html = "", ultimoMes = "";
+    let mesId = 0;
+
     lista.forEach(j => {
         const d = parseDate(getVal(j, 'data'));
         const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
-        if(mesAno !== ultimoMes) { html += `<div class="month-divider">${mesAno}</div>`; ultimoMes = mesAno; }
+        
+        if(mesAno !== ultimoMes) {
+            if(ultimoMes !== "") html += `</div>`; // Fecha o container do mês anterior
+            mesId++;
+            html += `
+                <div class="month-divider" onclick="toggleMonth('month-${mesId}')">
+                    ${mesAno}
+                    <span id="icon-month-${mesId}">▼</span>
+                </div>
+                <div id="month-month-${mesId}" class="month-content">`;
+            ultimoMes = mesAno;
+        }
+
         const gEAC = parseInt(getVal(j, 'gols_eac')), gADV = parseInt(getVal(j, 'gols_adv'));
         const isFora = clean(getVal(j, 'local')).includes("fora");
         let cor = "#cbd5e1"; 
         if(!isNaN(gEAC) && !isNaN(gADV)) cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : "var(--azul)";
+        
         html += `
         <div class="game-card">
             <div class="game-status-bar" style="background:${cor}"></div>
@@ -253,7 +271,22 @@ function renderJogos(filtro) {
             </div>
         </div>`;
     });
+    
+    if(html !== "") html += `</div>`; // Fecha o último mês
+
     document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
+}
+
+function toggleMonth(id) {
+    const content = document.getElementById('month-' + id);
+    const icon = document.getElementById('icon-' + id);
+    if(content.classList.contains('open')) {
+        content.classList.remove('open');
+        icon.innerText = '▼';
+    } else {
+        content.classList.add('open');
+        icon.innerText = '▲';
+    }
 }
 
 function openJogo(id) {
