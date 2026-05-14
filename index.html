@@ -66,10 +66,10 @@
         .tab-btn { padding:12px 24px; border-radius:25px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; font-size: 0.85rem; }
         .tab-btn.active { background: var(--azul); color: white; }
 
-        .stat-card { padding: 15px; border-radius: 15px; color: white; cursor: pointer; transition: 0.3s; }
+        .stat-card { padding: 12px 5px; border-radius: 15px; color: white; cursor: pointer; transition: 0.3s; text-align: center; }
         .stat-card:active { transform: scale(0.95); }
-        .stat-val { display: block; font-size: 1.8rem; font-weight: 900; }
-        .stat-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .stat-val { display: block; font-size: 1.5rem; font-weight: 900; }
+        .stat-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
         
         .history-panel { display: none; background: #f8fafc; margin-top: 10px; border-radius: 12px; padding: 10px; text-align: left; border: 1px solid #e2e8f0; }
         .history-item { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
@@ -211,7 +211,7 @@ async function loadData() {
 }
 
 function buildConvocatoriaList(idJogo) {
-    const convocadasRaw = DB.convocados.filter(c => getVal(c, 'id_jogo') == idJogo); // Corrigido para id_jogo se necessário, ou mantido jogo_id
+    const convocadasRaw = DB.convocados.filter(c => getVal(c, 'id_jogo') == idJogo);
     if (convocadasRaw.length === 0) return "";
     let listaFinal = convocadasRaw.map(c => {
         const info = DB.atletas.length > 0 ? DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome'))) : null;
@@ -319,42 +319,64 @@ function openJogo(id) {
 
 function openAtleta(nome, escalaoFiltro = '') {
     const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
-    const sc = DB.scout.filter(s => {
+    let sc = DB.scout.filter(s => {
         const matchesNome = clean(getVal(s, 'nome')) === clean(nome);
         if (!matchesNome) return false;
         if (!escalaoFiltro) return true;
         const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
         return jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
     });
+
+    // Ordenar Scout do mais recente para o mais antigo para os históricos
+    sc.sort((x, y) => {
+        const jogoX = DB.jogos.find(jg => getVal(jg, 'id') == getVal(x, 'jogo_id'));
+        const jogoY = DB.jogos.find(jg => getVal(jg, 'id') == getVal(y, 'jogo_id'));
+        return parseDate(getVal(jogoY, 'data')) - parseDate(getVal(jogoX, 'data'));
+    });
+
     const totalG = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
     const totalE = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
-    const formatHistList = (lista, campo) => lista.filter(s => parseInt(getVal(s, campo)) > 0).map(s => {
-        const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
-        return `<div class="history-item"><span><b>vs</b> ${getVal(j, 'adversário') || 'Jogo'}</span> <b>${getVal(s, campo)}</b></div>`;
-    }).join('') || '<div class="history-item">Nenhum registro.</div>';
+    const totalJ = sc.length;
+
+    const formatHistList = (lista, campo) => {
+        const filtrada = campo === 'jogos' ? lista : lista.filter(s => parseInt(getVal(s, campo)) > 0);
+        return filtrada.map(s => {
+            const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
+            const val = campo === 'jogos' ? '✔' : getVal(s, campo);
+            return `<div class="history-item"><span><b>vs</b> ${getVal(j, 'adversário') || 'Jogo'}</span> <b>${val}</b></div>`;
+        }).join('') || '<div class="history-item">Nenhum registro.</div>';
+    };
+
     document.getElementById('detailBody').innerHTML = `
         <div style="background: linear-gradient(180deg, #f8fafc 0%, white 100%); padding: 45px 20px; text-align:center">
-            <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:150px; height:150px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1)" onerror="this.src='logo.png'">
+            <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:130px; height:130px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1)" onerror="this.src='logo.png'">
             <h1 style="margin: 20px 0 5px 0; font-size: 1.6rem; font-weight: 900">${getVal(a, 'nome')}</h1>
             <div style="margin-bottom: 25px">
-                <span class="info-pill">🎂 ${getVal(a, 'nascimento')} (${calcularIdade(getVal(a, 'nascimento'))})</span>
+                <span class="info-pill">🎂 ${getVal(a, 'nascimento')}</span>
                 <span class="info-pill">🏆 ${escalaoFiltro || getVal(a, 'escalão')}</span>
-                <span class="info-pill">🎽 Nº ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span>
+                <span class="info-pill">🎽 Nº ${getVal(a, 'número')}</span>
             </div>
-            <div style="display:flex; gap:15px; max-width: 450px; margin: 0 auto">
-                <div style="flex:1">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; max-width: 500px; margin: 0 auto">
+                <div>
                     <div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')">
                         <span class="stat-val">${totalG}</span>
                         <span class="stat-label">Golos ▼</span>
                     </div>
                     <div id="hist-golos" class="history-panel">${formatHistList(sc, 'golos')}</div>
                 </div>
-                <div style="flex:1">
+                <div>
                     <div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('excl')">
                         <span class="stat-val">${totalE}</span>
                         <span class="stat-label">2 Min ▼</span>
                     </div>
                     <div id="hist-excl" class="history-panel">${formatHistList(sc, 'exclusoes')}</div>
+                </div>
+                <div>
+                    <div class="stat-card" style="background: var(--verde)" onclick="toggleStatHistory('jogos')">
+                        <span class="stat-val">${totalJ}</span>
+                        <span class="stat-label">Jogos ▼</span>
+                    </div>
+                    <div id="hist-jogos" class="history-panel">${formatHistList(sc, 'jogos')}</div>
                 </div>
             </div>
         </div>`;
@@ -489,7 +511,14 @@ function showView(v, p = '') {
     window.scrollTo(0,0);
 }
 
-function toggleStatHistory(type) { const el = document.getElementById(`hist-${type}`); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
+function toggleStatHistory(type) { 
+    const el = document.getElementById(`hist-${type}`); 
+    const isVisible = el.style.display === 'block';
+    // Fecha outros painéis abertos para ficar limpo
+    document.querySelectorAll('.history-panel').forEach(p => p.style.display = 'none');
+    el.style.display = isVisible ? 'none' : 'block'; 
+}
+
 function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
 function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }
 function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
