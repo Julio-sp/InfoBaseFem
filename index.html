@@ -8,7 +8,7 @@
     <style>
         :root {
             --verde: #16a34a;
-            --verde-dark: #14532d;
+            --verde-light: #dcfce7;
             --vermelho: #ef4444;
             --azul: #1e40af;
             --eac-dark: #0f172a;
@@ -16,502 +16,451 @@
             --text-main: #1e293b;
             --text-muted: #64748b;
             --white: #ffffff;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; font-family: 'Lexend', sans-serif; background-color: var(--eac-light); color: var(--text-main); line-height: 1.5; }
 
-        body {
-            margin: 0;
-            font-family: 'Lexend', sans-serif;
-            background-color: var(--eac-light);
-            color: var(--text-main);
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
+        /* LOADING SCREEN */
+        #loader { position: fixed; inset: 0; background: var(--white); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--azul); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- LOADER ESTRUTURADO --- */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background: var(--eac-light);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.5s ease;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #cbd5e1;
-            border-top: 5px solid var(--azul);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* TOP NAVIGATION */
+        .top-bar { position: fixed; top: 0; width: 100%; height: 75px; background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .menu-icon { font-size: 24px; cursor: pointer; padding: 10px; }
+        .logo-center { height: 45px; cursor: pointer; transition: transform 0.2s; }
+        .logo-center:active { transform: scale(0.95); }
 
-        /* --- NAVEGAÇÃO SUPERIOR --- */
-        .top-bar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 75px;
-            background: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 1000;
-            box-shadow: var(--shadow-sm);
-        }
-        .menu-toggle {
-            font-size: 28px;
-            cursor: pointer;
-            color: var(--eac-dark);
-            padding: 10px;
-        }
-        .logo-top { height: 45px; cursor: pointer; transition: var(--transition); }
-        .logo-top:active { transform: scale(0.95); }
-
-        /* --- SIDEBAR ROBUSTA --- */
-        #sidebar {
-            position: fixed;
-            left: -320px;
-            top: 0;
-            width: 320px;
-            height: 100vh;
-            background: var(--eac-dark);
-            color: var(--white);
-            transition: var(--transition);
-            z-index: 2000;
-            padding-top: 80px;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.2);
-            overflow-y: auto;
-        }
+        /* SIDEBAR */
+        #sidebar { position: fixed; left: -320px; top: 0; width: 300px; height: 100vh; background: var(--eac-dark); color: white; transition: var(--transition); z-index: 2000; overflow-y: auto; padding-top: 20px; }
         #sidebar.active { left: 0; }
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            z-index: 1999;
-        }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
         .sidebar-overlay.active { display: block; }
+        .nav-link { display: flex; align-items: center; padding: 16px 25px; color: #94a3b8; text-decoration: none; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: white; }
+        .submenu { background: #0a101f; display: none; }
+        .submenu.open { display: block; }
+        .sub-link { padding: 12px 25px 12px 55px; font-size: 0.85rem; display: block; color: #64748b; text-decoration: none; }
 
-        .nav-item {
-            display: block;
-            padding: 18px 25px;
-            color: #94a3b8;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            border-left: 4px solid transparent;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-        .nav-item:hover, .nav-item.active {
-            background: #1e293b;
-            color: var(--white);
-            border-left-color: var(--verde);
-        }
-        .submenu { background: #0a101f; max-height: 0; overflow: hidden; transition: var(--transition); }
-        .submenu.open { max-height: 500px; }
-        .submenu .nav-item { padding-left: 50px; font-size: 0.85rem; }
-
-        /* --- CONTAINERS DE CONTEÚDO --- */
-        .container {
-            max-width: 800px;
-            margin: 95px auto 40px auto;
-            padding: 0 20px;
-            display: none;
-            min-height: 80vh;
-        }
-        .container.active { display: block; animation: slideUp 0.5s ease forwards; }
+        /* MAIN LAYOUT */
+        .content { max-width: 850px; margin: 95px auto 50px auto; padding: 0 18px; display: none; }
+        .content.active { display: block; animation: slideUp 0.4s ease-out; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- COMPONENTES DE DESIGN (DNA) --- */
-        .dna-card {
-            background: var(--verde);
-            border-radius: 35px;
-            padding: 50px 20px;
-            text-align: center;
-            margin-bottom: 35px;
-            box-shadow: var(--shadow-md);
-            position: relative;
-            overflow: hidden;
-        }
-        .dna-title { font-size: 4rem; font-weight: 900; line-height: 0.8; letter-spacing: -3px; margin: 5px 0; }
-        .t-white { color: var(--white); }
-        .t-black { color: #000; opacity: 0.8; }
+        /* DASHBOARD CARDS */
+        .hero-banner { background: var(--verde); border-radius: 24px; padding: 40px 20px; text-align: center; margin-bottom: 30px; box-shadow: var(--shadow-lg); color: white; }
+        .hero-text { font-size: 3rem; font-weight: 900; line-height: 1; letter-spacing: -2px; text-transform: uppercase; }
+        .hero-text.black { color: var(--eac-dark); }
 
-        /* --- JOGOS / CARDS --- */
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin: 30px 0 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .section-title::before { content: ''; width: 6px; height: 24px; background: var(--verde); border-radius: 3px; }
+        /* GAME CARDS */
+        .game-card { background: var(--white); border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); }
+        .game-header { padding: 12px 20px; background: #f8fafc; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+        .game-body { padding: 25px 20px; display: flex; align-items: center; justify-content: space-between; text-align: center; }
+        .team-box { flex: 1; }
+        .team-logo { width: 55px; height: 55px; object-fit: contain; margin-bottom: 8px; }
+        .team-name { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; display: block; height: 2.4em; overflow: hidden; }
+        .score-box { flex: 1; font-size: 2.2rem; font-weight: 900; color: var(--eac-dark); position: relative; }
+        .score-detail { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; margin-top: 5px; display: block; }
 
-        .month-header {
-            background: var(--white);
-            padding: 15px 20px;
-            border-radius: 15px;
-            margin: 25px 0 12px 0;
-            font-weight: 800;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: var(--shadow-sm);
-        }
-        .month-content { display: none; }
-        .month-content.open { display: block; }
+        .btn-group { display: flex; padding: 0 15px 15px 15px; gap: 10px; }
+        .action-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-family: inherit; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: 0.2s; text-align: center; text-decoration: none; }
+        .btn-main { background: var(--eac-light); color: var(--eac-dark); }
+        .btn-accent { background: var(--verde-light); color: #166534; }
 
-        .game-card {
-            background: var(--white);
-            border-radius: 24px;
-            margin-bottom: 18px;
-            display: flex;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(0,0,0,0.02);
-            transition: var(--transition);
-        }
-        .game-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        .status-strip { width: 12px; }
-        .game-info { flex: 1; padding: 20px; }
+        /* STATS & LISTS */
+        .list-item { background: var(--white); padding: 12px 18px; border-radius: 16px; margin-bottom: 8px; display: flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .rank { width: 35px; font-weight: 900; font-size: 1.1rem; color: var(--text-muted); }
+        .player-img { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; margin-right: 15px; background: #f1f5f9; }
+        .player-info { flex: 1; }
+        .player-name { font-weight: 700; font-size: 0.95rem; display: block; }
+        .player-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+        .stat-val { font-weight: 900; font-size: 1.3rem; color: var(--azul); }
+
+        /* FILTER PILLS */
+        .pill-container { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0 20px 0; scrollbar-width: none; }
+        .pill-container::-webkit-scrollbar { display: none; }
+        .pill { padding: 10px 22px; background: var(--white); border-radius: 30px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
+        .pill.active { background: var(--azul); color: white; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3); }
+
+        /* SLIDE PANE (DETALHES) */
+        #pane-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2500; display: none; opacity: 0; transition: 0.3s; }
+        #pane-overlay.active { display: block; opacity: 1; }
+        #detail-pane { position: fixed; right: -100%; top: 0; width: 100%; max-width: 500px; height: 100vh; background: var(--eac-light); z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 0; box-shadow: -5px 0 30px rgba(0,0,0,0.1); }
+        #detail-pane.active { right: 0; }
+        .pane-header { padding: 20px; background: var(--white); display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #eee; }
+        .pane-body { padding: 20px; height: calc(100vh - 80px); overflow-y: auto; }
         
-        .meta-line { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; }
-        
-        .scoreboard { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .team-box { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .team-box img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 8px; }
-        .team-box span { font-size: 0.85rem; font-weight: 800; color: var(--eac-dark); }
-        
-        .score-center { text-align: center; min-width: 100px; }
-        .main-score { font-size: 2.2rem; font-weight: 900; letter-spacing: -2px; color: var(--eac-dark); line-height: 1; }
-        .partial-scores { 
-            font-size: 0.7rem; 
-            font-weight: 800; 
-            background: var(--eac-light); 
-            padding: 4px 12px; 
-            border-radius: 10px; 
-            color: var(--text-muted);
-            margin-top: 8px;
-            display: inline-block;
-        }
+        .two-min-badge { background: var(--eac-dark); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: 900; vertical-align: middle; margin-left: 5px; }
 
-        .actions { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { 
-            flex: 1; padding: 12px; border: none; border-radius: 12px; 
-            font-weight: 800; font-size: 0.75rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            text-decoration: none; transition: var(--transition);
+        @media (max-width: 480px) {
+            .hero-text { font-size: 2.2rem; }
+            .score-box { font-size: 1.8rem; }
         }
-        .btn-info { background: var(--eac-light); color: var(--text-main); }
-        .btn-map { background: #dcfce7; color: var(--verde-dark); }
-
-        /* --- FILTROS --- */
-        .filter-bar { display: flex; gap: 8px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
-        .filter-bar::-webkit-scrollbar { display: none; }
-        .pill { 
-            padding: 10px 22px; background: var(--white); border-radius: 20px; 
-            white-space: nowrap; font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
-            cursor: pointer; transition: var(--transition); border: 1px solid transparent;
-        }
-        .pill.active { background: var(--azul); color: var(--white); }
-
-        /* --- DETAIL PANE --- */
-        #detailPane {
-            position: fixed; inset: 0; background: var(--white);
-            z-index: 3000; transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-y: auto;
-        }
-        #detailPane.open { transform: translateX(0); }
-        .detail-nav { 
-            padding: 20px; border-bottom: 1px solid var(--eac-light); 
-            display: flex; align-items: center; font-weight: 800; 
-            position: sticky; top: 0; background: var(--white); z-index: 5;
-        }
-
     </style>
 </head>
 <body>
 
 <div id="loader">
     <div class="spinner"></div>
-    <p style="margin-top:20px; font-weight:800; color:var(--eac-dark)">A CARREGAR SISTEMA...</p>
+    <p style="margin-top:20px; font-weight:800; letter-spacing: 1px;">CARREGANDO ADN...</p>
 </div>
 
 <div class="top-bar">
-    <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
-    <img src="logo.png" class="logo-top" onclick="navigate('home')" onerror="this.style.display='none'">
-    <div style="width:48px"></div>
+    <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+    <img src="https://i.ibb.co/v3m9vXQ/logo-eac.png" class="logo-center" onclick="navigate('home')">
+    <div style="width:40px"></div>
 </div>
 
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
-    <div onclick="navigate('home')" class="nav-item">🏠 PÁGINA INICIAL</div>
-    <div onclick="navigate('artilharia')" class="nav-item">⚽ MELHORES MARCADORAS</div>
-    <div onclick="navigate('jogos')" class="nav-item">📅 RESULTADOS E CALENDÁRIO</div>
-    <div onclick="toggleSub('sub-atleta')" class="nav-item">👥 NOSSAS ATLETAS ▼</div>
-    <div id="sub-atleta" class="submenu">
-        <div onclick="navigate('atletas', 'SUB16')" class="nav-item">🔹 ESCALÃO SUB16</div>
-        <div onclick="navigate('atletas', 'SUB18')" class="nav-item">🔹 ESCALÃO SUB18</div>
+    <div onclick="navigate('home')" class="nav-link">🏠 DASHBOARD</div>
+    <div onclick="navigate('artilharia')" class="nav-link">⚽ MELHORES MARCADORAS</div>
+    <div onclick="navigate('jogos')" class="nav-link">📅 CALENDÁRIO & RESULTADOS</div>
+    
+    <div class="nav-link" onclick="toggleSub('sub-at')">👥 EQUIPAS ▼</div>
+    <div id="sub-at" class="submenu">
+        <div onclick="navigate('atletas', 'SUB16')" class="sub-link">⚡ SUB16 FEMININAS</div>
+        <div onclick="navigate('atletas', 'SUB18')" class="sub-link">🔥 SUB18 FEMININAS</div>
     </div>
-    <div onclick="navigate('treinos')" class="nav-item">📍 LOCAIS DE TREINO</div>
-    <div onclick="toggleSub('sub-niver')" class="nav-item">🎂 ANIVERSARIANTES ▼</div>
-    <div id="sub-niver" class="submenu"></div>
+
+    <div class="nav-link" onclick="toggleSub('sub-niv')">🎂 ANIVERSARIANTES ▼</div>
+    <div id="sub-niv" class="submenu" id="aniv-list-menu">
+        <!-- Gerado via JS -->
+    </div>
 </div>
 
-<!-- HOME -->
-<div id="view-home" class="container active">
-    <div class="dna-card">
-        <div class="dna-title t-white">HONRA</div>
-        <div class="dna-title t-black">RAÇA</div>
-        <div class="dna-title t-white">PAIXÃO</div>
+<!-- CONTAINER: HOME -->
+<div id="home" class="content active">
+    <div class="hero-banner">
+        <div class="hero-text">Honra</div>
+        <div class="hero-text black">Raça</div>
+        <div class="hero-text">Paixão</div>
     </div>
-    <h3 class="section-title">PRÓXIMOS DESAFIOS</h3>
-    <div id="next-games-list"></div>
+    <h3 style="font-weight:900; margin: 30px 0 20px 0; display: flex; align-items: center; gap: 10px;">
+        <span style="width:12px; height:12px; background:var(--azul); border-radius:50%; display:inline-block"></span>
+        PRÓXIMOS DESAFIOS
+    </h3>
+    <div id="next-games-container"></div>
 </div>
 
-<!-- GENERIC VIEW -->
-<div id="view-main" class="container">
-    <div id="dynamic-filters" class="filter-bar"></div>
-    <div id="dynamic-content"></div>
+<!-- CONTAINER: GENÉRICO PARA LISTAS -->
+<div id="view-template" class="content">
+    <div id="view-header"></div>
+    <div id="view-filters" class="pill-container"></div>
+    <div id="view-list"></div>
 </div>
 
-<!-- DETALHES -->
-<div id="detailPane">
-    <div class="detail-nav" onclick="closeDetails()">
-        <span style="font-size:24px; margin-right:15px">←</span> VOLTAR
+<!-- PAINEL DE DETALHES (FICHA DE JOGO) -->
+<div id="pane-overlay" onclick="closeDetails()"></div>
+<div id="detail-pane">
+    <div class="pane-header">
+        <button onclick="closeDetails()" style="background:none; border:none; font-size:24px; cursor:pointer">✕</button>
+        <span id="pane-title" style="font-weight:900; text-transform:uppercase">Ficha de Jogo</span>
     </div>
-    <div id="detailContent"></div>
+    <div class="pane-body" id="pane-body"></div>
 </div>
 
 <script>
-/* CONFIGURAÇÃO E BASE DE DADOS */
-const SPREADSHEET_ID = "1qkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw"; // ID extraído do link
-const GIDS = {
-    atletas: "0",
-    jogos: "1340468570",
-    scout: "1307801054"
+// --- CONFIGURAÇÃO E BASE DE DADOS ---
+const SHEETS_BASE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?output=csv";
+const GIDS = { ATLETAS: "0", JOGOS: "1340468570", SCOUT: "1307801054" };
+
+let DATA = { atletas: [], jogos: [], scout: [] };
+
+// Utilitário para ler colunas de forma segura (ignora maiúsculas/minúsculas e espaços)
+const getData = (obj, field) => {
+    const key = Object.keys(obj).find(k => k.toLowerCase().replace(/\s/g, '') === field.toLowerCase().replace(/\s/g, ''));
+    return key ? obj[key].toString().trim() : "";
 };
 
-let APP_DATA = { atletas: [], jogos: [], scout: [] };
-
-/* CORE ENGINE */
-const helpers = {
-    clean: (str) => str ? str.toString().trim() : "",
-    normalize: (str) => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
-    parseDate: (str) => {
-        if(!str || !str.includes('/')) return new Date(2000, 0, 1);
-        const [d, m, y] = str.split('/');
-        return new Date(y, m - 1, d);
-    },
-    getVal: (obj, key) => {
-        const target = helpers.normalize(key);
-        const actualKey = Object.keys(obj).find(k => helpers.normalize(k) === target);
-        return actualKey ? obj[actualKey] : "";
-    }
+const parseDate = (dStr) => {
+    if(!dStr || !dStr.includes('/')) return new Date(2000, 0, 1);
+    const [d, m, y] = dStr.split('/');
+    return new Date(y, m - 1, d);
 };
 
-async function fetchSheet(gid) {
-    const url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=${gid}&single=true&output=csv`;
-    try {
-        const response = await fetch(url + "&cache=" + Date.now());
-        const data = await response.text();
-        const rows = data.split('\n').filter(r => r.trim() !== "");
-        const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
-        
-        return rows.slice(1).map(row => {
-            const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            let item = {};
-            headers.forEach((h, i) => item[h] = values[i]?.replace(/"/g, '').trim() || "");
-            return item;
-        });
-    } catch (e) { 
-        console.error("Erro ao carregar GID " + gid, e);
-        return []; 
-    }
-}
-
+// --- CORE: CARREGAMENTO ---
 async function init() {
-    [APP_DATA.atletas, APP_DATA.jogos, APP_DATA.scout] = await Promise.all([
-        fetchSheet(GIDS.atletas),
-        fetchSheet(GIDS.jogos),
-        fetchSheet(GIDS.scout)
-    ]);
-    
-    document.getElementById('loader').style.opacity = '0';
-    setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
-    
-    renderHome();
-    renderBirthdayMenu();
+    try {
+        const fetchSheet = async (gid) => {
+            const res = await fetch(`${SHEETS_BASE}&gid=${gid}&t=${Date.now()}`);
+            const text = await res.text();
+            const rows = text.split('\n').filter(r => r.trim() !== "");
+            const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            return rows.slice(1).map(row => {
+                const cells = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                let item = {};
+                headers.forEach((h, i) => item[h] = cells[i]?.replace(/"/g, '').trim() || "");
+                return item;
+            });
+        };
+
+        [DATA.atletas, DATA.jogos, DATA.scout] = await Promise.all([
+            fetchSheet(GIDS.ATLETAS),
+            fetchSheet(GIDS.JOGOS),
+            fetchSheet(GIDS.SCOUT)
+        ]);
+
+        renderHome();
+        setupAnivMenu();
+        document.getElementById('loader').style.display = 'none';
+    } catch (err) {
+        console.error(err);
+        alert("Erro na ligação ao servidor de dados. Verifica a tua internet.");
+    }
 }
 
-/* NAVEGAÇÃO */
-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('active');
-    document.querySelector('.sidebar-overlay').classList.toggle('active');
+// --- NAVEGAÇÃO ---
+function navigate(view, param = '') {
+    toggleSidebar(false);
+    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    
+    if (view === 'home') {
+        document.getElementById('home').classList.add('active');
+        renderHome();
+    } else {
+        const vt = document.getElementById('view-template');
+        vt.classList.add('active');
+        window.scrollTo(0,0);
+        
+        if (view === 'artilharia') renderArtilharia('GERAL');
+        if (view === 'jogos') renderJogos('TODOS');
+        if (view === 'atletas') renderAtletas(param);
+    }
+}
+
+function toggleSidebar(force) {
+    const sb = document.getElementById('sidebar');
+    const ov = document.querySelector('.sidebar-overlay');
+    const state = force !== undefined ? force : !sb.classList.contains('active');
+    sb.classList.toggle('active', state);
+    ov.classList.toggle('active', state);
 }
 
 function toggleSub(id) {
     document.getElementById(id).classList.toggle('open');
 }
 
-function navigate(view, param = '') {
-    toggleSidebar();
-    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    
-    if(view === 'home') {
-        document.getElementById('view-home').classList.add('active');
-        renderHome();
-    } else {
-        document.getElementById('view-main').classList.add('active');
-        if(view === 'jogos') renderJogosList('TODOS');
-        if(view === 'artilharia') renderTopScorers('GERAL');
-        if(view === 'atletas') renderSquad(param);
-        if(view === 'treinos') renderTraining();
-    }
-    window.scrollTo(0,0);
-}
+// --- RENDERIZADORES ---
 
-/* RENDERS ESPECÍFICOS */
 function renderHome() {
-    const hoje = new Date(); hoje.setHours(0,0,0,0);
-    const proximos = APP_DATA.jogos
-        .filter(j => helpers.parseDate(helpers.getVal(j, 'data')) >= hoje && !helpers.getVal(j, 'gols_eac'))
-        .sort((a,b) => helpers.parseDate(helpers.getVal(a, 'data')) - helpers.parseDate(helpers.getVal(b, 'data')))
-        .slice(0, 3);
+    const agora = new Date();
+    agora.setHours(0,0,0,0);
 
-    const container = document.getElementById('next-games-list');
-    if(!proximos.length) {
-        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:40px">Sem jogos agendados para breve.</p>`;
-        return;
-    }
-    container.innerHTML = proximos.map(j => buildGameCard(j)).join('');
-}
+    // Filtrar os próximos 2 jogos que ainda não têm resultado
+    const proximos = DATA.jogos
+        .filter(j => {
+            const d = parseDate(getData(j, 'data'));
+            return d >= agora && getData(j, 'gols_eac') === "";
+        })
+        .sort((a, b) => parseDate(getData(a, 'data')) - parseDate(getData(b, 'data')))
+        .slice(0, 2); // Garantir exatamente 2 jogos
 
-function renderJogosList(filtro) {
-    const area = document.getElementById('dynamic-filters');
-    area.innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(f => `
-        <div class="pill ${filtro === f ? 'active' : ''}" onclick="renderJogosList('${f}')">${f}</div>
-    `).join('');
-
-    let filtrados = APP_DATA.jogos;
-    if(filtro !== 'TODOS') {
-        filtrados = filtrados.filter(j => helpers.normalize(helpers.getVal(j, 'escalao')) === helpers.normalize(filtro));
-    }
-    
-    filtrados.sort((a,b) => helpers.parseDate(helpers.getVal(b, 'data')) - helpers.parseDate(helpers.getVal(a, 'data')));
-
-    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-    let html = "", lastMonth = "", mIdx = 0;
-
-    filtrados.forEach(j => {
-        const d = helpers.parseDate(helpers.getVal(j, 'data'));
-        const mRef = `${meses[d.getMonth()]} ${d.getFullYear()}`;
-        
-        if(mRef !== lastMonth) {
-            if(lastMonth !== "") html += `</div>`;
-            mIdx++;
-            html += `<div class="month-header" onclick="document.getElementById('m-${mIdx}').classList.toggle('open')">
-                        ${mRef.toUpperCase()} <span>▼</span>
-                     </div><div id="m-${mIdx}" class="month-content">`;
-            lastMonth = mRef;
-        }
-        html += buildGameCard(j);
-    });
-    document.getElementById('dynamic-content').innerHTML = html + "</div>";
+    document.getElementById('next-games-container').innerHTML = proximos.length 
+        ? proximos.map(j => buildGameCard(j)).join('') 
+        : `<div style="text-align:center; padding:40px; color:var(--text-muted)">Nenhum jogo agendado para breve.</div>`;
 }
 
 function buildGameCard(j) {
-    const gEac = helpers.getVal(j, 'gols_eac');
-    const gAdv = helpers.getVal(j, 'gols_adv');
-    const isFora = helpers.normalize(helpers.getVal(j, 'local')).includes('fora');
-    const adversario = helpers.getVal(j, 'adversário');
-    const logoAdv = helpers.getVal(j, 'logo_adversario');
-    
-    // PEGANDO AS COLUNAS J E K ESPECIFICADAS
-    const res1 = helpers.getVal(j, 'res_1p');
-    const res2 = helpers.getVal(j, 'res_2p');
+    const id = getData(j, 'id');
+    const gEac = getData(j, 'gols_eac');
+    const gAdv = getData(j, 'gols_adv');
+    const advNome = getData(j, 'adversário');
+    const advLogo = getData(j, 'logo_adversario');
+    const escalao = getData(j, 'escalao');
+    const dataJ = getData(j, 'data');
+    const local = getData(j, 'local').toLowerCase();
+    const isFora = local.includes('fora');
+    const maps = getData(j, 'Link_maps');
 
-    let color = "var(--text-muted)";
+    let statusColor = "#cbd5e1";
     if(gEac !== "") {
-        const eac = parseInt(gEac); const adv = parseInt(gAdv);
-        color = (eac > adv) ? "var(--verde)" : (eac < adv) ? "var(--vermelho)" : "var(--azul)";
+        const v = parseInt(gEac), d = parseInt(gAdv);
+        statusColor = v > d ? "var(--verde)" : (v < d ? "var(--vermelho)" : "var(--azul)");
     }
 
     return `
-        <div class="game-card">
-            <div class="status-strip" style="background:${color}"></div>
-            <div class="game-info">
-                <div class="meta-line">
-                    <span>${helpers.getVal(j, 'data')} • ${helpers.getVal(j, 'hora')}</span>
-                    <span>${helpers.getVal(j, 'escalao')}</span>
-                </div>
-                <div class="scoreboard">
-                    <div class="team-box">
-                        <img src="${isFora ? logoAdv : 'logo.png'}" onerror="this.src='logo.png'">
-                        <span>${isFora ? adversario : 'EAC'}</span>
-                    </div>
-                    <div class="score-center">
-                        <div class="main-score">${gEac === "" ? "VS" : (isFora ? gAdv+'-'+gEac : gEac+'-'+gAdv)}</div>
-                        ${gEac !== "" && (res1 || res2) ? `<div class="partial-scores">${res1 || '0-0'} | ${res2 || '0-0'}</div>` : ''}
-                    </div>
-                    <div class="team-box">
-                        <img src="${!isFora ? logoAdv : 'logo.png'}" onerror="this.src='logo.png'">
-                        <span>${!isFora ? adversario : 'EAC'}</span>
-                    </div>
-                </div>
-                <div class="actions">
-                    ${gEac !== "" ? `<button class="btn btn-info" onclick="openMatchDetails('${helpers.getVal(j, 'id')}')">FICHA DE JOGO</button>` : ''}
-                    ${helpers.getVal(j, 'Link_maps') ? `<a href="${helpers.getVal(j, 'Link_maps')}" target="_blank" class="btn btn-map">📍 LOCAL</a>` : ''}
-                </div>
+    <div class="game-card">
+        <div class="game-header">
+            <span>${dataJ}</span>
+            <span style="color:var(--azul)">${escalao}</span>
+        </div>
+        <div class="game-body">
+            <div class="team-box">
+                <img src="${isFora ? advLogo : 'https://i.ibb.co/v3m9vXQ/logo-eac.png'}" class="team-logo" onerror="this.src='https://i.ibb.co/v3m9vXQ/logo-eac.png'">
+                <span class="team-name">${isFora ? advNome : 'EAC'}</span>
+            </div>
+            <div class="score-box">
+                ${gEac === "" ? "VS" : (isFora ? `${gAdv} - ${gEac}` : `${gEac} - ${gAdv}`)}
+                <span class="score-detail">${getData(j, 'res_1p') || '0-0'} (Int.)</span>
+            </div>
+            <div class="team-box">
+                <img src="${!isFora ? advLogo : 'https://i.ibb.co/v3m9vXQ/logo-eac.png'}" class="team-logo" onerror="this.src='https://i.ibb.co/v3m9vXQ/logo-eac.png'">
+                <span class="team-name">${!isFora ? advNome : 'EAC'}</span>
             </div>
         </div>
-    `;
+        <div class="btn-group">
+            ${gEac !== "" ? `<button class="action-btn btn-main" onclick="openFicha('${id}')">VER ESTATÍSTICAS</button>` : ''}
+            ${maps ? `<a href="${maps}" target="_blank" class="action-btn btn-accent">📍 VER LOCAL</a>` : ''}
+        </div>
+        <div style="height:4px; width:100%; background:${statusColor}"></div>
+    </div>`;
 }
 
-function openMatchDetails(id) {
-    const j = APP_DATA.jogos.find(x => helpers.getVal(x, 'id') == id);
-    const stats = APP_DATA.scout.filter(x => helpers.getVal(x, 'jogo_id') == id);
+function renderArtilharia(filtro) {
+    const container = document.getElementById('view-filters');
+    container.innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(f => 
+        `<div class="pill ${filtro === f ? 'active' : ''}" onclick="renderArtilharia('${f}')">${f}</div>`
+    ).join('');
+
+    // Cálculo robusto de golos
+    let scorers = {};
     
-    document.getElementById('detailContent').innerHTML = `
-        <div style="padding:25px">
-            <div style="text-align:center; margin-bottom:30px">
-                <h1 style="margin:0; font-weight:900; color:var(--eac-dark)">${helpers.getVal(j, 'adversário')}</h1>
-                <p style="color:var(--text-muted); font-weight:700">${helpers.getVal(j, 'data')} • ${helpers.getVal(j, 'escalao')}</p>
+    // Inicializar com todas as atletas (para aparecerem mesmo com 0 golos se quisermos, mas aqui filtramos depois)
+    DATA.atletas.forEach(a => {
+        scorers[getData(a, 'nome')] = { 
+            nome: getData(a, 'nome'), 
+            foto: getData(a, 'foto'), 
+            num: getData(a, 'número'), 
+            total: 0 
+        };
+    });
+
+    DATA.scout.forEach(s => {
+        const jogoId = getData(s, 'jogo_id');
+        const jogo = DATA.jogos.find(jg => getData(jg, 'id') === jogoId);
+        
+        if (jogo && (filtro === 'GERAL' || getData(jogo, 'escalao').toUpperCase() === filtro)) {
+            const nomeAtleta = getData(s, 'nome');
+            const golos = parseInt(getData(s, 'golos')) || 0;
+            if(scorers[nomeAtleta]) scorers[nomeAtleta].total += golos;
+        }
+    });
+
+    const ranking = Object.values(scorers).filter(x => x.total > 0).sort((a,b) => b.total - a.total);
+
+    document.getElementById('view-list').innerHTML = `
+        <h2 style="margin-top:0">Melhores Marcadoras</h2>
+        ${ranking.map((p, i) => `
+            <div class="list-item">
+                <div class="rank">${i+1}º</div>
+                <img src="${p.foto}" class="player-img" onerror="this.src='https://i.ibb.co/v3m9vXQ/logo-eac.png'">
+                <div class="player-info">
+                    <span class="player-name">${p.nome}</span>
+                    <span class="player-sub">Nº ${p.num} • Estarreja AC</span>
+                </div>
+                <div class="stat-val">${p.total}</div>
             </div>
-            
-            <h3 class="section-title">DESEMPENHO INDIVIDUAL</h3>
-            <div style="background:var(--eac-light); border-radius:20px; overflow:hidden">
-                ${stats.length ? stats.map(s => `
-                    <div style="display:flex; justify-content:space-between; padding:18px 25px; border-bottom:1px solid #e2e8f0; background:white; margin-bottom:2px">
-                        <span style="font-weight:800">${helpers.getVal(s, 'nome')}</span>
-                        <span style="font-weight:900; color:var(--azul)">${helpers.getVal(s, 'golos')} GOLOS</span>
-                    </div>
-                `).join('') : '<p style="padding:30px; text-align:center; color:var(--text-muted)">Sem dados de golos disponíveis.</p>'}
-            </div>
-        </div>
-    `;
-    document.getElementById('detailPane').classList.add('open');
+        `).join('')}`;
 }
 
-function closeDetails() { document.getElementById('detailPane').classList.remove('open'); }
+function renderJogos(filtro) {
+    const container = document.getElementById('view-filters');
+    container.innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(f => 
+        `<div class="pill ${filtro === f ? 'active' : ''}" onclick="renderJogos('${f}')">${f}</div>`
+    ).join('');
 
-/* INICIALIZAÇÃO */
+    let filtrados = DATA.jogos;
+    if(filtro !== 'TODOS') filtrados = filtrados.filter(j => getData(j, 'escalao').toUpperCase() === filtro);
+    
+    // Ordenar por data (mais recentes primeiro)
+    filtrados.sort((a,b) => parseDate(getData(b, 'data')) - parseDate(getData(a, 'data')));
+
+    document.getElementById('view-list').innerHTML = `<h2>Calendário e Resultados</h2>` + filtrados.map(j => buildGameCard(j)).join('');
+}
+
+function renderAtletas(esc) {
+    const lista = DATA.atletas.filter(a => getData(a, 'escalão').toUpperCase() === esc.toUpperCase());
+    document.getElementById('view-filters').innerHTML = ''; // Limpar filtros
+    document.getElementById('view-list').innerHTML = `
+        <h2 style="margin-bottom:25px">Plantel ${esc}</h2>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            ${lista.map(a => `
+                <div class="list-item" style="flex-direction:column; text-align:center; padding:20px;">
+                    <img src="${getData(a, 'foto')}" style="width:80px; height:80px; border-radius:50%; margin-bottom:10px; object-fit:cover" onerror="this.src='https://i.ibb.co/v3m9vXQ/logo-eac.png'">
+                    <span class="player-name">${getData(a, 'nome')}</span>
+                    <span class="player-sub">Nº ${getData(a, 'número')}</span>
+                </div>
+            `).join('')}
+        </div>`;
+}
+
+// --- ANIVERSÁRIOS ---
+function setupAnivMenu() {
+    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    const menu = document.getElementById('sub-niv');
+    menu.innerHTML = meses.map((m, i) => `<div class="sub-link" onclick="renderAniversarios(${i+1}, '${m}')">${m}</div>`).join('');
+}
+
+function renderAniversarios(mes, mesNome) {
+    navigate('custom');
+    const anivs = DATA.atletas.filter(a => {
+        const nasc = getData(a, 'nascimento');
+        return nasc && parseInt(nasc.split('/')[1]) === mes;
+    }).sort((a, b) => parseInt(getData(a, 'nascimento').split('/')[0]) - parseInt(getData(b, 'nascimento').split('/')[0]));
+
+    document.getElementById('view-list').innerHTML = `
+        <h2>Aniversários de ${mesNome} 🎂</h2>
+        ${anivs.length ? anivs.map(a => `
+            <div class="list-item">
+                <div class="rank" style="width:60px">${getData(a, 'nascimento').split('/')[0]}</div>
+                <img src="${getData(a, 'foto')}" class="player-img" onerror="this.src='https://i.ibb.co/v3m9vXQ/logo-eac.png'">
+                <div class="player-info">
+                    <span class="player-name">${getData(a, 'nome')}</span>
+                    <span class="player-sub">${getData(a, 'escalão')}</span>
+                </div>
+            </div>
+        `).join('') : '<p>Sem aniversariantes este mês.</p>'}`;
+}
+
+// --- PAINEL DE DETALHES ---
+function openFicha(jogoId) {
+    const jogo = DATA.jogos.find(j => getData(j, 'id') === jogoId);
+    const stats = DATA.scout.filter(s => getData(s, 'jogo_id') === jogoId);
+    
+    document.getElementById('pane-title').innerText = `EAC vs ${getData(jogo, 'adversário')}`;
+    
+    let html = `
+        <div style="background:var(--white); padding:20px; border-radius:15px; margin-bottom:20px; text-align:center">
+            <div style="font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:10px">${getData(jogo, 'data')}</div>
+            <div style="font-size:1.5rem; font-weight:900">${getData(jogo, 'gols_eac')} - ${getData(jogo, 'gols_adv')}</div>
+        </div>
+        <h4 style="font-weight:900; margin-bottom:15px">SCOUT INDIVIDUAL</h4>
+    `;
+
+    if(stats.length > 0) {
+        html += stats.map(s => {
+            const golos = parseInt(getData(s, 'golos')) || 0;
+            const doisMin = getData(s, '2_minutos');
+            return `
+                <div class="list-item">
+                    <div class="player-info">
+                        <span class="player-name">${getData(s, 'nome')} ${doisMin ? '<span class="two-min-badge">2 MIN</span>' : ''}</span>
+                    </div>
+                    <div class="stat-val" style="font-size:1.1rem">${golos} GOLOS</div>
+                </div>
+            `;
+        }).join('');
+    } else {
+        html += `<p style="text-align:center; color:var(--text-muted)">Estatísticas ainda não inseridas.</p>`;
+    }
+
+    document.getElementById('pane-body').innerHTML = html;
+    document.getElementById('pane-overlay').classList.add('active');
+    document.getElementById('detail-pane').classList.add('active');
+}
+
+function closeDetails() {
+    document.getElementById('pane-overlay').classList.remove('active');
+    document.getElementById('detail-pane').classList.remove('active');
+}
+
+// Inicializar tudo
 window.onload = init;
-
 </script>
+
 </body>
 </html>
