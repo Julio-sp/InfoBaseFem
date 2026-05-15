@@ -676,14 +676,6 @@ function ativarContadorJogo() {
     // Define a data e hora do jogo (17 de Maio de 2026 às 16:00)
     const dataJogo = new Date("2026-05-17T16:00:00").getTime();
 
-    // Mostra o quadrado do jogo que estava escondido (display: none)
-    const container = document.getElementById("next-game-container");
-    if (container) container.style.display = "block";
-
-    const intervalo = setInterval(() => {
-        const agora = new Date().getTime();
-        const diferenca = dataJogo - agora;
-
         // Se o jogo já começou ou passou, para o relógio
         if (diferenca < 0) {
             clearInterval(intervalo);
