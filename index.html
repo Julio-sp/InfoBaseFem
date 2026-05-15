@@ -99,6 +99,24 @@
         .info-pill { background: #f1f5f9; padding: 10px 15px; border-radius: 12px; font-size: 0.8rem; color: #475569; font-weight: 600; display: inline-block; margin: 5px; }
         
         .treino-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border-left: 6px solid var(--azul); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    /* Animação para o botão de Jogo a Decorrer */
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+    70% { transform: scale(0.95); box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+    display: inline-block;
+    background: var(--verde);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
     </style></head><body><div class="top-bar">
     <div onclick="toggleMenu()" style="font-size:26px; cursor:pointer; color: var(--eac-dark)">☰</div>
     <img src="logo.png" style="height:42px" onclick="showView('home')">
@@ -130,9 +148,38 @@
     </div></div><div id="home" class="container active">
     <div class="adn-container">
     <div class="adn-word w-black">FOCO</div>
-    <div class="adn-word w-white">UNIÃO</div>
-    <div class="adn-word w-black">COMPROMISSO</div>
+    <div class="adn-word w-white">COMPROMISSO</div>
+    <div class="adn-word w-black">UNIÃO</div>
 </div>
+        <!-- Seção do Próximo Jogo -->
+<div id="next-game-container" style="display: none; margin: 20px; padding: 20px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-left: 8px solid var(--verde);">
+    <div style="text-align: center;">
+        <span style="color: var(--verde); font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Próximo Desafio</span>
+        <h2 id="game-teams" style="margin: 10px 0; font-size: 1.2rem; font-weight: 900;">EAC vs AD VACARIÇA</h2>
+        
+        <!-- O CONTADOR -->
+        <div id="countdown" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;">
+            <div class="time-box"><span id="days">00</span><small>Dias</small></div>
+            <div class="time-box"><span id="hours">00</span><small>Horas</small></div>
+            <div class="time-box"><span id="mins">00</span><small>Min</small></div>
+        </div>
+
+        <div style="background: #f8fafc; padding: 10px; border-radius: 12px; margin-top: 10px;">
+            <p style="margin: 0; font-size: 0.85rem; font-weight: 700;">📅 Domingo, 16:00h</p>
+            <p style="margin: 0; font-size: 0.75rem; color: #64748b;">Pavilhão Municipal de Estarreja</p>
+        </div>
+
+        <button onclick="showView('convocados')" style="margin-top: 15px; width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer;">
+            VER CONVOCATÓRIA
+        </button>
+    </div>
+</div>
+
+<style>
+    .time-box { display: flex; flex-direction: column; align-items: center; background: var(--eac-dark); color: white; padding: 10px; border-radius: 10px; min-width: 60px; }
+    .time-box span { font-size: 1.2rem; font-weight: 900; }
+    .time-box small { font-size: 0.5rem; text-transform: uppercase; opacity: 0.7; }
+</style>
     <div id="homeNext">
         <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
             <span style="width: 5px; height: 25px; background: var(--verde); display: block; border-radius: 10px"></span>
