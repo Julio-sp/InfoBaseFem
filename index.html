@@ -250,9 +250,12 @@
     } catch (e) {
         console.error("Erro no carregamento:", e);
     }
-}function buildConvocatoriaList(idJogo) {
+}
+
+function buildConvocatoriaList(idJogo) {
     const convocadasRaw = DB.convocados.filter(c => getVal(c, 'id_jogo') == idJogo);
     if (convocadasRaw.length === 0) return "";
+    
     let listaFinal = convocadasRaw.map(c => {
         const info = DB.atletas.length > 0 ? DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome'))) : null;
         return {
@@ -260,19 +263,24 @@
             num: info ? parseInt(getVal(info, 'número')) : 999
         };
     });
+    
     listaFinal.sort((a, b) => a.num - b.num);
+    
     const itemsHTML = listaFinal.map(a => `
         <div class="conv-item">
             <span class="conv-num">${a.num === 999 ? '?' : a.num}</span>
             <span class="conv-nome">${a.nome}</span>
         </div>
     `).join('');
+    
     return `
         <div class="conv-container">
             <span class="conv-title">📋 Convocadas</span>
             <div class="conv-list">${itemsHTML}</div>
         </div>`;
-}function renderJogos(filtro) {
+}
+
+function renderJogos(filtro) {
     document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
     let lista = (filtro === 'TODOS') ? [...DB.jogos] : DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
@@ -320,7 +328,9 @@
     });
     if(html !== "") html += `</div>`;
     document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
-}function toggleMonth(id) {
+}
+
+function toggleMonth(id) {
     const content = document.getElementById('month-' + id);
     const icon = document.getElementById('icon-' + id);
     if(content.classList.contains('open')) {
@@ -330,7 +340,9 @@
         content.classList.add('open');
         icon.innerText = '▲';
     }
-}function openJogo(id) {
+}
+
+function openJogo(id) {
     const j = DB.jogos.find(x => getVal(x, 'id') == id);
     const sc = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
     document.getElementById('detailBody').innerHTML = `
@@ -349,17 +361,18 @@
             </div>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
-}function openAtleta(nome, escalaoFiltro = '') {
+}
+
+function openAtleta(nome, escalaoFiltro = '') {
     const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
     let sc = DB.scout.filter(s => {
         const matchesNome = clean(getVal(s, 'nome')) === clean(nome);
         if (!matchesNome) return false;
         if (!escalaoFiltro) return true;
         const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
-        return jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
+        return j && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
     });
 
-    // Ordenar Scout do mais recente para o mais antigo para os históricos
     sc.sort((x, y) => {
         const jogoX = DB.jogos.find(jg => getVal(jg, 'id') == getVal(x, 'jogo_id'));
         const jogoY = DB.jogos.find(jg => getVal(jg, 'id') == getVal(y, 'jogo_id'));
@@ -413,7 +426,9 @@
             </div>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
-}function renderArt(filtro) {
+}
+
+function renderArt(filtro) {
     document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
     let atletasUnicos = new Map();
@@ -437,7 +452,9 @@
             <div style="flex:1"><strong style="display:block">${p.nome}</strong><span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span></div>
             <div style="font-weight:900; font-size:1.3rem">${p.golos}</div>
         </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum golo registado.</p>";
-}function renderParticipacoes(filtro) {
+}
+
+function renderParticipacoes(filtro) {
     document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderParticipacoes('${b}')">${b}</button>`).join('');
     let atletasUnicos = new Map();
@@ -461,16 +478,22 @@
             <div style="flex:1"><strong style="display:block">${p.nome}</strong><span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span></div>
             <div style="font-weight:900; font-size:1.1rem; color:var(--eac-dark)">${p.totalJogos} <span style="font-size:0.7rem; font-weight:600">JOGOS</span></div>
         </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum jogo registado.</p>";
-}function renderTreinos() {
+}
+
+function renderTreinos() {
     document.getElementById('viewContent').innerHTML = `
         <h2 style="font-weight:900; margin-bottom:25px">📍 Locais de Treino</h2>
         <div class="treino-card"><b style="display:block; font-size:1.1rem; color:var(--azul)">🏟️ Pavilhão Municipal de Estarreja</b><p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Quarta: 19:00 - 20:30</p><a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a></div>
         <div class="treino-card" style="border-left-color: var(--verde)"><b style="display:block; font-size:1.1rem; color:var(--verde)">🏟️ Pavilhão Escola Secundária</b><p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Terça e Sexta: 19:00 - 20:30</p><a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a></div>`;
-}function renderAtletas(esc) {
+}
+
+function renderAtletas(esc) {
     const list = DB.atletas.filter(a => clean(getVal(a, 'escalão')) === clean(esc));
     document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:20px; font-weight:900">${esc}</h3>` + 
     list.map(a => `<div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}', '${esc}')"><img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'"><div><strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong><span style="color:#64748b; font-weight:800; font-size: 0.75rem">🎽 ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span></div></div>`).join('');
-}function renderHomeNext() {
+}
+
+function renderHomeNext() {
     if(!DB.jogos.length) return;
     const hoje = new Date();
     const proximos = DB.jogos
@@ -496,10 +519,14 @@
             </div>
         </div>`;
     }).join('') || "<p style='color:#94a3b8; text-align:center;'>Sem jogos marcados.</p>";
-}function renderNiverMenu() { 
+}
+
+function renderNiverMenu() { 
     const mNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     document.getElementById('sub-niver').innerHTML = mNames.map((m, i) => `<a onclick="showNiver(${i+1})">${m}</a>`).join(''); 
-}function showNiver(m) {
+}
+
+function showNiver(m) {
     showView('custom');
     const nomesVistos = new Set();
     const listaUnica = DB.atletas.filter(a => {
@@ -517,7 +544,9 @@
             <div style="flex:1"><b>${getVal(n,'nome')}</b></div>
             <b style="color:var(--verde)">Dia ${getVal(n,'nascimento').split('/')[0]}</b>
         </div>`).join('') || "<p style='text-align:center; padding:20px'>Sem aniversários este mês.</p>");
-}function showView(v, p = '') {
+}
+
+function showView(v, p = '') {
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
     document.getElementById('viewContent').innerHTML = ""; document.getElementById('filterArea').innerHTML = "";
@@ -531,77 +560,62 @@
         else if(v === 'treinos') renderTreinos();
     }
     window.scrollTo(0,0);
-}function toggleStatHistory(type) { 
+}
+
+function toggleStatHistory(type) { 
     const el = document.getElementById(`hist-${type}`); 
     const isVisible = el.style.display === 'block';
     document.querySelectorAll('.history-panel').forEach(p => p.style.display = 'none');
     el.style.display = isVisible ? 'none' : 'block'; 
-}function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }function closeDetail() { document.getElementById('detailPane').classList.remove('open'); } 
-  // --- COLA AQUI A NOVA FUNÇÃO DA PLAYLIST ---
+}
+
+function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }
+function closeDetail() { document.getElementById('detailPane').classList.remove('open'); } 
+
 function showPlaylist() {
     showView('custom'); 
-    
-    // Link oficial da playlist EAC sub18 já configurado para o site
     const playlistEmbedUrl = "https://open.spotify.com/embed/playlist/06ejdeZNzhkBOSN5oaeKX3?utm_source=generator&theme=0";
-
     document.getElementById('viewContent').innerHTML = `
         <div style="text-align: center; animation: fadeIn 0.5s ease; padding: 10px;">
             <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:10px;">🎧 RITMO DE JOGO</h2>
             <p style="color:#64748b; font-size:0.85rem; margin-bottom:20px; font-weight:600;">A vibe oficial das nossas Sub18! 💚🤍</p>
-            
             <div style="border-radius:25px; overflow:hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.2); max-width: 450px; margin: 0 auto; background: #000; min-height: 452px;">
-                <iframe 
-                    style="border-radius:12px" 
-                    src="${playlistEmbedUrl}" 
-                    width="100%" 
-                    height="452" 
-                    frameBorder="0" 
-                    allowfullscreen="" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                    loading="lazy">
-                </iframe>
+                <iframe style="border-radius:12px" src="${playlistEmbedUrl}" width="100%" height="452" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
             </div>
-            
-            <button onclick="showView('home')" style="margin-top: 30px; padding: 12px 25px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem;">
-                ⬅ VOLTAR AO INÍCIO
-            </button>
-        </div>
-    `;
+            <button onclick="showView('home')" style="margin-top: 30px; padding: 12px 25px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem;">⬅ VOLTAR AO INÍCIO</button>
+        </div>`;
 }
-        function showAcademy(tipo) {
+
+function showAcademy(tipo) {
     showView('custom'); 
     const baseURL = "https://raw.githubusercontent.com/Julio-sp/InfoBaseFem/main/fotos/";
-    
     const dados = {
         'prevencao': { tit: 'Prevenção', img: 'Prevencao.jpg', desc: 'Ativação e estabilidade para proteger as tuas articulações.' },
         'recuperacao': { tit: 'Recuperação', img: 'Recuperacao.jpg', desc: 'Protocolos essenciais para estares a 100% no próximo treino.' },
         'treino-invisivel': { tit: 'Treino Invisível', img: 'Treino%20invisivel.jpg', desc: 'O que fazes fora de campo determina o teu nível em campo.' },
         'pos-treino': { tit: 'Pós-Treino', img: 'pos%20treino.jpg', desc: 'Acelera a regeneração muscular após o esforço intenso.' },
         'pre-jogo': { tit: 'Pré-Jogo', img: 'pre%20jogo.jpg', desc: 'Foco total e energia certa para o momento da decisão.' },
-        'intervalo': { tit: 'Intervalo', img: 'intervalo.jpg', desc: 'Recarga rápida para manter a intensidade na 2ª parte.' }, // A vírgula aqui é fundamental!
+        'intervalo': { tit: 'Intervalo', img: 'intervalo.jpg', desc: 'Recarga rápida para manter a intensidade na 2ª parte.' },
         'mentalidade': { tit: 'Mentalidade de Jogo', img: 'Mentalidade.jpg', desc: 'A psicologia por trás dos atos: foco, resiliência e atitude vencedora.' }
     };
-
     const item = dados[tipo];
-
     document.getElementById('viewContent').innerHTML = `
         <div style="text-align: center; animation: fadeIn 0.5s ease; padding: 10px;">
             <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:20px; text-transform: uppercase;">${item.tit}</h2>
-            
             <div style="background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; max-width: 450px; margin: 0 auto;">
                 <img src="${baseURL}${item.img}" style="width: 100%; display: block;" onerror="this.src='logo.png'">
                 <div style="padding: 20px; background: #f8fafc;">
                     <p style="color: #475569; font-weight: 600; line-height: 1.5; margin: 0; font-size: 0.9rem;">${item.desc}</p>
                 </div>
             </div>
-            
-            <button onclick="showView('home')" style="margin-top: 30px; padding: 15px 35px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                ⬅ VOLTAR AO INÍCIO
-            </button>
-        </div>
-    `;
-}function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }
-        const frasesEAC = [
+            <button onclick="showView('home')" style="margin-top: 30px; padding: 15px 35px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">⬅ VOLTAR AO INÍCIO</button>
+        </div>`;
+}
+
+function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }
+
+const frasesEAC = [
     "A vitória começa no treino de hoje! 💪",
     "Honra a camisola em cada lance. Raça, EAC!",
     "O teu esforço de hoje é o teu sucesso de amanhã. 🚀",
@@ -612,60 +626,41 @@ function showPlaylist() {
 
 function mostrarFraseInspiradora() {
     const fraseAleatoria = frasesEAC[Math.floor(Math.random() * frasesEAC.length)];
-    
     const banner = document.createElement('div');
     banner.style = `
-        position: fixed; 
-        bottom: 25px; 
-        left: 20px; 
-        right: 20px; 
-        background: #0f172a; 
-        color: white; 
-        padding: 18px; 
-        border-radius: 18px; 
-        z-index: 3000; 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
-        font-weight: 600; 
-        font-size: 0.85rem; 
-        text-align: center; 
-        border-left: 5px solid #16a34a;
-        animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        position: fixed; bottom: 25px; left: 20px; right: 20px; 
+        background: #0f172a; color: white; padding: 18px; 
+        border-radius: 18px; z-index: 3000; box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+        font-weight: 600; font-size: 0.85rem; text-align: center; 
+        border-left: 5px solid #16a34a; animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex; align-items: center; justify-content: space-between;
     `;
-    
     banner.innerHTML = `
         <span style="flex: 1;">✨ ${fraseAleatoria}</span>
         <span onclick="this.parentElement.remove()" style="margin-left: 15px; cursor: pointer; font-size: 1.2rem; opacity: 0.5;">×</span>
     `;
-
     document.body.appendChild(banner);
 
-    // Desaparece automaticamente após 7 segundos
     setTimeout(() => {
         if (banner && banner.parentElement) {
             banner.style.animation = "fadeOutDown 0.6s ease forwards";
-            setTimeout(() => banner.remove(), 6000);
+            setTimeout(() => banner.remove(), 600);
         }
     }, 7000);
 }
 
-// Criar a animação no CSS dinamicamente
-const style = document.createElement('style');
-style.innerHTML = `
-    @keyframes slideInUp {
-        from { transform: translateY(100px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes fadeOutDown {
-        from { transform: translateY(0); opacity: 1; }
-        to { transform: translateY(100px); opacity: 0; }
-    }
+const styleFrase = document.createElement('style');
+styleFrase.innerHTML = `
+    @keyframes slideInUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes fadeOutDown { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100px); opacity: 0; } }
 `;
-document.head.appendChild(style);window.onload = () => {
-    loadData(); // Carrega os jogos, atletas, etc.
-    
+document.head.appendChild(styleFrase);
+
+window.onload = () => {
+    loadData();
     // Espera 2 segundos após o site abrir para mostrar a frase (dá um efeito mais profissional)
     setTimeout(mostrarFraseInspiradora, 2000); 
-}; </script></body></html>
+};
+</script>
+</body>
+</html>
