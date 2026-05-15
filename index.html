@@ -472,18 +472,28 @@
   // --- COLA AQUI A NOVA FUNÇÃO DA PLAYLIST ---
 function showPlaylist() {
     showView('custom'); 
+    
+    // O segredo está no "/embed/" no meio do link
+    const playlistEmbedUrl = "https://open.spotify.com/embed/playlist/37i9dQZF1DX6aTaZa0K6VA?utm_source=generator&theme=0";
+
     document.getElementById('viewContent').innerHTML = `
         <div style="text-align: center; animation: fadeIn 0.5s ease; padding: 10px;">
             <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:10px;">🎧 RITMO DE JOGO</h2>
             <p style="color:#64748b; font-size:0.85rem; margin-bottom:20px; font-weight:600;">Os hits que dão energia ao nosso aquecimento!</p>
-            <div style="border-radius:25px; overflow:hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.2); max-width: 450px; margin: 0 auto; background: #000;">
+            
+            <div style="border-radius:25px; overflow:hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.2); max-width: 450px; margin: 0 auto; background: #000; min-height: 450px;">
                 <iframe 
                     style="border-radius:12px" 
-                    src="https://open.spotify.com/playlist/37i9dQZF1DX6aTaZa0K6VA?si=bJ5EJNZvQ9ax0xkJD0zhmw&pi=6Ho2rm9aQACgr" 
-                    width="100%" height="450" frameBorder="0" allowfullscreen="" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">
+                    src="${playlistEmbedUrl}" 
+                    width="100%" 
+                    height="450" 
+                    frameBorder="0" 
+                    allowfullscreen="" 
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                    loading="lazy">
                 </iframe>
             </div>
+            
             <button onclick="showView('home')" style="margin-top: 30px; padding: 12px 25px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem;">
                 ⬅ VOLTAR AO INÍCIO
             </button>
