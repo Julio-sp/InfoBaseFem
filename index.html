@@ -102,6 +102,7 @@
     <a onclick="showAcademy('pos-treino')">🔹 PÓS-TREINO</a>
     <a onclick="showAcademy('pre-jogo')">🔹 PRÉ-JOGO</a>
     <a onclick="showAcademy('intervalo')">🔹 INTERVALO</a>
+    <a onclick="showAcademy('intervalo')">⚡ MENTALIDADE DE JOGO</a>
 </div>
     </div></div><div id="home" class="container active">
     <div class="adn-container">
@@ -476,6 +477,7 @@
         'pos-treino': { tit: 'Pós-Treino', img: 'pos%20treino.jpg', desc: 'Acelera a regeneração muscular após o esforço intenso.' },
         'pre-jogo': { tit: 'Pré-Jogo', img: 'pre%20jogo.jpg', desc: 'Foco total e energia certa para o momento da decisão.' },
         'intervalo': { tit: 'Intervalo', img: 'intervalo.jpg', desc: 'Recarga rápida para manter a intensidade na 2ª parte.' }
+        'mentalidade': { tit: 'Mentalidade', img: 'Mentalidade.jpg', desc: 'A Psicologia por trás dos atos' }
     };
     const item = dados[tipo];
     document.getElementById('viewContent').innerHTML = `
@@ -491,4 +493,29 @@
                 ⬅ VOLTAR AO INÍCIO
             </button>
         </div>`;
-}function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }window.onload = loadData;</script></body></html>
+}function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }window.onload = loadData;
+    const frases = [
+    "A vitória começa no treino de hoje!",
+    "Honra a camisola em cada lance.",
+    "O teu esforço de hoje é o teu sucesso de amanhã.",
+    "Unidas somos imbatíveis. Força EAC!",
+    "O talento ganha jogos, o trabalho em equipa ganha campeonatos.",
+    "Foco no processo, o resultado será uma consequência."
+];
+
+function mostrarFrase() {
+    const fraseAleatoria = frases[Math.floor(Math.random() * frases.length)];
+    const banner = document.createElement('div');
+    banner.style = "background: var(--eac-dark); color: white; padding: 15px; text-align: center; font-weight: 800; font-size: 0.85rem; position: fixed; bottom: 20px; left: 20px; right: 20px; border-radius: 15px; z-index: 2000; box-shadow: 0 10px 20px rgba(0,0,0,0.3); animation: slideUp 0.5s ease;";
+    banner.innerHTML = `✨ ${fraseAleatoria} <span onclick="this.parentElement.remove()" style="margin-left:15px; cursor:pointer; opacity:0.6">✕</span>`;
+    document.body.appendChild(banner);
+    
+    // Desaparece sozinho após 6 segundos
+    setTimeout(() => { if(banner) banner.remove(); }, 6000);
+}
+
+// Chamar a função após carregar os dados
+const originalLoadData = window.onload;
+window.onload = () => {
+    loadData();
+    setTimeout(mostrarFrase, 1500); // Aparece 1.5s depois de entrar};</script></body></html>
