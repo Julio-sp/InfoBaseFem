@@ -23,9 +23,31 @@
         .container.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .adn-container { background: var(--verde); padding: 50px 20px; border-radius: 25px; text-align: center; margin-bottom: 35px; }
-        .adn-word { font-size: 4rem; font-weight: 900; line-height: 0.9; letter-spacing: -3px; margin: 5px 0; }
-        .w-white { color: white; } .w-black { color: black; }
+       /* Container mais baixo e elegante */
+.adn-container { 
+    background: var(--verde); 
+    padding: 25px 15px; 
+    border-radius: 25px; 
+    text-align: center; 
+    margin-bottom: 30px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 10px; 
+}
+
+/* Letras menores e mais legíveis */
+.adn-word { 
+    font-size: 1.1rem; 
+    font-weight: 900; 
+    line-height: 1; 
+    letter-spacing: 1px; 
+    margin: 0; 
+    text-transform: uppercase;
+}
+
+.w-white { color: white; } 
+.w-black { color: rgba(0,0,0,0.7); } /* Um preto mais suave para ficar moderno */
 
         .month-divider { padding: 15px 20px; margin: 15px 0 5px 0; background: white; border-radius: 15px; font-weight: 800; color: var(--eac-dark); font-size: 1rem; text-transform: uppercase; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
         .month-content { display: none; margin-bottom: 20px; }
@@ -107,10 +129,10 @@
         <a onclick="showPlaylist()">🎧 RITMO DE JOGO</a>
     </div></div><div id="home" class="container active">
     <div class="adn-container">
-        <div class="adn-word w-black">HONRA</div>
-        <div class="adn-word w-white">RAÇA</div>
-        <div class="adn-word w-black">PAIXÃO</div>
-    </div>
+    <div class="adn-word w-black">FOCO</div>
+    <div class="adn-word w-white">UNIÃO</div>
+    <div class="adn-word w-black">COMPROMISSO</div>
+</div>
     <div id="homeNext">
         <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
             <span style="width: 5px; height: 25px; background: var(--verde); display: block; border-radius: 10px"></span>
@@ -474,7 +496,7 @@ function showPlaylist() {
     showView('custom'); 
     
     // O segredo está no "/embed/" no meio do link
-    const playlistEmbedUrl = "https://open.spotify.com/embed/playlist/37i9dQZF1DX6aTaZa0K6VA?utm_source=generator&theme=0";
+    const playlistEmbedUrl = "https://open.spotify.com/embed/playlist/06ejdeZNzhkBOSN5oaeKX3?utm_source=generator&theme=0";
 
     document.getElementById('viewContent').innerHTML = `
         <div style="text-align: center; animation: fadeIn 0.5s ease; padding: 10px;">
