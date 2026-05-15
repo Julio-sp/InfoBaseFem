@@ -671,8 +671,46 @@ styleFrase.innerHTML = `
 `;
 document.head.appendChild(styleFrase);
 
+// === NOVO: FUNÇÃO DO CONTADOR REGRESSIVO ===
+function ativarContadorJogo() {
+    // Define a data e hora do jogo (17 de Maio de 2026 às 16:00)
+    const dataJogo = new Date("2026-05-17T16:00:00").getTime();
+
+    // Mostra o quadrado do jogo que estava escondido (display: none)
+    const container = document.getElementById("next-game-container");
+    if (container) container.style.display = "block";
+
+    const intervalo = setInterval(() => {
+        const agora = new Date().getTime();
+        const diferenca = dataJogo - agora;
+
+        // Se o jogo já começou ou passou, para o relógio
+        if (diferenca < 0) {
+            clearInterval(intervalo);
+            const countdownEl = document.getElementById("countdown");
+            if (countdownEl) {
+                countdownEl.innerHTML = "<span style='color: var(--verde); font-weight: bold; font-size: 1.1rem;'>⏱️ O jogo já começou!</span>";
+            }
+            return;
+        }
+
+        // Cálculos do tempo restante
+        const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+
+        // Atualiza os números no ecrã (acrescenta o 0 se for menor que 10)
+        if (document.getElementById("days")) document.getElementById("days").innerText = dias.toString().padStart(2, '0');
+        if (document.getElementById("hours")) document.getElementById("hours").innerText = horas.toString().padStart(2, '0');
+        if (document.getElementById("mins")) document.getElementById("mins").innerText = minutos.toString().padStart(2, '0');
+    }, 1000);
+}
+
+// === O TEU CORAÇÃO DO SITE (ATUALIZADO) ===
 window.onload = () => {
     loadData();
+    ativarContadorJogo(); // <-- NOVO: Liga o contador assim que a página abre!
+    
     // Espera 2 segundos após o site abrir para mostrar a frase (dá um efeito mais profissional)
     setTimeout(mostrarFraseInspiradora, 2000); 
 };
