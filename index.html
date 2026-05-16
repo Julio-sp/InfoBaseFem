@@ -580,21 +580,57 @@ function showNiver(m) {
 }
 
 function showView(v, p = '') {
+    // 1. Fecha o menu lateral caso esteja aberto em telemóveis
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
+    
+    // 2. ESCONDE ABSOLUTAMENTE TUDO primeiro para limpar o ecrã
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    document.getElementById('viewContent').innerHTML = ""; 
-    document.getElementById('filterArea').innerHTML = "";
+    
+    // Se tiveres contentores principais com outras classes ou IDs específicos para a Home,
+    // garantimos que a home e os seus blocos ficam completamente escondidos:
+    if(document.getElementById('home')) {
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('home').classList.remove('active');
+    }
+    if(document.getElementById('mainView')) {
+        document.getElementById('mainView').style.display = 'none';
+        document.getElementById('mainView').classList.remove('active');
+    }
+    
+    // 3. Limpa os conteúdos dinâmicos das vistas secundárias para não acumular lixo
+    if(document.getElementById('viewContent')) document.getElementById('viewContent').innerHTML = ""; 
+    if(document.getElementById('filterArea')) document.getElementById('filterArea').innerHTML = "";
+
+    // 4. MOSTRA APENAS a secção pretendida
     if(v === 'home') { 
-        document.getElementById('home').classList.add('active'); 
+        const homeEl = document.getElementById('home');
+        if(homeEl) {
+            homeEl.style.display = 'block';
+            homeEl.classList.add('active'); 
+        }
         renderHomeNext(); 
+    } else if(v === 'custom') {
+        const mainEl = document.getElementById('mainView');
+        if(mainEl) {
+            mainEl.style.display = 'block';
+            mainEl.classList.add('active');
+        }
     } else { 
-        document.getElementById('mainView').classList.add('active'); 
+        const mainEl = document.getElementById('mainView');
+        if(mainEl) {
+            mainEl.style.display = 'block';
+            mainEl.classList.add('active'); 
+        }
+        
+        // Executa a renderização da secção correta
         if(v === 'jogos') renderJogos('TODOS'); 
         else if(v === 'atletas') renderAtletas(p); 
         else if(v === 'artilharia') renderArt('GERAL');
         else if(v === 'participacoes') renderParticipacoes('GERAL');
         else if(v === 'treinos') renderTreinos();
     }
+    
+    // 5. Atira o ecrã para o topo para a nova secção começar do início
     window.scrollTo(0,0);
 }
 
