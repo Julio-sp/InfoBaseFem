@@ -23,31 +23,29 @@
         .container.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-       /* Container mais baixo e elegante */
-.adn-container { 
-    background: var(--verde); 
-    padding: 25px 15px; 
-    border-radius: 25px; 
-    text-align: center; 
-    margin-bottom: 30px; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    gap: 10px; 
-}
+        .adn-container { 
+            background: var(--verde); 
+            padding: 25px 15px; 
+            border-radius: 25px; 
+            text-align: center; 
+            margin-bottom: 30px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 10px; 
+        }
 
-/* Letras menores e mais legíveis */
-.adn-word { 
-    font-size: 1.1rem; 
-    font-weight: 900; 
-    line-height: 1; 
-    letter-spacing: 1px; 
-    margin: 0; 
-    text-transform: uppercase;
-}
+        .adn-word { 
+            font-size: 1.1rem; 
+            font-weight: 900; 
+            line-height: 1; 
+            letter-spacing: 1px; 
+            margin: 0; 
+            text-transform: uppercase;
+        }
 
-.w-white { color: white; } 
-.w-black { color: rgba(0,0,0,0.7); } /* Um preto mais suave para ficar moderno */
+        .w-white { color: white; } 
+        .w-black { color: rgba(0,0,0,0.7); }
 
         .month-divider { padding: 15px 20px; margin: 15px 0 5px 0; background: white; border-radius: 15px; font-weight: 800; color: var(--eac-dark); font-size: 1rem; text-transform: uppercase; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
         .month-content { display: none; margin-bottom: 20px; }
@@ -99,28 +97,34 @@
         .info-pill { background: #f1f5f9; padding: 10px 15px; border-radius: 12px; font-size: 0.8rem; color: #475569; font-weight: 600; display: inline-block; margin: 5px; }
         
         .treino-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border-left: 6px solid var(--azul); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    /* Animação para o botão de Jogo a Decorrer */
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
-    70% { transform: scale(0.95); box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
-}
 
-.pulse-animation {
-    animation: pulse 2s infinite;
-    display: inline-block;
-    background: var(--verde);
-    color: white;
-    padding: 10px 25px;
-    border-radius: 50px;
-    font-weight: 900;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-}
-    </style></head><body><div class="top-bar">
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+            70% { transform: scale(0.95); box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+            display: inline-block;
+            background: var(--verde);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="top-bar">
     <div onclick="toggleMenu()" style="font-size:26px; cursor:pointer; color: var(--eac-dark)">☰</div>
     <img src="logo.png" style="height:42px" onclick="showView('home')">
-    <div id="lock-btn" onclick="handleLogin()" style="font-size: 20px; cursor:pointer">🔒</div></div><div id="sidebar">
+    <div id="lock-btn" onclick="handleLogin()" style="font-size: 20px; cursor:pointer">🔒</div>
+</div>
+
+<div id="sidebar">
     <div class="sidebar-content">
         <a onclick="showView('home')">🏠 INÍCIO</a>
         <a id="menu-artilharia" style="display:none" onclick="showView('artilharia')">⚽ ARTILHARIA</a>
@@ -134,81 +138,92 @@
         </div>
         <a onclick="toggleSub('sub-niver')">🎂 ANIVERSARIANTES ▼</a>
         <div id="sub-niver" class="submenu"></div>
-<a onclick="toggleSub('sub-academy')">🎓 EAC ACADEMY ▼</a>
-<div id="sub-academy" class="submenu">
-    <a onclick="showAcademy('prevencao')">🔹 PREVENÇÃO</a>
-    <a onclick="showAcademy('recuperacao')">🔹 RECUPERAÇÃO</a>
-    <a onclick="showAcademy('treino-invisivel')">🔹 TREINO INVISÍVEL</a>
-    <a onclick="showAcademy('pos-treino')">🔹 PÓS-TREINO</a>
-    <a onclick="showAcademy('pre-jogo')">🔹 PRÉ-JOGO</a>
-    <a onclick="showAcademy('intervalo')">🔹 INTERVALO</a>
-    <a onclick="showAcademy('mentalidade')">⚡ MENTALIDADE DE JOGO</a>
-</div>
+        <a onclick="toggleSub('sub-academy')">🎓 EAC ACADEMY ▼</a>
+        <div id="sub-academy" class="submenu">
+            <a onclick="showAcademy('prevencao')">🔹 PREVENÇÃO</a>
+            <a onclick="showAcademy('recuperacao')">🔹 RECUPERAÇÃO</a>
+            <a onclick="showAcademy('treino-invisivel')">🔹 TREINO INVISÍVEL</a>
+            <a onclick="showAcademy('pos-treino')">🔹 PÓS-TREINO</a>
+            <a onclick="showAcademy('pre-jogo')">🔹 PRÉ-JOGO</a>
+            <a onclick="showAcademy('intervalo')">🔹 INTERVALO</a>
+            <a onclick="showAcademy('mentalidade')">⚡ MENTALIDADE DE JOGO</a>
+        </div>
         <a onclick="showPlaylist()">🎧 RITMO DE JOGO</a>
-    </div></div><div id="home" class="container active">
-    <div class="adn-container">
-    <div class="adn-word w-black">FOCO</div>
-    <div class="adn-word w-white">COMPROMISSO</div>
-    <div class="adn-word w-black">UNIÃO</div>
-</div>
- <!-- Este bloco DEVE estar na sua tela inicial (Home) -->
-<div id="next-game-container" style="display: none; margin: 20px; padding: 20px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-left: 8px solid var(--verde);">
-    <div style="text-align: center;">
-        <span style="color: var(--verde); font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Próximo Desafio</span>
-        <h2 style="margin: 10px 0; font-size: 1.2rem; font-weight: 900;">EAC vs AD VACARIÇA</h2>
-        
-        <!-- O CONTADOR (O JS vai escrever aqui dentro) -->
-        <div id="countdown" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;">
-            <div class="time-box"><span id="days">00</span><small>Dias</small></div>
-            <div class="time-box"><span id="hours">00</span><small>Horas</small></div>
-            <div class="time-box"><span id="mins">00</span><small>Min</small></div>
-        </div>
-
-        <div style="background: #f8fafc; padding: 10px; border-radius: 12px; margin-top: 10px;">
-            <p style="margin: 0; font-size: 0.85rem; font-weight: 700;">📅 Domingo, 17 de Maio - 16:00h</p>
-        </div>
-
-        <!-- BOTÃO PARA A CONVOCATÓRIA -->
-        <button onclick="irParaConvocados()" style="margin-top: 15px; width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer;">
-            VER CONVOCATÓRIA
-        </button>
     </div>
 </div>
-<style>
-    .time-box { display: flex; flex-direction: column; align-items: center; background: var(--eac-dark); color: white; padding: 10px; border-radius: 10px; min-width: 60px; }
-    .time-box span { font-size: 1.2rem; font-weight: 900; }
-    .time-box small { font-size: 0.5rem; text-transform: uppercase; opacity: 0.7; }
-</style>
+
+<div id="home" class="container active">
+    <div class="adn-container">
+        <div class="adn-word w-black">FOCO</div>
+        <div class="adn-word w-white">COMPROMISSO</div>
+        <div class="adn-word w-black">UNIÃO</div>
+    </div>
+
+    <!-- O bloco estático do próximo jogo foi removido daqui para evitar duplicações, 
+         já que a função renderHomeNext() gera este card dinamicamente com dados reais -->
+
     <div id="homeNext">
         <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
             <span style="width: 5px; height: 25px; background: var(--verde); display: block; border-radius: 10px"></span>
             <span id="nextTitle">PRÓXIMOS JOGOS</span>
         </h3>
         <div id="homeNextContent"></div>
-    </div></div><div id="mainView" class="container">
+    </div>
+</div>
+
+<div id="mainView" class="container">
     <div id="filterArea" style="display:flex; gap:12px; margin-bottom:25px; flex-wrap:wrap"></div>
-    <div id="viewContent"></div></div><div id="detailPane">
+    <div id="viewContent"></div>
+</div>
+
+<div id="detailPane">
     <div style="padding: 22px; font-weight: 800; background: white; cursor:pointer; position:sticky; top:0; z-index:10; display: flex; align-items: center; border-bottom: 1px solid #f1f5f9" onclick="closeDetail()">
         <span style="margin-right: 15px; font-size: 20px">⬅</span> VOLTAR
     </div>
-    <div id="detailBody"></div></div><script>const LINKS = {
+    <div id="detailBody"></div>
+</div>
+
+<script>
+const LINKS = {
     atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
     jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
     scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv",
     convocados: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=179640149&single=true&output=csv"
-};let DB = { atletas: [], jogos: [], scout: [], convocados: [] };const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";const getVal = (obj, key) => {
+};
+
+let DB = { atletas: [], jogos: [], scout: [], convocados: [] };
+
+const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+
+const getVal = (obj, key) => {
     const foundKey = Object.keys(obj).find(k => clean(k) === clean(key));
     return foundKey ? obj[foundKey] : "";
-};function formatParcial(val, isFora) {
+};
+
+function formatParcial(val, isFora) {
     if(!val || val.trim() === "" || !val.includes('-')) return "00-00";
     if(!isFora) return val;
     const parts = val.split('-');
     return `${parts[1]}-${parts[0]}`;
-}function parseDate(str) {
+}
+
+function parseDate(str) {
     if(!str) return new Date(1900,0,1);
     const p = str.split('/');
     return new Date(p[2], p[1]-1, p[0]);
-}function calcularIdade(nascimento) {
+}
+
+// === NOVA FUNÇÃO UTILITÁRIA PARA COMBINAR DATA E HORA DE FORMA SEGURA ===
+function parseDateTime(dataStr, horaStr) {
+    if(!dataStr) return new Date(1900,0,1);
+    const p = dataStr.split('/');
+    const horaClean = horaStr ? horaStr.trim() : "00:00";
+    const [h, m] = horaClean.split(':');
+    // Retorna o objeto contendo o dia e hora exatos do jogo
+    return new Date(p[2], p[1]-1, p[0], h || 0, m || 0, 0);
+}
+
+function calcularIdade(nascimento) {
     if(!nascimento) return "";
     const hoje = new Date();
     const dataNasc = parseDate(nascimento);
@@ -216,7 +231,9 @@
     const m = hoje.getMonth() - dataNasc.getMonth();
     if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) idade--;
     return idade + " anos";
-}async function fetchCSV(url) {
+}
+
+async function fetchCSV(url) {
     try {
         const r = await fetch(url + "&t=" + Date.now());
         const text = await r.text();
@@ -229,7 +246,9 @@
             return obj;
         });
     } catch(e) { return []; }
-}async function loadData() {
+}
+
+async function loadData() {
     try {
         const [jogos, convocados] = await Promise.all([
             fetchCSV(LINKS.jogos),
@@ -251,18 +270,14 @@
         console.error("Erro no carregamento:", e);
     }
 }
+
 function buildConvocatoriaList(idJogo) {
     if (!DB.convocados || DB.convocados.length === 0) return "";
-
-    // IDs limpos de espaços e comparados de forma segura
     const idJogoLimpo = String(idJogo).trim();
-
     const convocadasRaw = DB.convocados.filter(c => {
-        // Procura pela coluna 'jogo_id' ignorando maiúsculas/minúsculas e espaços
         const jogoIdPlanilha = getVal(c, 'jogo_id') || getVal(c, 'Jogo_id') || getVal(c, 'JOGO_ID');
         return String(jogoIdPlanilha).trim() === idJogoLimpo;
     });
-
     if (convocadasRaw.length === 0) return "";
     
     let listaFinal = convocadasRaw.map(c => {
@@ -272,13 +287,11 @@ function buildConvocatoriaList(idJogo) {
             : null;
             
         return {
-            // Vai buscar o nome_exibicao (ou variações de maiúsculas)
             nome: getVal(c, 'nome_exibicao') || getVal(c, 'Nome_Exibicao') || getVal(c, 'nome').split(' ')[0],
             num: info ? parseInt(getVal(info, 'número')) : 999
         };
     });
     
-    // Ordena por número
     listaFinal.sort((a, b) => a.num - b.num);
     
     const itemsHTML = listaFinal.map(a => `
@@ -294,6 +307,7 @@ function buildConvocatoriaList(idJogo) {
             <div class="conv-list">${itemsHTML}</div>
         </div>`;
 }
+
 function renderJogos(filtro) {
     document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
@@ -343,7 +357,6 @@ function renderJogos(filtro) {
     if(html !== "") html += `</div>`;
     document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
 }
-
 function toggleMonth(id) {
     const content = document.getElementById('month-' + id);
     const icon = document.getElementById('icon-' + id);
@@ -384,7 +397,6 @@ function openAtleta(nome, escalaoFiltro = '') {
         if (!matchesNome) return false;
         if (!escalaoFiltro || clean(escalaoFiltro) === 'geral') return true;
         const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
-        // CORREÇÃO: Alterado de 'j' para 'jogo' para coincidir com a variável definida acima
         return jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
     });
 
@@ -495,6 +507,7 @@ function renderParticipacoes(filtro) {
             <div style="font-weight:900; font-size:1.1rem; color:var(--eac-dark)">${p.totalJogos} <span style="font-size:0.7rem; font-weight:600">JOGOS</span></div>
         </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum jogo registado.</p>";
 }
+
 function renderTreinos() {
     document.getElementById('viewContent').innerHTML = `
         <h2 style="font-weight:900; margin-bottom:25px">📍 Locais de Treino</h2>
@@ -508,12 +521,25 @@ function renderAtletas(esc) {
     list.map(a => `<div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}', '${esc}')"><img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'"><div><strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong><span style="color:#64748b; font-weight:800; font-size: 0.75rem">🎽 ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span></div></div>`).join('');
 }
 
+// === FUNÇÃO REFORMULADA COM FILTRAGEM POR MINUTO EXATO ===
 function renderHomeNext() {
     if(!DB.jogos.length) return;
-    const hoje = new Date();
+    const agora = new Date(); // Captura data e hora exatas do sistema
+    
     const proximos = DB.jogos
-        .filter(j => parseDate(getVal(j, 'data')) >= hoje && !getVal(j, 'gols_eac'))
-        .sort((a,b) => parseDate(getVal(a, 'data')) - parseDate(getVal(b, 'data'))).slice(0, 2);
+        .filter(j => {
+            // Combina a data e a hora da linha numa instância real de Date do JS
+            const dataHoraJogo = parseDateTime(getVal(j, 'data'), getVal(j, 'hora'));
+            // Só exibe se a hora do jogo for igual ou superior ao momento atual E não tiver golos preenchidos
+            return dataHoraJogo >= agora && !getVal(j, 'gols_eac');
+        })
+        .sort((a,b) => {
+            const dtA = parseDateTime(getVal(a, 'data'), getVal(a, 'hora'));
+            const dtB = parseDateTime(getVal(b, 'data'), getVal(b, 'hora'));
+            return dtA - dtB;
+        })
+        .slice(0, 2);
+
     document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
         const isFora = clean(getVal(j, 'local')).includes("fora");
         const mapsLink = getVal(j, 'Link_maps');
@@ -633,7 +659,7 @@ function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElemen
 const frasesEAC = [
     "A vitória começa no treino de hoje! 💪",
     "Honra a camisola em cada lance. Raça, EAC!",
-    "O teu esforço de hoje é o teu sucesso de amanhã. 🚀",
+    "O teu esforço de hoje é o teu success de amanhã. 🚀",
     "O talento ganha jogos, o trabalho em equipa ganha campeonatos. 🏆",
     "Foco no processo, o resultado será uma consequência.",
     "A tua melhor versão é aquela que ajuda a equipa a crescer."
@@ -673,7 +699,6 @@ document.head.appendChild(styleFrase);
 
 window.onload = () => {
     loadData();
-    // Espera 2 segundos após o site abrir para mostrar a frase (dá um efeito mais profissional)
     setTimeout(mostrarFraseInspiradora, 2000); 
 };
 </script>
