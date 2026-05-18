@@ -457,42 +457,40 @@ function openAtleta(nome, escalaoFiltro = '') {
                 <span class="info-pill">🎽 Nº ${getVal(a, 'número')}</span>
             </div>
             
-            <!-- Grelha de Estatísticas Atualizada para 4 itens se houver vermelhos -->
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap:10px; max-width: 500px; margin: 0 auto">
                 <div>
                     <div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')">
                         <span class="stat-val">${totalG}</span>
                         <span class="stat-label">Golos ▼</span>
                     </div>
-                    <div id="hist-golos" class="history-panel">${formatHistList(sc, 'golos')}</div>
+                    <div id="hist-golos" class="history-panel" style="width: 100%; min-width: 100%; box-sizing: border-box;">${formatHistList(sc, 'golos')}</div>
                 </div>
                 <div>
                     <div class="stat-card" style="background: #1e293b" onclick="toggleStatHistory('excl')">
-    <span class="stat-val">${totalE}</span>
-    <span class="stat-label">2 Min ▼</span>
-</div>
-                    <div id="hist-excl" class="history-panel">${formatHistList(sc, 'exclusoes')}</div>
+                        <span class="stat-val">${totalE}</span>
+                        <span class="stat-label">2 Min ▼</span>
+                    </div>
+                    <div id="hist-excl" class="history-panel" style="width: 100%; min-width: 100%; box-sizing: border-box;">${formatHistList(sc, 'exclusoes')}</div>
                 </div>
                 <div>
                     <div class="stat-card" style="background: var(--verde)" onclick="toggleStatHistory('jogos')">
                         <span class="stat-val">${totalJ}</span>
                         <span class="stat-label">Jogos ▼</span>
                     </div>
-                    <div id="hist-jogos" class="history-panel">${formatHistList(sc, 'jogos')}</div>
+                    <div id="hist-jogos" class="history-panel" style="width: 100%; min-width: 100%; box-sizing: border-box;">${formatHistList(sc, 'jogos')}</div>
                 </div>
                 ${totalV > 0 ? `
                 <div>
                     <div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('vermelhos')">
-    <span class="stat-val">${totalV}</span>
-    <span class="stat-label">Vermelho ▼</span>
-</div>
-                    <div id="hist-vermelhos" class="history-panel">${formatHistList(sc, 'vermelhos')}</div>
+                        <span class="stat-val">${totalV}</span>
+                        <span class="stat-label">Vermelho ▼</span>
+                    </div>
+                    <div id="hist-vermelhos" class="history-panel" style="width: 100%; min-width: 100%; box-sizing: border-box;">${formatHistList(sc, 'vermelhos')}</div>
                 </div>` : ''}
             </div>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
 }
-
 function renderArt(filtro) {
     document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b =>  
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
