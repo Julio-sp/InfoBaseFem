@@ -390,13 +390,19 @@ function openJogo(id) {
             <div style="margin-top:25px">
                 ${sc.map(s => {
                     const temVermelho = parseInt(getVal(s, 'vermelhos')) > 0;
+                    const temAzul = parseInt(getVal(s, 'azuis')) > 0; // Nova coluna adicionada
+                    
+                    let cartoes = '';
+                    if (temVermelho) cartoes += '🟥';
+                    if (temAzul) cartoes += '🟦';
+
                     return `
                     <div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background: white">
                         <span style="font-weight:700;">${getVal(s, 'nome')}</span>
                         <div style="display:flex; gap:10px; align-items:center">
                             <span style="font-weight:900; color:var(--azul)">${getVal(s,'golos')} GOLS</span>
                             ${parseInt(getVal(s,'exclusoes')) > 0 ? `<span class="badge-2min">${getVal(s,'exclusoes')} x 2'</span>` : ''}
-                            ${temVermelho ? `<span style="font-size:1.1rem; line-height:1; margin-left:2px;">🟥</span>` : ''}
+                            ${cartoes !== '' ? `<span style="font-size:1.1rem; line-height:1; display:flex; gap:2px;">${cartoes}</span>` : ''}
                         </div>
                     </div>`;
                 }).join('')}
@@ -425,15 +431,27 @@ function openAtleta(nome, escalaoFiltro = '') {
     const totalG = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
     const totalE = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
     const totalV = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'vermelhos')) || 0), 0);
+    const totalA = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'azuis')) || 0), 0); // Soma de azuis
+    const totalC = totalV + totalA; // Total geral de cartões disciplinar
     const totalJ = sc.length;
 
     const formatHistList = (lista, campo) => {
-        const filtrada = campo === 'jogos' ? lista : lista.filter(s => parseInt(getVal(s, campo)) > 0);
+        const filtrada = campo === 'jogos' ? lista : lista.filter(s => {
+            if (campo === 'vermelhos') {
+                return (parseInt(getVal(s, 'vermelhos')) > 0 || parseInt(getVal(s, 'azuis')) > 0);
+            }
+            return parseInt(getVal(s, campo)) > 0;
+        });
+
         return filtrada.map(s => {
             const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
             let val = campo === 'jogos' ? '✔' : getVal(s, campo);
-            if (campo === 'vermelhos' && parseInt(val) > 0) {
-                val = '🟥';
+            
+            if (campo === 'vermelhos') {
+                let displayCartoes = '';
+                if (parseInt(getVal(s, 'vermelhos')) > 0) displayCartoes += '🟥';
+                if (parseInt(getVal(s, 'azuis')) > 0) displayCartoes += '🟦';
+                val = displayCartoes;
             }
             
             return `
@@ -441,7 +459,7 @@ function openAtleta(nome, escalaoFiltro = '') {
                     <span style="font-weight: 600; color: #334155;">
                         <b style="color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; margin-right: 4px;">vs</b>${getVal(j, 'adversário') || 'Jogo'}
                     </span>
-                    <b style="color: #1e293b; font-size: 0.9rem; min-width: 30px; text-align: right; flex-shrink: 0;">${val}</b>
+                    <b style="font-size: 0.9rem; min-width: 40px; text-align: right; flex-shrink: 0; display:flex; gap:2px; justify-content:flex-end;">${val}</b>
                 </div>`;
         }).join('') || '<div style="padding: 15px; text-align: center; color: #94a3b8; font-size: 0.8rem;">Nenhum registro.</div>';
     };
@@ -456,12 +474,12 @@ function openAtleta(nome, escalaoFiltro = '') {
                 <span class="info-pill">🎽 Nº ${getVal(a, 'número')}</span>
             </div>
             
-           <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; max-width: 500px; margin: 0 auto">
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; max-width: 500px; margin: 0 auto">
                 <div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')">
                     <span class="stat-val">${totalG}</span>
                     <span class="stat-label" style="font-size:0.55rem;">Golos ▼</span>
                 </div>
-                <div class="stat-card" style="background: #1e293b" onclick="toggleStatHistory('excl')">
+                <div class="stat-card" style="background: var(--black)" onclick="toggleStatHistory('excl')">
                     <span class="stat-val">${totalE}</span>
                     <span class="stat-label" style="font-size:0.55rem;">2 Min ▼</span>
                 </div>
@@ -469,9 +487,9 @@ function openAtleta(nome, escalaoFiltro = '') {
                     <span class="stat-val">${totalJ}</span>
                     <span class="stat-label" style="font-size:0.55rem;">Jogos ▼</span>
                 </div>
-                <div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('vermelhos')">
-                    <span class="stat-val">${totalV}</span>
-                    <span class="stat-label" style="font-size:0.55rem;">Vermelho ▼</span>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ef4444 50%, #3b82f6 50%)" onclick="toggleStatHistory('vermelhos')">
+                    <span class="stat-val">${totalC}</span>
+                    <span class="stat-label" style="font-size:0.55rem;">Cartões ▼</span>
                 </div>
             </div>
 
