@@ -459,7 +459,7 @@ function openAtleta(nome, escalaoFiltro = '') {
                     <div id="hist-golos" class="history-panel">${formatHistList(sc, 'golos')}</div>
                 </div>
                 <div>
-                    <div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('excl')">
+                    <div class="stat-card" style="background: var(--black)" onclick="toggleStatHistory('excl')">
                         <span class="stat-val">${totalE}</span>
                         <span class="stat-label">2 Min ▼</span>
                     </div>
@@ -474,9 +474,9 @@ function openAtleta(nome, escalaoFiltro = '') {
                 </div>
                 ${totalV > 0 ? `
                 <div>
-                    <div class="stat-card" style="background: #1e293b" onclick="toggleStatHistory('vermelhos')">
+                    <div class="stat-card" style="background: #vermelho" onclick="toggleStatHistory('vermelhos')">
                         <span class="stat-val">${totalV}</span>
-                        <span class="stat-label">Vermelhos ▼</span>
+                        <span class="stat-label">Vermelho ▼</span>
                     </div>
                     <div id="hist-vermelhos" class="history-panel">${formatHistList(sc, 'vermelhos')}</div>
                 </div>` : ''}
