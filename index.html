@@ -388,14 +388,18 @@ function openJogo(id) {
             <h2 style="margin:0; font-weight:900; color:var(--eac-dark)">${getVal(j,'escalao')} vs ${getVal(j,'adversário')}</h2>
             <p style="color:#94a3b8; font-weight:700">${getVal(j,'data')} • ${getVal(j,'local')}</p>
             <div style="margin-top:25px">
-                ${sc.map(s => `
-                <div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background: white">
-                    <span style="font-weight:700;">${getVal(s, 'nome')}</span>
-                    <div style="display:flex; gap:10px; align-items:center">
-                        <span style="font-weight:900; color:var(--azul)">${getVal(s,'golos')} GOLS</span>
-                        ${parseInt(getVal(s,'exclusoes')) > 0 ? `<span class="badge-2min">${getVal(s,'exclusoes')} x 2'</span>` : ''}
-                    </div>
-                </div>`).join('')}
+                ${sc.map(s => {
+                    const temVermelho = parseInt(getVal(s, 'vermelhos')) > 0;
+                    return `
+                    <div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background: white">
+                        <span style="font-weight:700;">${getVal(s, 'nome')}</span>
+                        <div style="display:flex; gap:10px; align-items:center">
+                            <span style="font-weight:900; color:var(--azul)">${getVal(s,'golos')} GOLS</span>
+                            ${parseInt(getVal(s,'exclusoes')) > 0 ? `<span class="badge-2min">${getVal(s,'exclusoes')} x 2'</span>` : ''}
+                            ${temVermelho ? `<span style="font-size:1.1rem; line-height:1; margin-left:2px;">🟥</span>` : ''}
+                        </div>
+                    </div>`;
+                }).join('')}
             </div>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
@@ -420,33 +424,20 @@ function openAtleta(nome, escalaoFiltro = '') {
 
     const totalG = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
     const totalE = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
-    const totalV = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'vermelhos')) || 0), 0); // Adicionado aqui
+    const totalV = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'vermelhos')) || 0), 0);
     const totalJ = sc.length;
 
     const formatHistList = (lista, campo) => {
-        // Se o campo for 'vermelhos', filtramos quem tem mais de 0 cartões vermelhos
         const filtrada = campo === 'jogos' ? lista : lista.filter(s => parseInt(getVal(s, campo)) > 0);
         return filtrada.map(s => {
             const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
-            
-            // Define o que vai aparecer no histórico: se for vermelho, mostra o emoji 🟥
             let val = campo === 'jogos' ? '✔' : getVal(s, campo);
             if (campo === 'vermelhos' && parseInt(val) > 0) {
                 val = '🟥';
             }
-            
             return `<div class="history-item"><span><b>vs</b> ${getVal(j, 'adversário') || 'Jogo'}</span> <b>${val}</b></div>`;
         }).join('') || '<div class="history-item">Nenhum registro.</div>';
     };
-
-    // Aplica o emoji 🟥 diretamente na lista de jogadoras do jogo atual
-    sc.forEach(v => {
-        const vermelhoAtleta = parseInt(getVal(v, 'vermelhos')) || 0;
-        if (vermelhoAtleta > 0) {
-            const elementoGolos = document.querySelector(`[data-atleta="${getVal(v, 'atleta')}"] .badges`) || null;
-            if (elementoGolos) elementoGolos.innerHTML += ' 🟥';
-        }
-    });
 
     document.getElementById('detailBody').innerHTML = `
         <div style="background: linear-gradient(180deg, #f8fafc 0%, white 100%); padding: 45px 20px; text-align:center">
@@ -457,7 +448,9 @@ function openAtleta(nome, escalaoFiltro = '') {
                 <span class="info-pill">🏆 ${escalaoFiltro || getVal(a, 'escalão')}</span>
                 <span class="info-pill">🎽 Nº ${getVal(a, 'número')}</span>
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; max-width: 500px; margin: 0 auto">
+            
+            <!-- Grelha de Estatísticas Atualizada para 4 itens se houver vermelhos -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap:10px; max-width: 500px; margin: 0 auto">
                 <div>
                     <div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')">
                         <span class="stat-val">${totalG}</span>
@@ -479,6 +472,14 @@ function openAtleta(nome, escalaoFiltro = '') {
                     </div>
                     <div id="hist-jogos" class="history-panel">${formatHistList(sc, 'jogos')}</div>
                 </div>
+                ${totalV > 0 ? `
+                <div>
+                    <div class="stat-card" style="background: #1e293b" onclick="toggleStatHistory('vermelhos')">
+                        <span class="stat-val">${totalV}</span>
+                        <span class="stat-label">Vermelhos ▼</span>
+                    </div>
+                    <div id="hist-vermelhos" class="history-panel">${formatHistList(sc, 'vermelhos')}</div>
+                </div>` : ''}
             </div>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
