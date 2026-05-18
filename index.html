@@ -435,8 +435,16 @@ function openAtleta(nome, escalaoFiltro = '') {
             if (campo === 'vermelhos' && parseInt(val) > 0) {
                 val = '🟥';
             }
-            return `<div class="history-item"><span><b>vs</b> ${getVal(j, 'adversário') || 'Jogo'}</span> <b>${val}</b></div>`;
-        }).join('') || '<div class="history-item">Nenhum registro.</div>';
+            
+            // Layout corrigido: Garante espaço total, texto um pouco menor e alinhamento perfeito
+            return `
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.75rem; box-sizing: border-box;">
+                    <span style="font-weight: 500; color: #334155; padding-right: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <b style="color: #64748b; font-size: 0.65rem; text-transform: uppercase;">vs</b> ${getVal(j, 'adversário') || 'Jogo'}
+                    </span>
+                    <b style="color: #1e293b; font-size: 0.8rem; min-width: 20px; text-align: right; flex-shrink: 0;">${val}</b>
+                </div>`;
+        }).join('') || '<div style="padding: 15px; text-align: center; color: #94a3b8; font-size: 0.75rem;">Nenhum registro.</div>';
     };
 
     document.getElementById('detailBody').innerHTML = `
