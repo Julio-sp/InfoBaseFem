@@ -1,1 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Gestão EAC</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; display: flex; justify-content: center; padding: 20px; }
+        #login-container, #painel-conteudo { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; max-width: 800px; }
+        .nav-buttons { margin-top: 20px; display: flex; justify-content: space-between; }
+        button { padding: 10px 20px; cursor: pointer; background: #0056b3; color: white; border: none; border-radius: 4px; }
+        #painel-conteudo { display: none; }
+    </style>
+</head>
+<body>
 
+    <div id="login-container">
+        <h1>Acesso à Coordenação</h1>
+        <input type="password" id="senha" placeholder="Digite a senha">
+        <button onclick="verificarAcesso()">Entrar</button>
+    </div>
+
+    <div id="painel-conteudo">
+        <h1>Dashboard EAC</h1>
+        <div id="graficos-container">
+            <p>Carregando dados das atletas...</p>
+        </div>
+        <div class="nav-buttons">
+            <button onclick="voltar()">Anterior</button>
+            <button onclick="avancar()">Próximo</button>
+        </div>
+    </div>
+
+    <script>
+        function verificarAcesso() {
+            const senha = document.getElementById('senha').value;
+            // ALTERE A SENHA ABAIXO
+            if (senha === 'EAC2026') { 
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('painel-conteudo').style.display = 'block';
+                carregarDados();
+            } else {
+                alert('Senha incorreta!');
+            }
+        }
+
+        async function carregarDados() {
+            const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYPGCKAs-MiM-pofVu5bUqA-S_SA16ndk6muHYap6PdWsZ00VICpHEdTQgqgbALTqFaAsaVb_3GQya/pub?output=csv';
+            try {
+                const response = await fetch(url);
+                const data = await response.text();
+                document.getElementById('graficos-container').innerHTML = "Dados carregados com sucesso! (Pronto para configurar os gráficos).";
+                console.log(data);
+            } catch (error) {
+                document.getElementById('graficos-container').innerHTML = "Erro ao carregar dados.";
+            }
+        }
+
+        function voltar() { alert('Função de voltar em breve!'); }
+        function avancar() { alert('Função de avançar em breve!'); }
+    </script>
+</body>
+</html>
