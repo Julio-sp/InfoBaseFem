@@ -162,7 +162,7 @@
         <a onclick="showPlaylist()">🎧 RITMO DE JOGO</a>
 <a onclick="toggleSub('sub-restrito')">🔒 COORDENAÇÃO ▼</a>
         <div id="sub-restrito" class="submenu">
-            <a href="painel.html" target="_blank">🔹 DADOS PROTEGIDOS</a>
+           <a onclick="showView('painel')">🔹 DADOS PROTEGIDOS</a>
         </div>
     </div>
 </div>
@@ -649,8 +649,36 @@ function showView(v, p = '') {
         else if(v === 'artilharia') renderArt('GERAL');
         else if(v === 'participacoes') renderParticipacoes('GERAL');
         else if(v === 'treinos') renderTreinos();
+        else if(v === 'painel') renderPainel();
     }
     window.scrollTo(0,0);
+}
+    function renderPainel() {
+    document.getElementById('viewContent').innerHTML = `
+        <div id="login-form" style="text-align:center; padding: 20px;">
+            <h3>🔒 ACESSO RESTRITO</h3>
+            <input type="password" id="senha-input" placeholder="Senha...">
+            <button onclick="validarSenha()">ENTRAR</button>
+        </div>
+        <div id="conteudo-painel" style="display:none; padding: 20px;">
+            <h2 id="titulo-pergunta">Carregando...</h2>
+            <div id="exibicao-pergunta"></div>
+            <div class="nav-buttons">
+                <button onclick="mudarPergunta(-1)">Anterior</button>
+                <button onclick="mudarPergunta(1)">Próximo</button>
+            </div>
+        </div>
+    `;
+}
+    function validarSenha() {
+    const senha = document.getElementById('senha-input').value;
+    if (senha === "eac2026") { 
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('conteudo-painel').style.display = 'block';
+        buscarDados(); // Esta função 'buscarDados' e as outras (renderizar, mudarPergunta) também devem estar no seu arquivo JS
+    } else {
+        alert("Senha incorreta!");
+    }
 }
 
 function toggleStatHistory(type) { 
@@ -751,6 +779,70 @@ window.onload = () => {
     loadData();
     setTimeout(mostrarFraseInspiradora, 2000); 
 };
+</script>
+    <!-- Container do Painel (Oculto inicialmente) -->
+<div id="view-painel" class="view" style="display:none; text-align:center; padding: 20px;">
+    <div id="login-form">
+        <h3>🔒 ACESSO RESTRITO</h3>
+        <input type="password" id="senha-input" placeholder="Digite a senha...">
+        <button onclick="validarSenha()">ENTRAR</button>
+    </div>
+    
+    <div id="conteudo-painel" style="display:none;">
+        <h2 id="titulo-pergunta">Carregando...</h2>
+        <div id="exibicao-pergunta"></div>
+        <button onclick="mudarPergunta(-1)">Anterior</button>
+        <button onclick="mudarPergunta(1)">Próximo</button>
+    </div>
+</div>
+    <script>
+    // 1. Função de Validação de Senha
+    function validarSenha() {
+        const senha = document.getElementById('senha-input').value;
+        if (senha === "eac2026") { // Ajuste a senha aqui se desejar
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('conteudo-painel').style.display = 'block';
+            buscarDados(); // Inicia o carregamento da planilha
+        } else {
+            alert("Senha incorreta!");
+        }
+    }
+
+    // 2. Função que carrega a planilha (A mesma que usamos antes)
+    let dados = [];
+    let indiceAtual = 0;
+    const colunasTexto = ['G','M','R','W','AB','AF','AG','AM','AN','AO'];
+
+    async function buscarDados() {
+        const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYPGCKAs-MiM-pofVu5bUqA-S_SA16ndk6muHYap6PdWsZ00VICpHEdTQgqgbALTqFaAsaVb_3GQya/pub?output=csv';
+        const res = await fetch(url);
+        const texto = await res.text();
+        const linhas = texto.split('\n');
+        const titulos = linhas[0].split(',');
+        
+        dados = titulos.slice(1).map((t, i) => {
+            let letraColuna = String.fromCharCode(66 + i);
+            return {
+                titulo: t.replace(/"/g, ''),
+                valores: linhas.slice(1).map(linha => linha.split(',')[i + 1]),
+                ehTexto: colunasTexto.includes(letraColuna)
+            };
+        });
+        renderizar();
+    }
+
+    function renderizar() {
+        const p = dados[indiceAtual];
+        document.getElementById('titulo-pergunta').innerText = p.titulo;
+        document.getElementById('exibicao-pergunta').innerHTML = p.ehTexto ? 
+            "<ul>" + p.valores.map(v => `<li>${v}</li>`).join('') + "</ul>" : 
+            "<em>Dados numéricos carregados com sucesso.</em>";
+    }
+
+    function mudarPergunta(dir) {
+        indiceAtual = Math.max(0, Math.min(dados.length - 1, indiceAtual + dir));
+        renderizar();
+    }
 </script>
 </body>
 </html>
