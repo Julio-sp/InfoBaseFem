@@ -786,7 +786,8 @@ window.onload = () => {
         <h3>🔒 ACESSO RESTRITO</h3>
         <input type="password" id="senha-input" placeholder="Digite a senha...">
         <button onclick="validarSenha()">ENTRAR</button>
-    <div style="margin-top: 20px;">
+    </div>
+    <div id="conteudo-painel" style="display:none; margin-top: 20px;">
         <iframe 
             width="100%" 
             height="800" 
@@ -797,8 +798,6 @@ window.onload = () => {
             sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
         </iframe>
     </div>
-    </div>
-    
     <div id="conteudo-painel" style="display:none;">
         <h2 id="titulo-pergunta">Carregando...</h2>
         <div id="exibicao-pergunta"></div>
