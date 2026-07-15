@@ -786,6 +786,17 @@ window.onload = () => {
         <h3>🔒 ACESSO RESTRITO</h3>
         <input type="password" id="senha-input" placeholder="Digite a senha...">
         <button onclick="validarSenha()">ENTRAR</button>
+    <div style="margin-top: 20px;">
+        <iframe 
+            width="100%" 
+            height="800" 
+            src="https://datastudio.google.com/embed/reporting/80f90e1c-ec29-4ab1-abf2-a01aed511dc5/page/p_cjm2giak5d" 
+            frameborder="0" 
+            style="border:0" 
+            allowfullscreen 
+            sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
+        </iframe>
+    </div>
     </div>
     
     <div id="conteudo-painel" style="display:none;">
@@ -807,17 +818,7 @@ window.onload = () => {
             alert("Senha incorreta!");
         }
     }
-        <iframe 
-    width="100%" 
-    height="600" 
-    src="https://datastudio.google.com/embed/reporting/80f90e1c-ec29-4ab1-abf2-a01aed511dc5/page/p_cjm2giak5d" 
-    frameborder="0" 
-    style="border:0" 
-    allowfullscreen 
-    sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
-</iframe>
-
-    // 2. Função que carrega a planilha (A mesma que usamos antes)
+        // 2. Função que carrega a planilha (A mesma que usamos antes)
     let dados = [];
     let indiceAtual = 0;
     const colunasTexto = ['G','M','R','W','AB','AF','AG','AM','AN','AO'];
