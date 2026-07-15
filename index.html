@@ -813,23 +813,24 @@ window.onload = () => {
     let indiceAtual = 0;
     const colunasTexto = ['G','M','R','W','AB','AF','AG','AM','AN','AO'];
 
-    async function buscarDados() {
+  async function buscarDados() {
     const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYPGCKAs-MiM-pofVu5bUqA-S_SA16ndk6muHYap6PdWsZ00VICpHEdTQgqgbALTqFaAsaVb_3GQya/pub?output=csv';
     const res = await fetch(url);
     const texto = await res.text();
     const linhas = texto.split('\n');
     const titulos = linhas[0].split(',');
     
-    dados = titulos.slice(1).map((t, i) => {
+    // O slice(2) pula a coluna A e B, começando os dados na coluna C
+    dados = titulos.slice(2).map((t, i) => {
+        // Ajustamos o índice para pular as 2 primeiras colunas (A e B)
         let valores = linhas.slice(1).map(linha => {
-            let val = linha.split(',')[i + 1];
-            return val ? parseInt(val) : 0;
-        }).filter(v => v > 0); // Pega apenas números de 1 a 5
+            let colunas = linha.split(',');
+            return colunas[i + 3] ? parseInt(colunas[i + 3]) : 0;
+        }).filter(v => v > 0); 
 
         let soma = valores.reduce((a, b) => a + b, 0);
         let media = valores.length > 0 ? (soma / valores.length).toFixed(1) : 0;
         
-        // Conta quantos votos tem para cada estrela (1 a 5)
         let contagem = [0, 0, 0, 0, 0, 0];
         valores.forEach(v => { if(v >= 1 && v <= 5) contagem[v]++; });
 
@@ -837,9 +838,11 @@ window.onload = () => {
             titulo: t.replace(/"/g, ''),
             media: media,
             totalVotos: valores.length,
-            contagem: contagem // contagem[1] é votos em 1 estrela, contagem[5] votos em 5
+            contagem: contagem
         };
     });
+    // Reseta o índice para garantir que comece na primeira pergunta disponível
+    indiceAtual = 0; 
     renderizar();
 }
 
@@ -855,6 +858,11 @@ window.onload = () => {
             ${[1, 2, 3, 4, 5].map(i => `<div>${i} Estrela(s): ${p.contagem[i]} voto(s)</div>`).join('')}
         </div>
     `;
+}
+        function mudarPergunta(dir) {
+    // Garante que o índice não fique negativo nem maior que o número de colunas
+    indiceAtual = Math.max(0, Math.min(dados.length - 1, indiceAtual + dir));
+    renderizar(); // Esta função redesenha a tela com a nova pergunta
 }
 
 // Função para mostrar/esconder detalhes
