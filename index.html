@@ -232,10 +232,20 @@ const LINKS_FIXOS = {
 let epocaAtual = "2026/2027";
 let DB = { atletas: [], jogos: [], scout: [], convocados: [] };
 
-// Função para mudar de época no site
+// Função para obter os links ativos no momento com base na época
+function getLinksAtivos() {
+    const epocaConfig = LINKS_EPOCAS[epocaAtual] || LINKS_EPOCAS["2026/2027"];
+    return {
+        ...LINKS_FIXOS,
+        jogos: epocaConfig.jogos,
+        scout: epocaConfig.scout
+    };
+}
+
+// Função para mudar de época no site e recarregar os dados
 function mudarEpoca(novaEpoca) {
     epocaAtual = novaEpoca;
-    carregarDados();
+    loadData(); // Chama o recarregamento dos dados
 }
 
 const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
@@ -265,6 +275,7 @@ function parseDateTime(dataStr, horaStr) {
     const [h, m] = horaClean.split(':');
     return new Date(p[2], p[1]-1, p[0], h || 0, m || 0, 0);
 }
+
 function calcularIdade(nascimento) {
     if(!nascimento) return "";
     const hoje = new Date();
@@ -292,27 +303,31 @@ async function fetchCSV(url) {
 
 async function loadData() {
     try {
+        const links = getLinksAtivos(); // Obtém os links dinâmicos conforme a época selecionada
+
         const [jogos, convocados] = await Promise.all([
-            fetchCSV(LINKS.jogos),
-            fetchCSV(LINKS.convocados)
+            fetchCSV(links.jogos),
+            fetchCSV(links.convocados)
         ]);
         DB.jogos = jogos;
         DB.convocados = convocados;
-        renderHomeNext();
-        renderNiverMenu();
-        fetchCSV(LINKS.atletas).then(data => {
+        
+        if (typeof renderHomeNext === "function") renderHomeNext();
+        if (typeof renderNiverMenu === "function") renderNiverMenu();
+
+        fetchCSV(links.atletas).then(data => {
             DB.atletas = data;
-            renderNiverMenu(); 
-            renderHomeNext();
+            if (typeof renderNiverMenu === "function") renderNiverMenu(); 
+            if (typeof renderHomeNext === "function") renderHomeNext();
         });
-        fetchCSV(LINKS.scout).then(data => {
+
+        fetchCSV(links.scout).then(data => {
             DB.scout = data;
         });
     } catch (e) {
         console.error("Erro no carregamento:", e);
     }
 }
-
 function buildConvocatoriaList(idJogo) {
     if (!DB.convocados || DB.convocados.length === 0) return "";
     const idJogoLimpo = String(idJogo).trim();
