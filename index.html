@@ -135,6 +135,17 @@
 
 <div id="sidebar">
     <div class="sidebar-content">
+        <!-- SELECTOR DE ÉPOCA NO TOPO -->
+        <div style="padding: 10px 15px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <label style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 6px; font-weight: bold;">
+                📅 Época Ativa
+            </label>
+            <select onchange="mudarEpoca(this.value)" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background-color: #1e293b; color: #ffffff; font-weight: bold; cursor: pointer; outline: none;">
+                <option value="2026/2027" selected>Época 2026/2027</option>
+                <option value="2025/2026">Época 2025/2026</option>
+            </select>
+        </div>
+
         <a onclick="showView('home')">🏠 INÍCIO</a>
         <a id="menu-artilharia" style="display:none" onclick="showView('artilharia')">⚽ ARTILHARIA</a>
         <a onclick="showView('treinos')">📍 LOCAIS DE TREINO</a>
@@ -157,8 +168,10 @@
             <a onclick="showAcademy('intervalo')">🔹 INTERVALO</a>
             <a onclick="showAcademy('mentalidade')">⚡ MENTALIDADE DE JOGO</a>
             <a href="https://www.instagram.com/reel/DVbrLmfiEl5/?igsh=MTRpemFiYnlydHJmaQ==" target="_blank" style="color: #60a5fa;">📺 TREINO • MUN. ESTARREJA ↗</a>
-         <a href="https://www.instagram.com/reel/DVeNtCwCKrv/?igsh=MTQyZDM5MXlkamFxdQ==" target="_blank" style="color: #60a5fa;">📺 TREINO • SECUNDÁRIA ↗</a>
-      </div>
+            <a href="https://www.instagram.com/reel/DVeNtCwCKrv/?igsh=MTQyZDM5MXlkamFxdQ==" target="_blank" style="color: #60a5fa;">📺 TREINO • SECUNDÁRIA ↗</a>
+        </div>
+    </div>
+</div>
         <a onclick="showPlaylist()">🎧 RITMO DE JOGO</a>
 <a onclick="toggleSub('sub-restrito')">🔒 COORDENAÇÃO ▼</a>
         <div id="sub-restrito" class="submenu">
@@ -199,14 +212,31 @@
 </div>
 
 <script>
-const LINKS = {
+// Links configurados por época
+const LINKS_EPOCAS = {
+    "2026/2027": {
+        jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1515663193&single=true&output=csv",
+        scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=999011262&single=true&output=csv"
+    },
+    "2025/2026": {
+        jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
+        scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
+    }
+};
+
+const LINKS_FIXOS = {
     atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
-    jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
-    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv",
     convocados: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=179640149&single=true&output=csv"
 };
 
+let epocaAtual = "2026/2027";
 let DB = { atletas: [], jogos: [], scout: [], convocados: [] };
+
+// Função para mudar de época no site
+function mudarEpoca(novaEpoca) {
+    epocaAtual = novaEpoca;
+    carregarDados();
+}
 
 const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
 
@@ -228,16 +258,13 @@ function parseDate(str) {
     return new Date(p[2], p[1]-1, p[0]);
 }
 
-// === NOVA FUNÇÃO UTILITÁRIA PARA COMBINAR DATA E HORA DE FORMA SEGURA ===
 function parseDateTime(dataStr, horaStr) {
     if(!dataStr) return new Date(1900,0,1);
     const p = dataStr.split('/');
     const horaClean = horaStr ? horaStr.trim() : "00:00";
     const [h, m] = horaClean.split(':');
-    // Retorna o objeto contendo o dia e hora exatos do jogo
     return new Date(p[2], p[1]-1, p[0], h || 0, m || 0, 0);
 }
-
 function calcularIdade(nascimento) {
     if(!nascimento) return "";
     const hoje = new Date();
