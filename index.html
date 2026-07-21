@@ -818,43 +818,9 @@ function validarSenha() {
     if (senha === "eac2026") { 
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('conteudo-painel').style.display = 'block';
-        buscarDados(); 
+        // A linha buscarDados() foi removida daqui!
     } else {
         alert("Senha incorreta!");
-    }
-}
-
-async function buscarDados() {
-    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYPGCKAs-MiM-pofVu5bUqA-S_SA16ndk6muHYap6PdWsZ00VICpHEdTQgqgbALTqFaAsaVb_3GQya/pub?output=csv';
-    try {
-        const res = await fetch(url);
-        const texto = await res.text();
-        const linhas = texto.split('\n');
-        const titulos = linhas[0].split(',');
-        
-        dados = titulos.slice(2).map((t, i) => {
-            let valores = linhas.slice(1).map(linha => {
-                let colunas = linha.split(',');
-                return colunas[i + 3] ? parseInt(colunas[i + 3]) : 0;
-            }).filter(v => v > 0); 
-
-            let soma = valores.reduce((a, b) => a + b, 0);
-            let media = valores.length > 0 ? (soma / valores.length).toFixed(1) : 0;
-            
-            let contagem = [0, 0, 0, 0, 0, 0];
-            valores.forEach(v => { if(v >= 1 && v <= 5) contagem[v]++; });
-
-            return {
-                titulo: t.replace(/"/g, ''),
-                media: media,
-                totalVotos: valores.length,
-                contagem: contagem
-            };
-        });
-        indiceAtual = 0; 
-        renderizar();
-    } catch(e) {
-        console.error("Erro ao carregar painel:", e);
     }
 }
 
