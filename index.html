@@ -832,19 +832,17 @@ function atualizarPainelScout() {
     const atletaSel = document.getElementById('filtro-atleta').value;
 
     let scoutFiltrado = DB.scoutAvancado.filter(s => {
-        const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
+        const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'Jogo_ID'));
         const matchEscalao = (escalaoSel === 'TODOS') || (jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoSel));
-        const matchJogo = (idJogoSel === 'TODOS') || (getVal(s, 'jogo_id') == idJogoSel);
+        const matchJogo = (idJogoSel === 'TODOS') || (getVal(s, 'Jogo_ID') == idJogoSel);
         
-        // CORREÇÃO: Procura pelo nome ou pelo ID do atleta na aba Scout_Avancado
-        const nomeAtletaScout = clean(getVal(s, 'nome') || getVal(s, 'nome_atleta') || getVal(s, 'Atleta_Nome'));
+        const nomeAtletaScout = clean(getVal(s, 'Atleta_Nome') || getVal(s, 'nome'));
         const idAtletaScout = clean(getVal(s, 'Atleta_ID') || getVal(s, 'atleta_id'));
         
-        // Verifica se a atleta bate certo com o filtro
         let matchAtleta = (atletaSel === 'TODOS');
         if (!matchAtleta) {
             const atletaObj = DB.atletas.find(a => clean(getVal(a, 'nome')) === atletaSel);
-            const idAtletaObj = atletaObj ? clean(getVal(atletaObj, 'id')) : '';
+            const idAtletaObj = atletaObj ? clean(getVal(atletaObj, 'Atleta_ID') || getVal(atletaObj, 'id')) : '';
             
             matchAtleta = (nomeAtletaScout === atletaSel) || 
                           (idAtletaScout !== '' && idAtletaScout === idAtletaObj);
@@ -870,38 +868,57 @@ function atualizarPainelScout() {
     let zonasBaliza = { z1:0, z2:0, z3:0, z4:0, z5:0, z6:0, z7:0, z8:0, z9:0 };
 
     scoutFiltrado.forEach(s => {
-        const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado_remate'));
-        const orig = clean(getVal(s, 'Zona_Origem') || getVal(s, 'zona_origem'));
-        const zb = getVal(s, 'Zona_Baliza') || getVal(s, 'zona_baliza');
+        const res = clean(getVal(s, 'Resultado_Remate'));
+        const orig = clean(getVal(s, 'Zona_Origem'));
+        const acaoDef = clean(getVal(s, 'Acao_Defensiva'));
+        const zbRaw = getVal(s, 'Zona_Baliza');
 
-        const g = (res === 'golo') ? 1 : (parseInt(getVal(s, 'golos')) || 0);
-        const is7m = orig.includes('7m') || orig.includes('7 metros');
-        
-        totalRemates += 1;
-        totalGolos += g;
-
-        if (is7m) {
-            total7mTentativas += 1;
-            if (res === 'golo') total7mGolos += 1;
+        // 1. CÁLCULO DE MINUTOS (Diferença entre Saída e Entrada)
+        const minEntrada = parseInt(getVal(s, 'Minuto_Entrada'));
+        const minSaida = parseInt(getVal(s, 'Minuto_Saida'));
+        if (!isNaN(minEntrada) && !isNaN(minSaida) && minSaida > minEntrada) {
+            totalMinutos += (minSaida - minEntrada);
         }
 
-        if (res.includes('fora') || res.includes('poste') || res.includes('trave')) totalFora += 1;
-        if (res.includes('defesa gr')) totalDefesasSofridas += 1;
-        if (res.includes('bloco')) totalBlocos += 1;
-
-        if (zb && zonasBaliza['z' + zb] !== undefined) {
-            zonasBaliza['z' + zb] += 1;
+        // 2. EXTRAÇÃO DA ZONA DE BALIZA (Ex: "7 = Baixo-Esq" -> Pega o número 7)
+        if (zbRaw) {
+            const numMatch = zbRaw.match(/\d/); // Encontra o primeiro número na string
+            if (numMatch && res === 'golo') {
+                const zNum = numMatch[0];
+                if (zonasBaliza['z' + zNum] !== undefined) {
+                    zonasBaliza['z' + zNum] += 1;
+                }
+            }
         }
 
-        const defGR = parseInt(getVal(s, 'defesas_gr')) || parseInt(getVal(s, 'defesas')) || 0;
-        const remGR = parseInt(getVal(s, 'remates_sofridos_gr')) || parseInt(getVal(s, 'remates_gr')) || 0;
-        const def7mGR = parseInt(getVal(s, 'defesas_7m_gr')) || 0;
-        const rem7mGR = parseInt(getVal(s, '7m_sofridos_gr')) || 0;
+        // 3. ESTATÍSTICAS DE ATAQUE / REMATES
+        if (res !== "") {
+            totalRemates += 1;
+            const is7m = orig.includes('7m') || orig.includes('7 metros');
 
-        totalDefesasGR += defGR;
-        totalRematesContraGR += remGR;
-        defesas7mGR += def7mGR;
-        remates7mContraGR += rem7mGR;
+            if (res === 'golo') {
+                totalGolos += 1;
+                if (is7m) total7mGolos += 1;
+            } else if (res.includes('defesa gr')) {
+                totalDefesasSofridas += 1;
+            } else if (res.includes('fora') || res.includes('poste')) {
+                totalFora += 1;
+            } else if (res.includes('bloco')) {
+                totalBlocos += 1;
+            }
+
+            if (is7m) total7mTentativas += 1;
+        }
+
+        // 4. ESTATÍSTICAS DE GUARDA-REDES (Baseado na coluna Acao_Defensiva)
+        if (acaoDef.includes('defesa gr')) {
+            totalDefesasGR += 1;
+            totalRematesContraGR += 1;
+            if (orig.includes('7m')) {
+                defesas7mGR += 1;
+                remates7mContraGR += 1;
+            }
+        }
     });
 
     const eficGeral = totalRemates > 0 ? Math.round((totalGolos / totalRemates) * 100) : 0;
@@ -923,6 +940,7 @@ function atualizarPainelScout() {
             </div>
         </div>
 
+        <!-- SEÇÃO GUARDA-REDES -->
         <div style="background: white; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
             <h4 style="margin: 0 0 12px 0; font-weight: 900; text-align: center; color: var(--eac-dark); font-size: 0.85rem;">🧤 ESTATÍSTICAS GUARDA-REDES</h4>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
