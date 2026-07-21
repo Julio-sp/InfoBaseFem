@@ -211,11 +211,13 @@
 const LINKS_EPOCAS = {
     "2026/2027": {
         jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1515663193&single=true&output=csv",
-        scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=999011262&single=true&output=csv"
+        scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=999011262&single=true&output=csv",
+        scoutAvancado: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2008001682&single=true&output=csv"
     },
     "2025/2026": {
         jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
-        scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
+        scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv",
+        scoutAvancado: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2008001682&single=true&output=csv"
     }
 };
 
@@ -225,22 +227,21 @@ const LINKS_FIXOS = {
 };
 
 let epocaAtual = "2026/2027";
-let DB = { atletas: [], jogos: [], scout: [], convocados: [] };
+let DB = { atletas: [], jogos: [], scout: [], convocados: [], scoutAvancado: [] };
 
-// Função para obter os links ativos no momento com base na época
 function getLinksAtivos() {
     const epocaConfig = LINKS_EPOCAS[epocaAtual] || LINKS_EPOCAS["2026/2027"];
     return {
         ...LINKS_FIXOS,
         jogos: epocaConfig.jogos,
-        scout: epocaConfig.scout
+        scout: epocaConfig.scout,
+        scoutAvancado: epocaConfig.scoutAvancado
     };
 }
 
-// Função para mudar de época no site e recarregar os dados
 function mudarEpoca(novaEpoca) {
     epocaAtual = novaEpoca;
-    loadData(); // Chama o recarregamento dos dados
+    loadData(); 
 }
 
 const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
@@ -298,14 +299,16 @@ async function fetchCSV(url) {
 
 async function loadData() {
     try {
-        const links = getLinksAtivos(); // Obtém os links dinâmicos conforme a época selecionada
+        const links = getLinksAtivos();
 
-        const [jogos, convocados] = await Promise.all([
+        const [jogos, convocados, scoutAvancadoData] = await Promise.all([
             fetchCSV(links.jogos),
-            fetchCSV(links.convocados)
+            fetchCSV(links.convocados),
+            fetchCSV(links.scoutAvancado)
         ]);
         DB.jogos = jogos;
         DB.convocados = convocados;
+        DB.scoutAvancado = scoutAvancadoData;
         
         if (typeof renderHomeNext === "function") renderHomeNext();
         if (typeof renderNiverMenu === "function") renderNiverMenu();
@@ -323,6 +326,7 @@ async function loadData() {
         console.error("Erro no carregamento:", e);
     }
 }
+
 function buildConvocatoriaList(idJogo) {
     if (!DB.convocados || DB.convocados.length === 0) return "";
     const idJogoLimpo = String(idJogo).trim();
@@ -409,6 +413,7 @@ function renderJogos(filtro) {
     if(html !== "") html += `</div>`;
     document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
 }
+
 function toggleMonth(id) {
     const content = document.getElementById('month-' + id);
     const icon = document.getElementById('icon-' + id);
@@ -431,7 +436,7 @@ function openJogo(id) {
             <div style="margin-top:25px">
                 ${sc.map(s => {
                     const temVermelho = parseInt(getVal(s, 'vermelhos')) > 0;
-                    const temAzul = parseInt(getVal(s, 'azuis')) > 0; // Nova coluna adicionada
+                    const temAzul = parseInt(getVal(s, 'azuis')) > 0;
                     
                     let cartoes = '';
                     if (temVermelho) cartoes += '🟥';
@@ -510,7 +515,7 @@ function openAtleta(nome, escalaoFiltro = '') {
             <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:130px; height:130px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1)" onerror="this.src='logo.png'">
             <h1 style="margin: 20px 0 5px 0; font-size: 1.6rem; font-weight: 900">${getVal(a, 'nome')}</h1>
             <div style="margin-bottom: 25px">
-                <span class="info-pill">🎂 ${getVal(a, 'nascimento')}</span>
+                <span class="info-pill">🎂 ${getVal(a, 'nascimento')} (${calcularIdade(getVal(a, 'nascimento'))})</span>
                 <span class="info-pill">🏆 ${escalaoFiltro || getVal(a, 'escalão')}</span>
                 <span class="info-pill">🎽 Nº ${getVal(a, 'número')}</span>
             </div>
@@ -545,7 +550,7 @@ function openAtleta(nome, escalaoFiltro = '') {
 }
 
 function renderArt(filtro) {
-    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b =>  
+    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
     let atletasUnicos = new Map();
     DB.atletas.forEach(atleta => {
@@ -571,7 +576,7 @@ function renderArt(filtro) {
 }
 
 function renderParticipacoes(filtro) {
-    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b =>  
+    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderParticipacoes('${b}')">${b}</button>`).join('');
     let atletasUnicos = new Map();
     DB.atletas.forEach(atleta => {
@@ -691,20 +696,159 @@ function showView(v, p = '') {
     window.scrollTo(0,0);
 }
 
+// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO)
 function renderPainel() {
     document.getElementById('viewContent').innerHTML = `
         <div id="login-form" style="text-align:center; padding: 20px;">
-            <h3>🔒 ACESSO RESTRITO</h3>
-            <input type="password" id="senha-input" placeholder="Senha..." style="padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 10px;">
+            <h3>🔒 ACESSO RESTRITO - COORDENAÇÃO</h3>
+            <input type="password" id="senha-input" placeholder="Senha de acesso..." style="padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 10px; width: 80%; max-width: 300px;">
             <br>
             <button onclick="validarSenha()" style="padding: 10px 20px; background: var(--eac-dark); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">ENTRAR</button>
         </div>
-        <div id="conteudo-painel" style="display:none; padding: 20px;">
-            <h2 id="titulo-pergunta">Carregando...</h2>
-            <div id="exibicao-pergunta"></div>
-            <div class="nav-buttons" style="margin-top:20px; display:flex; justify-center:center; gap:10px;">
-                <button onclick="mudarPergunta(-1)">Anterior</button>
-                <button onclick="mudarPergunta(1)">Próximo</button>
+        <div id="conteudo-painel" style="display:none; padding: 10px;">
+            <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:20px; text-align:center;">📊 PAINEL SCOUT AVANÇADO</h2>
+            
+            <div style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 140px;">
+                        <label style="font-size: 0.75rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">FILTRAR JOGO</label>
+                        <select id="filtro-jogo" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
+                            <option value="TODOS">Todos os Jogos</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 140px;">
+                        <label style="font-size: 0.75rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">FILTRAR ATLETA</label>
+                        <select id="filtro-atleta" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
+                            <option value="TODOS">Todas as Atletas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="estatisticas-scout"></div>
+        </div>
+    `;
+}
+
+function validarSenha() {
+    const senha = document.getElementById('senha-input').value;
+    if (senha === "eac2026") { 
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('conteudo-painel').style.display = 'block';
+        carregarOpcoesFiltroPainel();
+        atualizarPainelScout();
+    } else {
+        alert("Senha incorreta!");
+    }
+}
+
+function carregarOpcoesFiltroPainel() {
+    const selJogo = document.getElementById('filtro-jogo');
+    const selAtleta = document.getElementById('filtro-atleta');
+
+    if (!selJogo || !selAtleta) return;
+
+    selJogo.innerHTML = '<option value="TODOS">Todos os Jogos</option>';
+    selAtleta.innerHTML = '<option value="TODOS">Todas as Atletas</option>';
+
+    DB.jogos.forEach(j => {
+        const id = getVal(j, 'id');
+        const adv = getVal(j, 'adversário');
+        const esc = getVal(j, 'escalao');
+        if (id) selJogo.innerHTML += `<option value="${id}">${esc} vs ${adv}</option>`;
+    });
+
+    let atletasLista = [...DB.atletas];
+    atletasLista.sort((a,b) => getVal(a, 'nome').localeCompare(getVal(b, 'nome')));
+    atletasLista.forEach(a => {
+        const nome = getVal(a, 'nome');
+        if (nome) selAtleta.innerHTML += `<option value="${clean(nome)}">${nome}</option>`;
+    });
+}
+
+function atualizarPainelScout() {
+    const idJogoSel = document.getElementById('filtro-jogo').value;
+    const atletaSel = document.getElementById('filtro-atleta').value;
+
+    let scoutFiltrado = DB.scoutAvancado.filter(s => {
+        const matchJogo = (idJogoSel === 'TODOS') || (getVal(s, 'jogo_id') == idJogoSel);
+        const matchAtleta = (atletaSel === 'TODOS') || (clean(getVal(s, 'nome')) === atletaSel);
+        return matchJogo && matchAtleta;
+    });
+
+    let totalGolos = 0;
+    let totalRemates = 0;
+    let total7mGolos = 0;
+    let total7mTentativas = 0;
+    let totalFora = 0;
+    let totalDefesasSofridas = 0;
+    let totalBlocos = 0;
+
+    let zonasBaliza = { z1:0, z2:0, z3:0, z4:0, z5:0, z6:0, z7:0, z8:0, z9:0 };
+
+    scoutFiltrado.forEach(s => {
+        const g = parseInt(getVal(s, 'golos')) || 0;
+        const r = parseInt(getVal(s, 'remates_totais')) || parseInt(getVal(s, 'remates')) || 0;
+        const g7 = parseInt(getVal(s, '7m_golos')) || 0;
+        const r7 = parseInt(getVal(s, '7m_totais')) || 0;
+        const rf = parseInt(getVal(s, 'remates_fora')) || 0;
+        const ds = parseInt(getVal(s, 'defesas_sofridas')) || 0;
+        const bl = parseInt(getVal(s, 'blocos')) || 0;
+
+        totalGolos += g;
+        totalRemates += r;
+        total7mGolos += g7;
+        total7mTentativas += r7;
+        totalFora += rf;
+        totalDefesasSofridas += ds;
+        totalBlocos += bl;
+
+        for(let i=1; i<=9; i++) {
+            zonasBaliza['z'+i] += parseInt(getVal(s, 'z'+i)) || 0;
+        }
+    });
+
+    const eficGeral = totalRemates > 0 ? Math.round((totalGolos / totalRemates) * 100) : 0;
+    const efic7m = total7mTentativas > 0 ? Math.round((total7mGolos / total7mTentativas) * 100) : 0;
+
+    document.getElementById('estatisticas-scout').innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+            <div style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; display: block;">Remates Totais</span>
+                <span style="font-size: 1.8rem; font-weight: 900; color: var(--eac-dark);">${totalGolos} / ${totalRemates}</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: var(--verde); background: #dcfce7; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 5px;">Eficácia: ${eficGeral}%</span>
+            </div>
+            <div style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; display: block;">7 Metros</span>
+                <span style="font-size: 1.8rem; font-weight: 900; color: var(--azul);">${total7mGolos} / ${total7mTentativas}</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: var(--azul); background: #dbeafe; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 5px;">Eficácia: ${efic7m}%</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px;">
+            <div style="background: white; padding: 12px 5px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">Fora / Poste</span>
+                <span style="font-size: 1.2rem; font-weight: 900; color: var(--vermelho);">${totalFora}</span>
+            </div>
+            <div style="background: white; padding: 12px 5px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">Defesas GR</span>
+                <span style="font-size: 1.2rem; font-weight: 900; color: #eab308;">${totalDefesasSofridas}</span>
+            </div>
+            <div style="background: white; padding: 12px 5px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">Blocos</span>
+                <span style="font-size: 1.2rem; font-weight: 900; color: #64748b;">${totalBlocos}</span>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <h4 style="margin: 0 0 15px 0; font-weight: 900; text-align: center; color: var(--eac-dark); font-size: 0.95rem;">🎯 ZONAS DOS GOLOS (MAPA BALIZA)</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #0f172a; padding: 12px; border-radius: 12px; border: 4px solid #334155;">
+                ${[1,2,3,4,5,6,7,8,9].map(z => `
+                    <div style="background: #1e293b; color: white; padding: 15px 5px; border-radius: 8px; text-align: center; border: 1px dashed #475569;">
+                        <span style="font-size: 0.6rem; color: #94a3b8; display: block;">ZONA ${z}</span>
+                        <span style="font-size: 1.2rem; font-weight: 900; color: #4ade80;">${zonasBaliza['z'+z]}</span>
+                    </div>
+                `).join('')}
             </div>
         </div>
     `;
@@ -808,46 +952,6 @@ styleFrase.innerHTML = `
     @keyframes fadeOutDown { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100px); opacity: 0; } }
 `;
 document.head.appendChild(styleFrase);
-
-// Painel e Pesquisas
-let dados = [];
-let indiceAtual = 0;
-
-function validarSenha() {
-    const senha = document.getElementById('senha-input').value;
-    if (senha === "eac2026") { 
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('conteudo-painel').style.display = 'block';
-        // A linha buscarDados() foi removida daqui!
-    } else {
-        alert("Senha incorreta!");
-    }
-}
-
-function renderizar() {
-    if (!dados.length) return;
-    const p = dados[indiceAtual];
-    document.getElementById('titulo-pergunta').innerText = p.titulo;
-    
-    document.getElementById('exibicao-pergunta').innerHTML = `
-        <div style="font-size: 2em; font-weight: bold; color: #2c3e50;">⭐ ${p.media}</div>
-        <p>Média de ${p.totalVotos} votos</p>
-        <button onclick="toggleDetalhes()">Ver Detalhes</button>
-        <div id="detalhes-votos" style="display:none; margin-top:15px; text-align: left;">
-            ${[1, 2, 3, 4, 5].map(i => `<div>${i} Estrela(s): ${p.contagem[i]} voto(s)</div>`).join('')}
-        </div>
-    `;
-}
-
-function mudarPergunta(dir) {
-    indiceAtual = Math.max(0, Math.min(dados.length - 1, indiceAtual + dir));
-    renderizar(); 
-}
-
-function toggleDetalhes() {
-    const d = document.getElementById('detalhes-votos');
-    d.style.display = d.style.display === 'none' ? 'block' : 'none';
-}
 
 window.onload = () => {
     loadData();
