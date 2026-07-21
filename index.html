@@ -170,12 +170,10 @@
             <a href="https://www.instagram.com/reel/DVbrLmfiEl5/?igsh=MTRpemFiYnlydHJmaQ==" target="_blank" style="color: #60a5fa;">📺 TREINO • MUN. ESTARREJA ↗</a>
             <a href="https://www.instagram.com/reel/DVeNtCwCKrv/?igsh=MTQyZDM5MXlkamFxdQ==" target="_blank" style="color: #60a5fa;">📺 TREINO • SECUNDÁRIA ↗</a>
         </div>
-    </div>
-</div>
         <a onclick="showPlaylist()">🎧 RITMO DE JOGO</a>
-<a onclick="toggleSub('sub-restrito')">🔒 COORDENAÇÃO ▼</a>
+        <a onclick="toggleSub('sub-restrito')">🔒 COORDENAÇÃO ▼</a>
         <div id="sub-restrito" class="submenu">
-           <a onclick="showView('painel')">🔹 DADOS PROTEGIDOS</a>
+            <a onclick="showView('painel')">🔹 DADOS PROTEGIDOS</a>
         </div>
     </div>
 </div>
@@ -186,9 +184,6 @@
         <div class="adn-word w-white">COMPROMISSO</div>
         <div class="adn-word w-black">UNIÃO</div>
     </div>
-
-    <!-- O bloco estático do próximo jogo foi removido daqui para evitar duplicações, 
-         já que a função renderHomeNext() gera este card dinamicamente com dados reais -->
 
     <div id="homeNext">
         <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
@@ -477,8 +472,8 @@ function openAtleta(nome, escalaoFiltro = '') {
     const totalG = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
     const totalE = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
     const totalV = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'vermelhos')) || 0), 0);
-    const totalA = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'azuis')) || 0), 0); // Soma de azuis
-    const totalC = totalV + totalA; // Total geral de cartões disciplinar
+    const totalA = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'azuis')) || 0), 0); 
+    const totalC = totalV + totalA; 
     const totalJ = sc.length;
 
     const formatHistList = (lista, campo) => {
@@ -548,6 +543,7 @@ function openAtleta(nome, escalaoFiltro = '') {
         </div>`;
     document.getElementById('detailPane').classList.add('open');
 }
+
 function renderArt(filtro) {
     document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b =>  
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
@@ -613,16 +609,13 @@ function renderAtletas(esc) {
     list.map(a => `<div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}', '${esc}')"><img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'"><div><strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong><span style="color:#64748b; font-weight:800; font-size: 0.75rem">🎽 ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span></div></div>`).join('');
 }
 
-// === FUNÇÃO REFORMULADA COM FILTRAGEM POR MINUTO EXATO ===
 function renderHomeNext() {
     if(!DB.jogos.length) return;
-    const agora = new Date(); // Captura data e hora exatas do sistema
+    const agora = new Date(); 
     
     const proximos = DB.jogos
         .filter(j => {
-            // Combina a data e a hora da linha numa instância real de Date do JS
             const dataHoraJogo = parseDateTime(getVal(j, 'data'), getVal(j, 'hora'));
-            // Só exibe se a hora do jogo for igual ou superior ao momento atual E não tiver golos preenchidos
             return dataHoraJogo >= agora && !getVal(j, 'gols_eac');
         })
         .sort((a,b) => {
@@ -683,8 +676,10 @@ function showView(v, p = '') {
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
     document.getElementById('viewContent').innerHTML = ""; document.getElementById('filterArea').innerHTML = "";
-    if(v === 'home') { document.getElementById('home').classList.add('active'); renderHomeNext(); }
-    else { 
+    if(v === 'home') { 
+        document.getElementById('home').classList.add('active'); 
+        renderHomeNext(); 
+    } else { 
         document.getElementById('mainView').classList.add('active'); 
         if(v === 'jogos') renderJogos('TODOS'); 
         else if(v === 'atletas') renderAtletas(p); 
@@ -695,32 +690,24 @@ function showView(v, p = '') {
     }
     window.scrollTo(0,0);
 }
-    function renderPainel() {
+
+function renderPainel() {
     document.getElementById('viewContent').innerHTML = `
         <div id="login-form" style="text-align:center; padding: 20px;">
             <h3>🔒 ACESSO RESTRITO</h3>
-            <input type="password" id="senha-input" placeholder="Senha...">
-            <button onclick="validarSenha()">ENTRAR</button>
+            <input type="password" id="senha-input" placeholder="Senha..." style="padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 10px;">
+            <br>
+            <button onclick="validarSenha()" style="padding: 10px 20px; background: var(--eac-dark); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">ENTRAR</button>
         </div>
         <div id="conteudo-painel" style="display:none; padding: 20px;">
             <h2 id="titulo-pergunta">Carregando...</h2>
             <div id="exibicao-pergunta"></div>
-            <div class="nav-buttons">
+            <div class="nav-buttons" style="margin-top:20px; display:flex; justify-center:center; gap:10px;">
                 <button onclick="mudarPergunta(-1)">Anterior</button>
                 <button onclick="mudarPergunta(1)">Próximo</button>
             </div>
         </div>
     `;
-}
-    function validarSenha() {
-    const senha = document.getElementById('senha-input').value;
-    if (senha === "eac2026") { 
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('conteudo-painel').style.display = 'block';
-        buscarDados(); // Esta função 'buscarDados' e as outras (renderizar, mudarPergunta) também devem estar no seu arquivo JS
-    } else {
-        alert("Senha incorreta!");
-    }
 }
 
 function toggleStatHistory(type) { 
@@ -774,12 +761,17 @@ function showAcademy(tipo) {
         </div>`;
 }
 
-function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }
+function handleLogin() { 
+    if(prompt("Senha:") === "eac2026") { 
+        document.getElementById('menu-artilharia').style.display='block'; 
+        document.getElementById('lock-btn').innerText="🔓"; 
+    } 
+}
 
 const frasesEAC = [
     "A vitória começa no treino de hoje! 💪",
     "Honra a camisola em cada lance. Raça, EAC!",
-    "O teu esforço de hoje é o teu success de amanhã. 🚀",
+    "O teu esforço de hoje é o teu sucesso de amanhã. 🚀",
     "O talento ganha jogos, o trabalho em equipa ganha campeonatos. 🏆",
     "Foco no processo, o resultado será uma consequência.",
     "A tua melhor versão é aquela que ajuda a equipa a crescer."
@@ -817,87 +809,57 @@ styleFrase.innerHTML = `
 `;
 document.head.appendChild(styleFrase);
 
-window.onload = () => {
-    loadData();
-    setTimeout(mostrarFraseInspiradora, 2000); 
-};
-</script>
-    <!-- Container do Painel (Oculto inicialmente) -->
-<div id="view-painel" class="view" style="display:none; text-align:center; padding: 20px;">
-    <div id="login-form">
-        <h3>🔒 ACESSO RESTRITO</h3>
-        <input type="password" id="senha-input" placeholder="Digite a senha...">
-        <button onclick="validarSenha()">ENTRAR</button>
-    </div>
-    <div id="conteudo-painel" style="display:none; margin-top: 20px;">
-        <iframe 
-            width="100%" 
-            height="800" 
-            src="https://datastudio.google.com/embed/reporting/80f90e1c-ec29-4ab1-abf2-a01aed511dc5/page/p_cjm2giak5d" 
-            frameborder="0" 
-            style="border:0" 
-            allowfullscreen 
-            sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
-        </iframe>
-    </div>
-    <div id="conteudo-painel" style="display:none;">
-        <h2 id="titulo-pergunta">Carregando...</h2>
-        <div id="exibicao-pergunta"></div>
-        <button onclick="mudarPergunta(-1)">Anterior</button>
-        <button onclick="mudarPergunta(1)">Próximo</button>
-    </div>
-</div>
-    <script>
-    // 1. Função de Validação de Senha
-    function validarSenha() {
-        const senha = document.getElementById('senha-input').value;
-        if (senha === "eac2026") { // Ajuste a senha aqui se desejar
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('conteudo-painel').style.display = 'block';
-            buscarDados(); // Inicia o carregamento da planilha
-        } else {
-            alert("Senha incorreta!");
-        }
+// Painel e Pesquisas
+let dados = [];
+let indiceAtual = 0;
+
+function validarSenha() {
+    const senha = document.getElementById('senha-input').value;
+    if (senha === "eac2026") { 
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('conteudo-painel').style.display = 'block';
+        buscarDados(); 
+    } else {
+        alert("Senha incorreta!");
     }
-        // 2. Função que carrega a planilha (A mesma que usamos antes)
-    let dados = [];
-    let indiceAtual = 0;
-    const colunasTexto = ['G','M','R','W','AB','AF','AG','AM','AN','AO'];
-
-  async function buscarDados() {
-    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYPGCKAs-MiM-pofVu5bUqA-S_SA16ndk6muHYap6PdWsZ00VICpHEdTQgqgbALTqFaAsaVb_3GQya/pub?output=csv';
-    const res = await fetch(url);
-    const texto = await res.text();
-    const linhas = texto.split('\n');
-    const titulos = linhas[0].split(',');
-    
-    // O slice(2) pula a coluna A e B, começando os dados na coluna C
-    dados = titulos.slice(2).map((t, i) => {
-        // Ajustamos o índice para pular as 2 primeiras colunas (A e B)
-        let valores = linhas.slice(1).map(linha => {
-            let colunas = linha.split(',');
-            return colunas[i + 3] ? parseInt(colunas[i + 3]) : 0;
-        }).filter(v => v > 0); 
-
-        let soma = valores.reduce((a, b) => a + b, 0);
-        let media = valores.length > 0 ? (soma / valores.length).toFixed(1) : 0;
-        
-        let contagem = [0, 0, 0, 0, 0, 0];
-        valores.forEach(v => { if(v >= 1 && v <= 5) contagem[v]++; });
-
-        return {
-            titulo: t.replace(/"/g, ''),
-            media: media,
-            totalVotos: valores.length,
-            contagem: contagem
-        };
-    });
-    // Reseta o índice para garantir que comece na primeira pergunta disponível
-    indiceAtual = 0; 
-    renderizar();
 }
 
-    function renderizar() {
+async function buscarDados() {
+    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYPGCKAs-MiM-pofVu5bUqA-S_SA16ndk6muHYap6PdWsZ00VICpHEdTQgqgbALTqFaAsaVb_3GQya/pub?output=csv';
+    try {
+        const res = await fetch(url);
+        const texto = await res.text();
+        const linhas = texto.split('\n');
+        const titulos = linhas[0].split(',');
+        
+        dados = titulos.slice(2).map((t, i) => {
+            let valores = linhas.slice(1).map(linha => {
+                let colunas = linha.split(',');
+                return colunas[i + 3] ? parseInt(colunas[i + 3]) : 0;
+            }).filter(v => v > 0); 
+
+            let soma = valores.reduce((a, b) => a + b, 0);
+            let media = valores.length > 0 ? (soma / valores.length).toFixed(1) : 0;
+            
+            let contagem = [0, 0, 0, 0, 0, 0];
+            valores.forEach(v => { if(v >= 1 && v <= 5) contagem[v]++; });
+
+            return {
+                titulo: t.replace(/"/g, ''),
+                media: media,
+                totalVotos: valores.length,
+                contagem: contagem
+            };
+        });
+        indiceAtual = 0; 
+        renderizar();
+    } catch(e) {
+        console.error("Erro ao carregar painel:", e);
+    }
+}
+
+function renderizar() {
+    if (!dados.length) return;
     const p = dados[indiceAtual];
     document.getElementById('titulo-pergunta').innerText = p.titulo;
     
@@ -910,17 +872,21 @@ window.onload = () => {
         </div>
     `;
 }
-        function mudarPergunta(dir) {
-    // Garante que o índice não fique negativo nem maior que o número de colunas
+
+function mudarPergunta(dir) {
     indiceAtual = Math.max(0, Math.min(dados.length - 1, indiceAtual + dir));
-    renderizar(); // Esta função redesenha a tela com a nova pergunta
+    renderizar(); 
 }
 
-// Função para mostrar/esconder detalhes
 function toggleDetalhes() {
     const d = document.getElementById('detalhes-votos');
     d.style.display = d.style.display === 'none' ? 'block' : 'none';
 }
+
+window.onload = () => {
+    loadData();
+    setTimeout(mostrarFraseInspiradora, 2000); 
+};
 </script>
 </body>
 </html>
