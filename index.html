@@ -707,12 +707,14 @@ function showView(v, p = '') {
     window.scrollTo(0,0);
 }
 
-// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO COM GUARDA-REDES, MINUTOS E FILTRO DE ESCALÃO)
+// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO COM ATALHO TECLA ENTER)
 function renderPainel() {
     document.getElementById('viewContent').innerHTML = `
         <div id="login-form" style="text-align:center; padding: 20px;">
             <h3>🔒 ACESSO RESTRITO - COORDENAÇÃO</h3>
-            <input type="password" id="senha-input" placeholder="Senha de acesso..." style="padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 10px; width: 80%; max-width: 300px;">
+            <input type="password" id="senha-input" placeholder="Senha de acesso..." 
+                   onkeydown="if(event.key === 'Enter') validarSenha()" 
+                   style="padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 10px; width: 80%; max-width: 300px;">
             <br>
             <button onclick="validarSenha()" style="padding: 10px 20px; background: var(--eac-dark); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">ENTRAR</button>
         </div>
