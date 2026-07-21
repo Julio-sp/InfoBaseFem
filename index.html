@@ -229,6 +229,25 @@ const LINKS_FIXOS = {
 let epocaAtual = "2026/2027";
 let DB = { atletas: [], jogos: [], scout: [], convocados: [], scoutAvancado: [] };
 
+// SISTEMA DE SESSÃO COM EXPIRAÇÃO DE 10 MINUTOS
+const SESSION_TIMEOUT = 10 * 60 * 1000; // 10 Minutos em milissegundos
+
+function sessaoValida() {
+    const authTime = localStorage.getItem('eac_auth_time');
+    if (!authTime) return false;
+    if (Date.now() - parseInt(authTime) > SESSION_TIMEOUT) {
+        localStorage.removeItem('eac_auth_time');
+        return false;
+    }
+    return true;
+}
+
+function renovarSessao() {
+    localStorage.setItem('eac_auth_time', Date.now().toString());
+    document.getElementById('menu-artilharia').style.display = 'block';
+    document.getElementById('lock-btn').innerText = "🔓";
+}
+
 function getLinksAtivos() {
     const epocaConfig = LINKS_EPOCAS[epocaAtual] || LINKS_EPOCAS["2026/2027"];
     return {
@@ -322,6 +341,10 @@ async function loadData() {
         fetchCSV(links.scout).then(data => {
             DB.scout = data;
         });
+
+        if (sessaoValida()) {
+            renovarSessao();
+        }
     } catch (e) {
         console.error("Erro no carregamento:", e);
     }
@@ -515,8 +538,7 @@ function openAtleta(nome, escalaoFiltro = '') {
                 </div>`;
         }).join('') || '<div style="padding: 15px; text-align: center; color: #94a3b8; font-size: 0.8rem;">Nenhum registro.</div>';
     };
-
-    document.getElementById('detailBody').innerHTML = `
+document.getElementById('detailBody').innerHTML = `
         <div style="background: linear-gradient(180deg, #f8fafc 0%, white 100%); padding: 45px 20px; text-align:center">
             <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:130px; height:130px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1)" onerror="this.src='logo.png'">
             <h1 style="margin: 20px 0 5px 0; font-size: 1.6rem; font-weight: 900">${getVal(a, 'nome')}</h1>
@@ -707,10 +729,12 @@ function showView(v, p = '') {
     window.scrollTo(0,0);
 }
 
-// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO COM ATALHO TECLA ENTER)
+// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO COM ATALHO TECLA ENTER E AUTENTICAÇÃO TEMPORÁRIA)
 function renderPainel() {
+    const estaAutenticado = sessaoValida();
+    
     document.getElementById('viewContent').innerHTML = `
-        <div id="login-form" style="text-align:center; padding: 20px;">
+        <div id="login-form" style="text-align:center; padding: 20px; display: ${estaAutenticado ? 'none' : 'block'};">
             <h3>🔒 ACESSO RESTRITO - COORDENAÇÃO</h3>
             <input type="password" id="senha-input" placeholder="Senha de acesso..." 
                    onkeydown="if(event.key === 'Enter') validarSenha()" 
@@ -718,7 +742,7 @@ function renderPainel() {
             <br>
             <button onclick="validarSenha()" style="padding: 10px 20px; background: var(--eac-dark); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">ENTRAR</button>
         </div>
-        <div id="conteudo-painel" style="display:none; padding: 10px;">
+        <div id="conteudo-painel" style="display: ${estaAutenticado ? 'block' : 'none'}; padding: 10px;">
             <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:20px; text-align:center;">📊 PAINEL SCOUT AVANÇADO</h2>
             
             <div style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
@@ -749,11 +773,17 @@ function renderPainel() {
             <div id="estatisticas-scout"></div>
         </div>
     `;
+
+    if (estaAutenticado) {
+        carregarOpcoesFiltroPainel();
+        atualizarPainelScout();
+    }
 }
 
 function validarSenha() {
     const senha = document.getElementById('senha-input').value;
     if (senha === "eac2026") { 
+        renovarSessao();
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('conteudo-painel').style.display = 'block';
         carregarOpcoesFiltroPainel();
@@ -779,7 +809,6 @@ function carregarOpcoesFiltroPainel() {
         if (id) selJogo.innerHTML += `<option value="${id}">${esc} vs ${adv}</option>`;
     });
 
-    // Remoção automática de duplicados na lista do filtro de atletas
     let nomesProcessados = new Set();
     let atletasUnicas = [];
 
@@ -819,7 +848,6 @@ function atualizarPainelScout() {
     let totalBlocos = 0;
     let totalMinutos = 0;
 
-    // Estatísticas de Guarda-Redes (GR)
     let totalDefesasGR = 0;
     let totalRematesContraGR = 0;
     let defesas7mGR = 0;
@@ -828,25 +856,29 @@ function atualizarPainelScout() {
     let zonasBaliza = { z1:0, z2:0, z3:0, z4:0, z5:0, z6:0, z7:0, z8:0, z9:0 };
 
     scoutFiltrado.forEach(s => {
-        const g = parseInt(getVal(s, 'golos')) || 0;
-        const r = parseInt(getVal(s, 'remates_totais')) || parseInt(getVal(s, 'remates')) || 0;
-        const g7 = parseInt(getVal(s, '7m_golos')) || 0;
-        const r7 = parseInt(getVal(s, '7m_totais')) || 0;
-        const rf = parseInt(getVal(s, 'remates_fora')) || 0;
-        const ds = parseInt(getVal(s, 'defesas_sofridas')) || 0;
-        const bl = parseInt(getVal(s, 'blocos')) || 0;
-        const min = parseInt(getVal(s, 'minutos')) || parseInt(getVal(s, 'min_jogados')) || 0;
+        const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado_remate'));
+        const orig = clean(getVal(s, 'Zona_Origem') || getVal(s, 'zona_origem'));
+        const zb = getVal(s, 'Zona_Baliza') || getVal(s, 'zona_baliza');
 
+        const g = (res === 'golo') ? 1 : (parseInt(getVal(s, 'golos')) || 0);
+        const is7m = orig.includes('7m') || orig.includes('7 metros');
+        
+        totalRemates += 1;
         totalGolos += g;
-        totalRemates += r;
-        total7mGolos += g7;
-        total7mTentativas += r7;
-        totalFora += rf;
-        totalDefesasSofridas += ds;
-        totalBlocos += bl;
-        totalMinutos += min;
 
-        // Dados específicos GR
+        if (is7m) {
+            total7mTentativas += 1;
+            if (res === 'golo') total7mGolos += 1;
+        }
+
+        if (res.includes('fora') || res.includes('poste') || res.includes('trave')) totalFora += 1;
+        if (res.includes('defesa gr')) totalDefesasSofridas += 1;
+        if (res.includes('bloco')) totalBlocos += 1;
+
+        if (zb && zonasBaliza['z' + zb] !== undefined) {
+            zonasBaliza['z' + zb] += 1;
+        }
+
         const defGR = parseInt(getVal(s, 'defesas_gr')) || parseInt(getVal(s, 'defesas')) || 0;
         const remGR = parseInt(getVal(s, 'remates_sofridos_gr')) || parseInt(getVal(s, 'remates_gr')) || 0;
         const def7mGR = parseInt(getVal(s, 'defesas_7m_gr')) || 0;
@@ -856,10 +888,6 @@ function atualizarPainelScout() {
         totalRematesContraGR += remGR;
         defesas7mGR += def7mGR;
         remates7mContraGR += rem7mGR;
-
-        for(let i=1; i<=9; i++) {
-            zonasBaliza['z'+i] += parseInt(getVal(s, 'z'+i)) || 0;
-        }
     });
 
     const eficGeral = totalRemates > 0 ? Math.round((totalGolos / totalRemates) * 100) : 0;
@@ -881,7 +909,6 @@ function atualizarPainelScout() {
             </div>
         </div>
 
-        <!-- SEÇÃO GUARDA-REDES -->
         <div style="background: white; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
             <h4 style="margin: 0 0 12px 0; font-weight: 900; text-align: center; color: var(--eac-dark); font-size: 0.85rem;">🧤 ESTATÍSTICAS GUARDA-REDES</h4>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
@@ -955,7 +982,6 @@ function showPlaylist() {
             <button onclick="showView('home')" style="margin-top: 30px; padding: 12px 25px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem;">⬅ VOLTAR AO INÍCIO</button>
         </div>`;
 }
-
 function showAcademy(tipo) {
     showView('custom'); 
     const baseURL = "https://raw.githubusercontent.com/Julio-sp/InfoBaseFem/main/fotos/";
@@ -984,9 +1010,11 @@ function showAcademy(tipo) {
 
 function handleLogin() { 
     if(prompt("Senha:") === "eac2026") { 
-        document.getElementById('menu-artilharia').style.display='block'; 
-        document.getElementById('lock-btn').innerText="🔓"; 
-    } 
+        renovarSessao();
+        alert("Acesso restrito concedido por 10 minutos!");
+    } else {
+        alert("Senha incorreta!");
+    }
 }
 
 const frasesEAC = [
