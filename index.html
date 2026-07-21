@@ -462,7 +462,7 @@ function openAtleta(nome, escalaoFiltro = '') {
     let sc = DB.scout.filter(s => {
         const matchesNome = clean(getVal(s, 'nome')) === clean(nome);
         if (!matchesNome) return false;
-        if (!escalaoFiltro || clean(escalaoFiltro) === 'geral') return true;
+        if (!escalaoFiltro || clean(escalaoFiltro) === 'geral' || clean(escalaoFiltro) === 'todos') return true;
         const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
         return jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
     });
@@ -480,11 +480,15 @@ function openAtleta(nome, escalaoFiltro = '') {
     const totalA = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'azuis')) || 0), 0); 
     const totalC = totalV + totalA; 
     const totalJ = sc.length;
+    const totalMin = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'minutos')) || parseInt(getVal(v, 'min_jogados')) || 0), 0);
 
     const formatHistList = (lista, campo) => {
         const filtrada = campo === 'jogos' ? lista : lista.filter(s => {
             if (campo === 'vermelhos') {
                 return (parseInt(getVal(s, 'vermelhos')) > 0 || parseInt(getVal(s, 'azuis')) > 0);
+            }
+            if (campo === 'minutos') {
+                return (parseInt(getVal(s, 'minutos')) || parseInt(getVal(s, 'min_jogados')) || 0) > 0;
             }
             return parseInt(getVal(s, campo)) > 0;
         });
@@ -498,6 +502,8 @@ function openAtleta(nome, escalaoFiltro = '') {
                 if (parseInt(getVal(s, 'vermelhos')) > 0) displayCartoes += '🟥';
                 if (parseInt(getVal(s, 'azuis')) > 0) displayCartoes += '🟦';
                 val = displayCartoes;
+            } else if (campo === 'minutos') {
+                val = (getVal(s, 'minutos') || getVal(s, 'min_jogados') || 0) + "'";
             }
             
             return `
@@ -520,27 +526,32 @@ function openAtleta(nome, escalaoFiltro = '') {
                 <span class="info-pill">🎽 Nº ${getVal(a, 'número')}</span>
             </div>
             
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; max-width: 500px; margin: 0 auto">
+            <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:6px; max-width: 550px; margin: 0 auto">
                 <div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')">
                     <span class="stat-val">${totalG}</span>
-                    <span class="stat-label" style="font-size:0.55rem;">Golos ▼</span>
+                    <span class="stat-label" style="font-size:0.5rem;">Golos ▼</span>
+                </div>
+                <div class="stat-card" style="background: #0284c7" onclick="toggleStatHistory('minutos')">
+                    <span class="stat-val">${totalMin}'</span>
+                    <span class="stat-label" style="font-size:0.5rem;">Minutos ▼</span>
                 </div>
                 <div class="stat-card" style="background: #1e293b" onclick="toggleStatHistory('excl')">
                     <span class="stat-val">${totalE}</span>
-                    <span class="stat-label" style="font-size:0.55rem;">2 Min ▼</span>
+                    <span class="stat-label" style="font-size:0.5rem;">2 Min ▼</span>
                 </div>
                 <div class="stat-card" style="background: var(--verde)" onclick="toggleStatHistory('jogos')">
                     <span class="stat-val">${totalJ}</span>
-                    <span class="stat-label" style="font-size:0.55rem;">Jogos ▼</span>
+                    <span class="stat-label" style="font-size:0.5rem;">Jogos ▼</span>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #ef4444 50%, #3b82f6 50%)" onclick="toggleStatHistory('vermelhos')">
                     <span class="stat-val">${totalC}</span>
-                    <span class="stat-label" style="font-size:0.55rem;">Cartões ▼</span>
+                    <span class="stat-label" style="font-size:0.5rem;">Cartões ▼</span>
                 </div>
             </div>
 
-            <div style="max-width: 500px; margin: 15px auto 0 auto;">
+            <div style="max-width: 550px; margin: 15px auto 0 auto;">
                 <div id="hist-golos" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'golos')}</div>
+                <div id="hist-minutos" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'minutos')}</div>
                 <div id="hist-excl" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'exclusoes')}</div>
                 <div id="hist-jogos" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'jogos')}</div>
                 <div id="hist-vermelhos" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'vermelhos')}</div>
@@ -696,7 +707,7 @@ function showView(v, p = '') {
     window.scrollTo(0,0);
 }
 
-// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO)
+// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO COM GUARDA-REDES, MINUTOS E FILTRO DE ESCALÃO)
 function renderPainel() {
     document.getElementById('viewContent').innerHTML = `
         <div id="login-form" style="text-align:center; padding: 20px;">
@@ -710,14 +721,22 @@ function renderPainel() {
             
             <div style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 140px;">
-                        <label style="font-size: 0.75rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">FILTRAR JOGO</label>
+                    <div style="flex: 1; min-width: 120px;">
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">ESCALÃO</label>
+                        <select id="filtro-escalao" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
+                            <option value="TODOS">Todos</option>
+                            <option value="SUB16">SUB16</option>
+                            <option value="SUB18">SUB18</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 130px;">
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">JOGO</label>
                         <select id="filtro-jogo" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
                             <option value="TODOS">Todos os Jogos</option>
                         </select>
                     </div>
-                    <div style="flex: 1; min-width: 140px;">
-                        <label style="font-size: 0.75rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">FILTRAR ATLETA</label>
+                    <div style="flex: 1; min-width: 130px;">
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">ATLETA</label>
                         <select id="filtro-atleta" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
                             <option value="TODOS">Todas as Atletas</option>
                         </select>
@@ -758,22 +777,35 @@ function carregarOpcoesFiltroPainel() {
         if (id) selJogo.innerHTML += `<option value="${id}">${esc} vs ${adv}</option>`;
     });
 
-    let atletasLista = [...DB.atletas];
-    atletasLista.sort((a,b) => getVal(a, 'nome').localeCompare(getVal(b, 'nome')));
-    atletasLista.forEach(a => {
-        const nome = getVal(a, 'nome');
-        if (nome) selAtleta.innerHTML += `<option value="${clean(nome)}">${nome}</option>`;
+    // Remoção automática de duplicados na lista do filtro de atletas
+    let nomesProcessados = new Set();
+    let atletasUnicas = [];
+
+    DB.atletas.forEach(a => {
+        const nomeLimpo = clean(getVal(a, 'nome'));
+        if (nomeLimpo && !nomesProcessados.has(nomeLimpo)) {
+            nomesProcessados.add(nomeLimpo);
+            atletasUnicas.push(getVal(a, 'nome'));
+        }
+    });
+
+    atletasUnicas.sort((a,b) => a.localeCompare(b));
+    atletasUnicas.forEach(nome => {
+        selAtleta.innerHTML += `<option value="${clean(nome)}">${nome}</option>`;
     });
 }
 
 function atualizarPainelScout() {
+    const escalaoSel = document.getElementById('filtro-escalao').value;
     const idJogoSel = document.getElementById('filtro-jogo').value;
     const atletaSel = document.getElementById('filtro-atleta').value;
 
     let scoutFiltrado = DB.scoutAvancado.filter(s => {
+        const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
+        const matchEscalao = (escalaoSel === 'TODOS') || (jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoSel));
         const matchJogo = (idJogoSel === 'TODOS') || (getVal(s, 'jogo_id') == idJogoSel);
         const matchAtleta = (atletaSel === 'TODOS') || (clean(getVal(s, 'nome')) === atletaSel);
-        return matchJogo && matchAtleta;
+        return matchEscalao && matchJogo && matchAtleta;
     });
 
     let totalGolos = 0;
@@ -783,6 +815,13 @@ function atualizarPainelScout() {
     let totalFora = 0;
     let totalDefesasSofridas = 0;
     let totalBlocos = 0;
+    let totalMinutos = 0;
+
+    // Estatísticas de Guarda-Redes (GR)
+    let totalDefesasGR = 0;
+    let totalRematesContraGR = 0;
+    let defesas7mGR = 0;
+    let remates7mContraGR = 0;
 
     let zonasBaliza = { z1:0, z2:0, z3:0, z4:0, z5:0, z6:0, z7:0, z8:0, z9:0 };
 
@@ -794,6 +833,7 @@ function atualizarPainelScout() {
         const rf = parseInt(getVal(s, 'remates_fora')) || 0;
         const ds = parseInt(getVal(s, 'defesas_sofridas')) || 0;
         const bl = parseInt(getVal(s, 'blocos')) || 0;
+        const min = parseInt(getVal(s, 'minutos')) || parseInt(getVal(s, 'min_jogados')) || 0;
 
         totalGolos += g;
         totalRemates += r;
@@ -802,6 +842,18 @@ function atualizarPainelScout() {
         totalFora += rf;
         totalDefesasSofridas += ds;
         totalBlocos += bl;
+        totalMinutos += min;
+
+        // Dados específicos GR
+        const defGR = parseInt(getVal(s, 'defesas_gr')) || parseInt(getVal(s, 'defesas')) || 0;
+        const remGR = parseInt(getVal(s, 'remates_sofridos_gr')) || parseInt(getVal(s, 'remates_gr')) || 0;
+        const def7mGR = parseInt(getVal(s, 'defesas_7m_gr')) || 0;
+        const rem7mGR = parseInt(getVal(s, '7m_sofridos_gr')) || 0;
+
+        totalDefesasGR += defGR;
+        totalRematesContraGR += remGR;
+        defesas7mGR += def7mGR;
+        remates7mContraGR += rem7mGR;
 
         for(let i=1; i<=9; i++) {
             zonasBaliza['z'+i] += parseInt(getVal(s, 'z'+i)) || 0;
@@ -810,6 +862,8 @@ function atualizarPainelScout() {
 
     const eficGeral = totalRemates > 0 ? Math.round((totalGolos / totalRemates) * 100) : 0;
     const efic7m = total7mTentativas > 0 ? Math.round((total7mGolos / total7mTentativas) * 100) : 0;
+    const eficGR = totalRematesContraGR > 0 ? Math.round((totalDefesasGR / totalRematesContraGR) * 100) : 0;
+    const efic7mGR = remates7mContraGR > 0 ? Math.round((defesas7mGR / remates7mContraGR) * 100) : 0;
 
     document.getElementById('estatisticas-scout').innerHTML = `
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
@@ -825,18 +879,39 @@ function atualizarPainelScout() {
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px;">
-            <div style="background: white; padding: 12px 5px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center;">
-                <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">Fora / Poste</span>
-                <span style="font-size: 1.2rem; font-weight: 900; color: var(--vermelho);">${totalFora}</span>
+        <!-- SEÇÃO GUARDA-REDES -->
+        <div style="background: white; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+            <h4 style="margin: 0 0 12px 0; font-weight: 900; text-align: center; color: var(--eac-dark); font-size: 0.85rem;">🧤 ESTATÍSTICAS GUARDA-REDES</h4>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <div style="background: #f8fafc; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0;">
+                    <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">DEFESAS TOTAIS</span>
+                    <span style="font-size: 1.4rem; font-weight: 900; color: var(--azul);">${totalDefesasGR} / ${totalRematesContraGR}</span>
+                    <span style="font-size: 0.7rem; font-weight: 800; color: var(--azul); display: block; margin-top: 3px;">${eficGR}% Eficiência</span>
+                </div>
+                <div style="background: #f8fafc; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0;">
+                    <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">DEFESAS 7M</span>
+                    <span style="font-size: 1.4rem; font-weight: 900; color: var(--verde);">${defesas7mGR} / ${remates7mContraGR}</span>
+                    <span style="font-size: 0.7rem; font-weight: 800; color: var(--verde); display: block; margin-top: 3px;">${efic7mGR}% Eficiência</span>
+                </div>
             </div>
-            <div style="background: white; padding: 12px 5px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center;">
-                <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">Defesas GR</span>
-                <span style="font-size: 1.2rem; font-weight: 900; color: #eab308;">${totalDefesasSofridas}</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px;">
+            <div style="background: white; padding: 10px 4px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block;">Min. Jogados</span>
+                <span style="font-size: 1.1rem; font-weight: 900; color: #0284c7;">${totalMinutos}'</span>
             </div>
-            <div style="background: white; padding: 12px 5px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center;">
-                <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">Blocos</span>
-                <span style="font-size: 1.2rem; font-weight: 900; color: #64748b;">${totalBlocos}</span>
+            <div style="background: white; padding: 10px 4px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block;">Fora / Poste</span>
+                <span style="font-size: 1.1rem; font-weight: 900; color: var(--vermelho);">${totalFora}</span>
+            </div>
+            <div style="background: white; padding: 10px 4px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block;">Def. Sofridas</span>
+                <span style="font-size: 1.1rem; font-weight: 900; color: #eab308;">${totalDefesasSofridas}</span>
+            </div>
+            <div style="background: white; padding: 10px 4px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block;">Blocos</span>
+                <span style="font-size: 1.1rem; font-weight: 900; color: #64748b;">${totalBlocos}</span>
             </div>
         </div>
 
