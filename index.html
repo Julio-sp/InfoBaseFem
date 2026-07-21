@@ -729,7 +729,7 @@ function showView(v, p = '') {
     window.scrollTo(0,0);
 }
 
-// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO COM ATALHO TECLA ENTER E AUTENTICAÇÃO TEMPORÁRIA)
+// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO)
 function renderPainel() {
     const estaAutenticado = sessaoValida();
     
@@ -835,7 +835,21 @@ function atualizarPainelScout() {
         const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
         const matchEscalao = (escalaoSel === 'TODOS') || (jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoSel));
         const matchJogo = (idJogoSel === 'TODOS') || (getVal(s, 'jogo_id') == idJogoSel);
-        const matchAtleta = (atletaSel === 'TODOS') || (clean(getVal(s, 'nome')) === atletaSel);
+        
+        // CORREÇÃO: Procura pelo nome ou pelo ID do atleta na aba Scout_Avancado
+        const nomeAtletaScout = clean(getVal(s, 'nome') || getVal(s, 'nome_atleta') || getVal(s, 'Atleta_Nome'));
+        const idAtletaScout = clean(getVal(s, 'Atleta_ID') || getVal(s, 'atleta_id'));
+        
+        // Verifica se a atleta bate certo com o filtro
+        let matchAtleta = (atletaSel === 'TODOS');
+        if (!matchAtleta) {
+            const atletaObj = DB.atletas.find(a => clean(getVal(a, 'nome')) === atletaSel);
+            const idAtletaObj = atletaObj ? clean(getVal(atletaObj, 'id')) : '';
+            
+            matchAtleta = (nomeAtletaScout === atletaSel) || 
+                          (idAtletaScout !== '' && idAtletaScout === idAtletaObj);
+        }
+
         return matchEscalao && matchJogo && matchAtleta;
     });
 
