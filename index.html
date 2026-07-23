@@ -821,13 +821,91 @@ function showView(v, p = '') {
     }
     window.scrollTo(0,0);
 }
-    // ==========================================
+  // ==========================================
+// CONFIGURAÇÃO DE DADOS E LINKS CSV DA PLANILHA
+// ==========================================
+const SPREADSHEET_CONFIG = {
+    urlJogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1794507243&single=true&output=csv",
+    urlAtletasCampo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2115424182&single=true&output=csv",
+    urlScoutCampo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=752175872&single=true&output=csv",
+    urlGuardaRedes: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1738670761&single=true&output=csv"
+};
+
+// Objeto global de base de dados
+window.DB = window.DB || {
+    atletas: [],
+    jogos: [],
+    scoutAvancado: []
+};
+
+// Função de carregamento e sincronização automática com o Google Sheets
+async function loadData() {
+    try {
+        console.log("🔄 A carregar dados atualizados do Google Sheets...");
+
+        const [resJogos, resAtletasCampo, resScoutCampo, resGR] = await Promise.all([
+            fetch(SPREADSHEET_CONFIG.urlJogos).then(r => r.text()).catch(() => ""),
+            fetch(SPREADSHEET_CONFIG.urlAtletasCampo).then(r => r.text()).catch(() => ""),
+            fetch(SPREADSHEET_CONFIG.urlScoutCampo).then(r => r.text()).catch(() => ""),
+            fetch(SPREADSHEET_CONFIG.urlGuardaRedes).then(r => r.text()).catch(() => "")
+        ]);
+
+        const jogosData = parseCSV(resJogos);
+        const atletasCampoData = parseCSV(resAtletasCampo).map(a => ({ ...a, Posicao_Tipo: 'CAMPO' }));
+        const scoutCampoData = parseCSV(resScoutCampo).map(s => ({ ...s, Origem_Aba: 'CAMPO' }));
+        const grData = parseCSV(resGR).map(g => ({ ...g, Origem_Aba: 'GR' }));
+
+        // Atualiza a estrutura DB global combinando as abas
+        DB.jogos = jogosData;
+        
+        // Marca e unifica lista de atletas
+        DB.atletas = [...atletasCampoData];
+
+        // Combina registos de scout das atletas de campo e das guarda-redes
+        DB.scoutAvancado = [...scoutCampoData, ...grData];
+
+        console.log("✅ Dados sincronizados com sucesso!");
+        console.log(`📊 Jogos: ${DB.jogos.length} | Atletas: ${DB.atletas.length} | Registos Scout: ${DB.scoutAvancado.length}`);
+
+        // Atualiza a interface se o painel estiver visível
+        if (document.getElementById('conteudo-painel') && document.getElementById('conteudo-painel').style.display === 'block') {
+            carregarOpcoesFiltroPainel();
+            atualizarPainelScout();
+        }
+    } catch (error) {
+        console.error("❌ Erro ao carregar dados da planilha:", error);
+    }
+}
+
+// Converte texto CSV recebido da Web em Objetos JavaScript
+function parseCSV(csvText) {
+    if (!csvText) return [];
+    const lines = csvText.split('\n').filter(l => l.trim() !== '');
+    if (lines.length === 0) return [];
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    const result = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        const currentLine = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        const obj = {};
+        for (let j = 0; j < headers.length; j++) {
+            let val = currentLine[j] !== undefined ? currentLine[j].trim() : '';
+            val = val.replace(/^"|"$/g, '');
+            obj[headers[j]] = val;
+        }
+        result.push(obj);
+    }
+    return result;
+}
+
+// ==========================================
 // PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO)
 // ==========================================
 
 function renderPainel() {
     const estaAutenticado = sessaoValida();
-    
+
     document.getElementById('viewContent').innerHTML = `
         <div id="login-form" style="text-align:center; padding: 20px; display: ${estaAutenticado ? 'none' : 'block'};">
             <h3>🔒 ACESSO RESTRITO - COORDENAÇÃO</h3>
@@ -838,11 +916,14 @@ function renderPainel() {
             <button onclick="validarSenha()" style="padding: 10px 20px; background: var(--eac-dark); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">ENTRAR</button>
         </div>
         <div id="conteudo-painel" style="display: ${estaAutenticado ? 'block' : 'none'}; padding: 10px;">
-            <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:20px; text-align:center;">📊 PAINEL SCOUT AVANÇADO</h2>
-            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="font-weight:900; color:var(--eac-dark); margin:0; font-size: 1.1rem;">📊 PAINEL SCOUT AVANÇADO</h2>
+                <button onclick="loadData(); alert('Dados atualizados com sucesso!');" style="background: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; cursor: pointer;">🔄 Sincronizar Planilha</button>
+            </div>
+
             <div style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 120px;">
+                    <div style="flex: 1; min-width: 100px;">
                         <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">ESCALÃO</label>
                         <select id="filtro-escalao" onchange="aoMudarEscalao()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
                             <option value="TODOS">Todos</option>
@@ -850,16 +931,24 @@ function renderPainel() {
                             <option value="SUB18">SUB18</option>
                         </select>
                     </div>
-                    <div style="flex: 1; min-width: 130px;">
-                        <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">JOGO</label>
-                        <select id="filtro-jogo" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
-                            <option value="TODOS">Todos os Jogos</option>
+                    <div style="flex: 1; min-width: 110px;">
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">FUNÇÃO</label>
+                        <select id="filtro-funcao" onchange="aoMudarFuncao()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
+                            <option value="TODOS">Todas</option>
+                            <option value="CAMPO">Jogadora de Campo</option>
+                            <option value="GR">Guarda-Redes</option>
                         </select>
                     </div>
-                    <div style="flex: 1; min-width: 130px;">
+                    <div style="flex: 1; min-width: 110px;">
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">JOGO</label>
+                        <select id="filtro-jogo" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
+                            <option value="TODOS">Todos</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 110px;">
                         <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">ATLETA</label>
                         <select id="filtro-atleta" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
-                            <option value="TODOS">Todas as Atletas</option>
+                            <option value="TODOS">Todas</option>
                         </select>
                     </div>
                 </div>
@@ -893,8 +982,14 @@ function aoMudarEscalao() {
     atualizarPainelScout();
 }
 
+function aoMudarFuncao() {
+    carregarOpcoesFiltroPainel();
+    atualizarPainelScout();
+}
+
 function carregarOpcoesFiltroPainel() {
     const selEscalao = document.getElementById('filtro-escalao')?.value || 'TODOS';
+    const selFuncao = document.getElementById('filtro-funcao')?.value || 'TODOS';
     const selJogo = document.getElementById('filtro-jogo');
     const selAtleta = document.getElementById('filtro-atleta');
 
@@ -903,65 +998,87 @@ function carregarOpcoesFiltroPainel() {
     const jogoAtual = selJogo.value;
     const atletaAtual = selAtleta.value;
 
-    selJogo.innerHTML = '<option value="TODOS">Todos os Jogos</option>';
-    selAtleta.innerHTML = '<option value="TODOS">Todas as Atletas</option>';
+    selJogo.innerHTML = '<option value="TODOS">Todos</option>';
+    selAtleta.innerHTML = '<option value="TODOS">Todas</option>';
 
-    // Filtra lista de jogos pelo escalão selecionado
-    DB.jogos.forEach(j => {
-        const id = getVal(j, 'id');
-        const adv = getVal(j, 'adversário');
-        const esc = getVal(j, 'escalao');
-        
-        if (id && (selEscalao === 'TODOS' || clean(esc) === clean(selEscalao))) {
-            selJogo.innerHTML += `<option value="${id}">${esc} vs ${adv}</option>`;
-        }
-    });
+    // 1. Preenche lista de Jogos
+    if (Array.isArray(DB.jogos)) {
+        DB.jogos.forEach(j => {
+            const id = getVal(j, 'id') || getVal(j, 'Jogo_ID');
+            const adv = getVal(j, 'adversário') || getVal(j, 'Adversario') || 'Adversário';
+            const esc = getVal(j, 'escalao') || getVal(j, 'Escalao') || '';
 
-    // Popula atletas de forma única e ordenada
-    let nomesProcessados = new Set();
-    let atletasUnicas = [];
+            if (id && (selEscalao === 'TODOS' || clean(esc) === clean(selEscalao))) {
+                selJogo.innerHTML += `<option value="${id}">${esc ? esc + ' vs ' : ''}${adv}</option>`;
+            }
+        });
+    }
 
-    DB.atletas.forEach(a => {
-        const nomeLimpo = clean(getVal(a, 'nome'));
-        if (nomeLimpo && !nomesProcessados.has(nomeLimpo)) {
-            nomesProcessados.add(nomeLimpo);
-            atletasUnicas.push(getVal(a, 'nome'));
-        }
-    });
+    // 2. Preenche Atletas separando Jogadoras de Campo e Guarda-Redes pelas abas
+    let mapaAtletas = new Map();
 
-    atletasUnicas.sort((a, b) => a.localeCompare(b));
-    atletasUnicas.forEach(nome => {
+    if (Array.isArray(DB.scoutAvancado)) {
+        DB.scoutAvancado.forEach(s => {
+            const nome = getVal(s, 'Atleta_Nome') || getVal(s, 'nome') || getVal(s, 'Atleta');
+            const origem = s.Origem_Aba || '';
+
+            if (nome) {
+                const ehGR = (origem === 'GR');
+                const passaFuncao = (selFuncao === 'TODOS') || 
+                                    (selFuncao === 'GR' && ehGR) || 
+                                    (selFuncao === 'CAMPO' && !ehGR);
+
+                if (passaFuncao) {
+                    mapaAtletas.set(clean(nome), nome.trim());
+                }
+            }
+        });
+    }
+
+    const listaOrdenada = Array.from(mapaAtletas.values()).sort((a, b) => a.localeCompare(b));
+    listaOrdenada.forEach(nome => {
         selAtleta.innerHTML += `<option value="${clean(nome)}">${nome}</option>`;
     });
 
-    // Mantém seleções anteriores caso ainda sejam válidas
     if ([...selJogo.options].some(o => o.value === jogoAtual)) selJogo.value = jogoAtual;
     if ([...selAtleta.options].some(o => o.value === atletaAtual)) selAtleta.value = atletaAtual;
 }
 
 function atualizarPainelScout() {
-    const escalaoSel = document.getElementById('filtro-escalao').value;
-    const idJogoSel = document.getElementById('filtro-jogo').value;
-    const atletaSel = document.getElementById('filtro-atleta').value;
+    const escalaoSel = document.getElementById('filtro-escalao')?.value || 'TODOS';
+    const funcaoSel = document.getElementById('filtro-funcao')?.value || 'TODOS';
+    const idJogoSel = document.getElementById('filtro-jogo')?.value || 'TODOS';
+    const atletaSel = document.getElementById('filtro-atleta')?.value || 'TODOS';
+
+    if (!Array.isArray(DB.scoutAvancado)) {
+        document.getElementById('estatisticas-scout').innerHTML = '<p style="text-align:center; padding:20px;">A carregar dados...</p>';
+        return;
+    }
 
     let scoutFiltrado = DB.scoutAvancado.filter(s => {
-        const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'Jogo_ID'));
-        const matchEscalao = (escalaoSel === 'TODOS') || (jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoSel));
-        const matchJogo = (idJogoSel === 'TODOS') || (getVal(s, 'Jogo_ID') == idJogoSel);
-        
-        const nomeAtletaScout = clean(getVal(s, 'Atleta_Nome') || getVal(s, 'nome'));
-        const idAtletaScout = clean(getVal(s, 'Atleta_ID') || getVal(s, 'atleta_id'));
-        
+        const idJogoScout = String(getVal(s, 'Jogo_ID') || getVal(s, 'jogo_id'));
+        const jogoObj = Array.isArray(DB.jogos) ? DB.jogos.find(j => String(getVal(j, 'id') || getVal(j, 'Jogo_ID')) === idJogoScout) : null;
+
+        const escJogo = jogoObj ? (getVal(jogoObj, 'escalao') || getVal(jogoObj, 'Escalao')) : '';
+        const matchEscalao = (escalaoSel === 'TODOS') || (clean(escJogo) === clean(escalaoSel));
+
+        const matchJogo = (idJogoSel === 'TODOS') || (idJogoScout === String(idJogoSel));
+
+        const nomeScout = clean(getVal(s, 'Atleta_Nome') || getVal(s, 'nome') || getVal(s, 'Atleta'));
+        const idScout = clean(getVal(s, 'Atleta_ID') || getVal(s, 'atleta_id'));
+
         let matchAtleta = (atletaSel === 'TODOS');
         if (!matchAtleta) {
-            const atletaObj = DB.atletas.find(a => clean(getVal(a, 'nome')) === atletaSel);
-            const idAtletaObj = atletaObj ? clean(getVal(atletaObj, 'Atleta_ID') || getVal(atletaObj, 'id')) : '';
-            
-            matchAtleta = (nomeAtletaScout === atletaSel) || 
-                          (idAtletaObj !== '' && idAtletaScout === idAtletaObj);
+            matchAtleta = (nomeScout === atletaSel) || (idScout === atletaSel);
         }
 
-        return matchEscalao && matchJogo && matchAtleta;
+        // Filtro estrito por Função (Aba GR vs Aba Campo)
+        const origem = s.Origem_Aba || '';
+        let matchFuncao = true;
+        if (funcaoSel === 'GR') matchFuncao = (origem === 'GR');
+        if (funcaoSel === 'CAMPO') matchFuncao = (origem === 'CAMPO');
+
+        return matchEscalao && matchJogo && matchAtleta && matchFuncao;
     });
 
     let totalGolos = 0, totalRemates = 0, total7mGolos = 0, total7mTentativas = 0;
@@ -971,19 +1088,18 @@ function atualizarPainelScout() {
     let zonasBaliza = { z1:0, z2:0, z3:0, z4:0, z5:0, z6:0, z7:0, z8:0, z9:0 };
 
     scoutFiltrado.forEach(s => {
-        const res = clean(getVal(s, 'Resultado_Remate'));
-        const orig = clean(getVal(s, 'Zona_Origem'));
-        const acaoDef = clean(getVal(s, 'Acao_Defensiva'));
-        const zbRaw = getVal(s, 'Zona_Baliza');
+        const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'Resultado') || getVal(s, 'resultado'));
+        const orig = clean(getVal(s, 'Zona_Origem') || getVal(s, 'Origem') || getVal(s, 'origem'));
+        const acaoDef = clean(getVal(s, 'Acao_Defensiva') || getVal(s, 'Acao_GR') || getVal(s, 'acao_defensiva'));
+        const zbRaw = String(getVal(s, 'Zona_Baliza') || getVal(s, 'Baliza') || '');
 
-        // Cálculo de Minutos jogados
         const minEntrada = parseInt(getVal(s, 'Minuto_Entrada'), 10);
         const minSaida = parseInt(getVal(s, 'Minuto_Saida'), 10);
         if (!isNaN(minEntrada) && !isNaN(minSaida) && minSaida > minEntrada) {
             totalMinutos += (minSaida - minEntrada);
         }
 
-        // Mapeamento Zonas de baliza
+        // Zonas de Remate / Golos
         if (zbRaw) {
             const numMatch = zbRaw.match(/\d/);
             if (numMatch && res === 'golo') {
@@ -994,7 +1110,7 @@ function atualizarPainelScout() {
             }
         }
 
-        // Ações de Ataque
+        // Estatísticas de Remate (Campo)
         if (res !== "") {
             totalRemates += 1;
             const is7m = orig.includes('7m') || orig.includes('7 metros');
@@ -1013,27 +1129,27 @@ function atualizarPainelScout() {
             if (is7m) total7mTentativas += 1;
         }
 
-        // Ações Defensivas (Guarda-Redes)
-        if (acaoDef.includes('defesa gr') || acaoDef.includes('defesa')) {
-            totalDefesasGR += 1;
-            totalRematesContraGR += 1;
-            if (orig.includes('7m')) {
-                defesas7mGR += 1;
-                remates7mContraGR += 1;
+        // Estatísticas de Defesas (Guarda-Redes)
+        if (s.Origem_Aba === 'GR' || acaoDef !== '') {
+            if (acaoDef.includes('defesa gr') || acaoDef.includes('defesa')) {
+                totalDefesasGR += 1;
+                totalRematesContraGR += 1;
+                if (orig.includes('7m')) {
+                    defesas7mGR += 1;
+                    remates7mContraGR += 1;
+                }
+            } else if (acaoDef.includes('golo sofrido') || acaoDef.includes('golo')) {
+                totalRematesContraGR += 1;
+                if (orig.includes('7m')) remates7mContraGR += 1;
             }
-        } else if (acaoDef.includes('golo sofrido')) {
-            totalRematesContraGR += 1;
-            if (orig.includes('7m')) remates7mContraGR += 1;
         }
     });
 
-    // Cálculos de Eficiência
     const eficGeral = totalRemates > 0 ? Math.round((totalGolos / totalRemates) * 100) : 0;
     const efic7m = total7mTentativas > 0 ? Math.round((total7mGolos / total7mTentativas) * 100) : 0;
     const eficGR = totalRematesContraGR > 0 ? Math.round((totalDefesasGR / totalRematesContraGR) * 100) : 0;
     const efic7mGR = remates7mContraGR > 0 ? Math.round((defesas7mGR / remates7mContraGR) * 100) : 0;
 
-    // Identificação da Hot Zone (Zona com mais golos)
     const maxGolosZona = Math.max(...Object.values(zonasBaliza));
 
     document.getElementById('estatisticas-scout').innerHTML = `
@@ -1165,15 +1281,6 @@ function showAcademy(tipo) {
         </div>`;
 }
 
-function handleLogin() { 
-    if(prompt("Senha:") === "eac2026") { 
-        renovarSessao();
-        alert("Acesso restrito concedido por 10 minutos!");
-    } else {
-        alert("Senha incorreta!");
-    }
-}
-
 // ==========================================
 // BANNERS E ESTILOS INSPIRACIONAIS
 // ==========================================
@@ -1220,7 +1327,7 @@ styleFrase.innerHTML = `
 document.head.appendChild(styleFrase);
 
 window.onload = () => {
-    if (typeof loadData === 'function') loadData();
+    loadData();
     setTimeout(mostrarFraseInspiradora, 2000); 
 };
 </script>
