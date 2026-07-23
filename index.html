@@ -266,8 +266,9 @@ function mudarEpoca(novaEpoca) {
 const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
 
 const getVal = (obj, key) => {
+    if (!obj) return "";
     const foundKey = Object.keys(obj).find(k => clean(k) === clean(key));
-    return foundKey ? obj[foundKey] : "";
+    return foundKey && obj[foundKey] !== undefined && obj[foundKey] !== null ? String(obj[foundKey]).trim() : "";
 };
 
 function formatParcial(val, isFora) {
@@ -300,12 +301,18 @@ function calcularIdade(nascimento) {
     if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) idade--;
     return idade + " anos";
 }
-
 async function fetchCSV(url) {
     try {
-        const r = await fetch(url + "&t=" + Date.now());
+        if (!url) return [];
+        // Garante que o separador do parâmetro de cache 't' seja correto (? ou &)
+        const separator = url.includes('?') ? '&' : '?';
+        const r = await fetch(url + separator + "t=" + Date.now());
+        if (!r.ok) return [];
+        
         const text = await r.text();
         const lines = text.split('\n').filter(l => l.trim() !== "");
+        if (lines.length === 0) return [];
+
         const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ""));
         return lines.slice(1).map(line => {
             let obj = {};
@@ -313,50 +320,53 @@ async function fetchCSV(url) {
             headers.forEach((h, i) => obj[h] = vals[i] ? vals[i].replace(/"/g, "").trim() : "");
             return obj;
         });
-    } catch(e) { return []; }
+    } catch(e) { 
+        console.error("Erro ao buscar CSV:", e);
+        return []; 
+    }
 }
 
 async function loadData() {
     try {
         const links = getLinksAtivos();
 
-        const [jogos, convocados, scoutAvancadoData] = await Promise.all([
+        // Carrega TODOS os CSVs de forma paralela e segura
+        const [jogos, convocados, scoutAvancadoData, atletasData, scoutData] = await Promise.all([
             fetchCSV(links.jogos),
             fetchCSV(links.convocados),
-            fetchCSV(links.scoutAvancado)
+            fetchCSV(links.scoutAvancado),
+            fetchCSV(links.atletas),
+            fetchCSV(links.scout)
         ]);
+
+        // Atribui os dados ao banco global
         DB.jogos = jogos;
         DB.convocados = convocados;
         DB.scoutAvancado = scoutAvancadoData;
-        
+        DB.atletas = atletasData;
+        DB.scout = scoutData;
+
+        // Executa as renderizações de forma síncrona com os dados prontos
         if (typeof renderHomeNext === "function") renderHomeNext();
         if (typeof renderNiverMenu === "function") renderNiverMenu();
 
-        fetchCSV(links.atletas).then(data => {
-            DB.atletas = data;
-            if (typeof renderNiverMenu === "function") renderNiverMenu(); 
-            if (typeof renderHomeNext === "function") renderHomeNext();
-        });
-
-        fetchCSV(links.scout).then(data => {
-            DB.scout = data;
-        });
-
-        if (sessaoValida()) {
+        if (typeof sessaoValida === "function" && sessaoValida()) {
             renovarSessao();
         }
     } catch (e) {
-        console.error("Erro no carregamento:", e);
+        console.error("Erro no carregamento de dados:", e);
     }
 }
 
 function buildConvocatoriaList(idJogo) {
     if (!DB.convocados || DB.convocados.length === 0) return "";
     const idJogoLimpo = String(idJogo).trim();
+    
     const convocadasRaw = DB.convocados.filter(c => {
         const jogoIdPlanilha = getVal(c, 'jogo_id') || getVal(c, 'Jogo_id') || getVal(c, 'JOGO_ID');
         return String(jogoIdPlanilha).trim() === idJogoLimpo;
     });
+
     if (convocadasRaw.length === 0) return "";
     
     let listaFinal = convocadasRaw.map(c => {
@@ -367,7 +377,7 @@ function buildConvocatoriaList(idJogo) {
             
         return {
             nome: getVal(c, 'nome_exibicao') || getVal(c, 'Nome_Exibicao') || getVal(c, 'nome').split(' ')[0],
-            num: info ? parseInt(getVal(info, 'número')) : 999
+            num: info ? (parseInt(getVal(info, 'número')) || 999) : 999
         };
     });
     
@@ -388,16 +398,26 @@ function buildConvocatoriaList(idJogo) {
 }
 
 function renderJogos(filtro) {
-    document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
-        `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
-    let lista = (filtro === 'TODOS') ? [...DB.jogos] : DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
+    const filterArea = document.getElementById('filterArea');
+    if (filterArea) {
+        filterArea.innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
+            `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
+    }
+
+    let lista = (filtro === 'TODOS') 
+        ? [...DB.jogos] 
+        : DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
+
     lista.sort((a,b) => parseDate(getVal(b, 'data')) - parseDate(getVal(a, 'data')));
+
     const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     let html = "", ultimoMes = "";
     let mesId = 0;
+
     lista.forEach(j => {
         const d = parseDate(getVal(j, 'data'));
-        const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
+        const mesAno = d ? `${meses[d.getMonth()]} ${d.getFullYear()}` : "Data Indefinida";
+
         if(mesAno !== ultimoMes) {
             if(ultimoMes !== "") html += `</div>`;
             mesId++;
@@ -409,10 +429,16 @@ function renderJogos(filtro) {
                 <div id="month-month-${mesId}" class="month-content">`;
             ultimoMes = mesAno;
         }
-        const gEAC = parseInt(getVal(j, 'gols_eac')), gADV = parseInt(getVal(j, 'gols_adv'));
+
+        const gEAC = parseInt(getVal(j, 'gols_eac'));
+        const gADV = parseInt(getVal(j, 'gols_adv'));
         const isFora = clean(getVal(j, 'local')).includes("fora");
+
         let cor = "#cbd5e1"; 
-        if(!isNaN(gEAC) && !isNaN(gADV)) cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : "var(--azul)";
+        if(!isNaN(gEAC) && !isNaN(gADV)) {
+            cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : "var(--azul)";
+        }
+
         html += `
         <div class="game-card">
             <div class="game-status-bar" style="background:${cor}"></div>
@@ -433,13 +459,20 @@ function renderJogos(filtro) {
             </div>
         </div>`;
     });
+
     if(html !== "") html += `</div>`;
-    document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
+    
+    const viewContent = document.getElementById('viewContent');
+    if (viewContent) {
+        viewContent.innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
+    }
 }
 
 function toggleMonth(id) {
     const content = document.getElementById('month-' + id);
     const icon = document.getElementById('icon-' + id);
+    if (!content || !icon) return;
+
     if(content.classList.contains('open')) {
         content.classList.remove('open');
         icon.innerText = '▼';
@@ -451,7 +484,10 @@ function toggleMonth(id) {
 
 function openJogo(id) {
     const j = DB.jogos.find(x => getVal(x, 'id') == id);
+    if (!j) return;
+
     const sc = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
+    
     document.getElementById('detailBody').innerHTML = `
         <div style="padding:25px">
             <h2 style="margin:0; font-weight:900; color:var(--eac-dark)">${getVal(j,'escalao')} vs ${getVal(j,'adversário')}</h2>
@@ -465,12 +501,14 @@ function openJogo(id) {
                     if (temVermelho) cartoes += '🟥';
                     if (temAzul) cartoes += '🟦';
 
+                    const exclusoes = parseInt(getVal(s, 'exclusoes')) || 0;
+
                     return `
                     <div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background: white">
                         <span style="font-weight:700;">${getVal(s, 'nome')}</span>
                         <div style="display:flex; gap:10px; align-items:center">
-                            <span style="font-weight:900; color:var(--azul)">${getVal(s,'golos')} GOLS</span>
-                            ${parseInt(getVal(s,'exclusoes')) > 0 ? `<span class="badge-2min">${getVal(s,'exclusoes')} x 2'</span>` : ''}
+                            <span style="font-weight:900; color:var(--azul)">${getVal(s,'golos') || 0} GOLS</span>
+                            ${exclusoes > 0 ? `<span class="badge-2min">${exclusoes} x 2'</span>` : ''}
                             ${cartoes !== '' ? `<span style="font-size:1.1rem; line-height:1; display:flex; gap:2px;">${cartoes}</span>` : ''}
                         </div>
                     </div>`;
@@ -482,6 +520,7 @@ function openJogo(id) {
 
 function openAtleta(nome, escalaoFiltro = '') {
     const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
+    
     let sc = DB.scout.filter(s => {
         const matchesNome = clean(getVal(s, 'nome')) === clean(nome);
         if (!matchesNome) return false;
@@ -513,7 +552,7 @@ function openAtleta(nome, escalaoFiltro = '') {
             if (campo === 'minutos') {
                 return (parseInt(getVal(s, 'minutos')) || parseInt(getVal(s, 'min_jogados')) || 0) > 0;
             }
-            return parseInt(getVal(s, campo)) > 0;
+            return (parseInt(getVal(s, campo)) || 0) > 0;
         });
 
         return filtrada.map(s => {
@@ -538,14 +577,15 @@ function openAtleta(nome, escalaoFiltro = '') {
                 </div>`;
         }).join('') || '<div style="padding: 15px; text-align: center; color: #94a3b8; font-size: 0.8rem;">Nenhum registro.</div>';
     };
-document.getElementById('detailBody').innerHTML = `
+
+    document.getElementById('detailBody').innerHTML = `
         <div style="background: linear-gradient(180deg, #f8fafc 0%, white 100%); padding: 45px 20px; text-align:center">
             <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:130px; height:130px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1)" onerror="this.src='logo.png'">
-            <h1 style="margin: 20px 0 5px 0; font-size: 1.6rem; font-weight: 900">${getVal(a, 'nome')}</h1>
+            <h1 style="margin: 20px 0 5px 0; font-size: 1.6rem; font-weight: 900">${getVal(a, 'nome') || nome}</h1>
             <div style="margin-bottom: 25px">
-                <span class="info-pill">🎂 ${getVal(a, 'nascimento')} (${calcularIdade(getVal(a, 'nascimento'))})</span>
-                <span class="info-pill">🏆 ${escalaoFiltro || getVal(a, 'escalão')}</span>
-                <span class="info-pill">🎽 Nº ${getVal(a, 'número')}</span>
+                <span class="info-pill">🎂 ${getVal(a, 'nascimento') || 'N/D'} (${typeof calcularIdade === "function" ? calcularIdade(getVal(a, 'nascimento')) : ''})</span>
+                <span class="info-pill">🏆 ${escalaoFiltro || getVal(a, 'escalão') || 'Geral'}</span>
+                <span class="info-pill">🎽 Nº ${getVal(a, 'número') || '-'}</span>
             </div>
             
             <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:6px; max-width: 550px; margin: 0 auto">
@@ -579,17 +619,29 @@ document.getElementById('detailBody').innerHTML = `
                 <div id="hist-vermelhos" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'vermelhos')}</div>
             </div>
         </div>`;
+    
     document.getElementById('detailPane').classList.add('open');
 }
 
 function renderArt(filtro) {
-    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
-        `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
+    const filterArea = document.getElementById('filterArea');
+    if (filterArea) {
+        filterArea.innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
+            `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
+    }
+
     let atletasUnicos = new Map();
     DB.atletas.forEach(atleta => {
         const nomeChave = clean(getVal(atleta, 'nome'));
-        if (!atletasUnicos.has(nomeChave)) atletasUnicos.set(nomeChave, { nome: getVal(atleta, 'nome'), foto: getVal(atleta, 'foto'), num: getVal(atleta, 'número') });
+        if (!atletasUnicos.has(nomeChave)) {
+            atletasUnicos.set(nomeChave, { 
+                nome: getVal(atleta, 'nome'), 
+                foto: getVal(atleta, 'foto'), 
+                num: getVal(atleta, 'número') 
+            });
+        }
     });
+
     let ranking = Array.from(atletasUnicos.values()).map(atleta => {
         const golos = DB.scout.filter(s => {
             if (clean(getVal(s, 'nome')) !== clean(atleta.nome)) return false;
@@ -597,25 +649,38 @@ function renderArt(filtro) {
             const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
             return j && clean(getVal(j, 'escalao')) === clean(filtro);
         }).reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
+
         return { ...atleta, golos };
     }).filter(x => x.golos > 0).sort((a,b) => b.golos - a.golos);
-    document.getElementById('viewContent').innerHTML = ranking.map((p, i) => `
-        <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro}')">
-            <div style="font-weight:900; font-size:1.2rem; margin-right:15px; color:var(--azul)">${i+1}º</div>
-            <img src="${p.foto || 'logo.png'}" class="atleta-img-circle" style="width:45px; height:45px" onerror="this.src='logo.png'">
-            <div style="flex:1"><strong style="display:block">${p.nome}</strong><span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span></div>
-            <div style="font-weight:900; font-size:1.3rem">${p.golos}</div>
-        </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum golo registado.</p>";
-}
 
+    const viewContent = document.getElementById('viewContent');
+    if (viewContent) {
+        viewContent.innerHTML = ranking.map((p, i) => `
+            <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro}')">
+                <div style="font-weight:900; font-size:1.2rem; margin-right:15px; color:var(--azul)">${i+1}º</div>
+                <img src="${p.foto || 'logo.png'}" class="atleta-img-circle" style="width:45px; height:45px" onerror="this.src='logo.png'">
+                <div style="flex:1"><strong style="display:block">${p.nome}</strong><span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span></div>
+                <div style="font-weight:900; font-size:1.3rem">${p.golos}</div>
+            </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum golo registado.</p>";
+    }
+}
 function renderParticipacoes(filtro) {
     document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
-        `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderParticipacoes('${b}')">${b}</button>`).join('');
+        `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderParticipacoes('${b}')">${b}</button>`
+    ).join('');
+
     let atletasUnicos = new Map();
     DB.atletas.forEach(atleta => {
         const nomeChave = clean(getVal(atleta, 'nome'));
-        if (!atletasUnicos.has(nomeChave)) atletasUnicos.set(nomeChave, { nome: getVal(atleta, 'nome'), foto: getVal(atleta, 'foto'), num: getVal(atleta, 'número') });
+        if (!atletasUnicos.has(nomeChave)) {
+            atletasUnicos.set(nomeChave, { 
+                nome: getVal(atleta, 'nome'), 
+                foto: getVal(atleta, 'foto'), 
+                num: getVal(atleta, 'número') 
+            });
+        }
     });
+
     let ranking = Array.from(atletasUnicos.values()).map(atleta => {
         const totalJogos = DB.scout.filter(s => {
             if (clean(getVal(s, 'nome')) !== clean(atleta.nome)) return false;
@@ -625,26 +690,47 @@ function renderParticipacoes(filtro) {
         }).length;
         return { ...atleta, totalJogos };
     }).filter(x => x.totalJogos > 0).sort((a,b) => b.totalJogos - a.totalJogos);
+
     document.getElementById('viewContent').innerHTML = ranking.map((p, i) => `
         <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro}')">
             <div style="font-weight:900; font-size:1.2rem; margin-right:15px; color:var(--verde)">${i+1}º</div>
             <img src="${p.foto || 'logo.png'}" class="atleta-img-circle" style="width:45px; height:45px" onerror="this.src='logo.png'">
-            <div style="flex:1"><strong style="display:block">${p.nome}</strong><span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span></div>
+            <div style="flex:1">
+                <strong style="display:block">${p.nome}</strong>
+                <span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span>
+            </div>
             <div style="font-weight:900; font-size:1.1rem; color:var(--eac-dark)">${p.totalJogos} <span style="font-size:0.7rem; font-weight:600">JOGOS</span></div>
-        </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum jogo registado.</p>";
+        </div>
+    `).join('') || "<p style='text-align:center; padding:20px'>Nenhum jogo registado.</p>";
 }
 
 function renderTreinos() {
     document.getElementById('viewContent').innerHTML = `
         <h2 style="font-weight:900; margin-bottom:25px">📍 Locais de Treino</h2>
-        <div class="treino-card"><b style="display:block; font-size:1.1rem; color:var(--azul)">🏟️ Pavilhão Municipal de Estarreja</b><p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Quarta: 19:00 - 20:30</p><a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a></div>
-        <div class="treino-card" style="border-left-color: var(--verde)"><b style="display:block; font-size:1.1rem; color:var(--verde)">🏟️ Pavilhão Escola Secundária</b><p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Terça e Sexta: 19:00 - 20:30</p><a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a></div>`;
+        <div class="treino-card">
+            <b style="display:block; font-size:1.1rem; color:var(--azul)">🏟️ Pavilhão Municipal de Estarreja</b>
+            <p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Quarta: 19:00 - 20:30</p>
+            <a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a>
+        </div>
+        <div class="treino-card" style="border-left-color: var(--verde)">
+            <b style="display:block; font-size:1.1rem; color:var(--verde)">🏟️ Pavilhão Escola Secundária</b>
+            <p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Terça e Sexta: 19:00 - 20:30</p>
+            <a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a>
+        </div>`;
 }
 
 function renderAtletas(esc) {
     const list = DB.atletas.filter(a => clean(getVal(a, 'escalão')) === clean(esc));
     document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:20px; font-weight:900">${esc}</h3>` + 
-    list.map(a => `<div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}', '${esc}')"><img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'"><div><strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong><span style="color:#64748b; font-weight:800; font-size: 0.75rem">🎽 ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span></div></div>`).join('');
+    list.map(a => `
+        <div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}', '${esc}')">
+            <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'">
+            <div>
+                <strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong>
+                <span style="color:#64748b; font-weight:800; font-size: 0.75rem">🎽 ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span>
+            </div>
+        </div>
+    `).join('');
 }
 
 function renderHomeNext() {
@@ -697,7 +783,10 @@ function showNiver(m) {
         const mPart = getVal(a, 'nascimento').split('/');
         if(mPart.length < 2) return false;
         const mesNasc = parseInt(mPart[1]);
-        if (mesNasc === m && !nomesVistos.has(clean(getVal(a, 'nome')))) { nomesVistos.add(clean(getVal(a, 'nome'))); return true; }
+        if (mesNasc === m && !nomesVistos.has(clean(getVal(a, 'nome')))) { 
+            nomesVistos.add(clean(getVal(a, 'nome'))); 
+            return true; 
+        }
         return false;
     }).sort((a, b) => parseInt(getVal(a, 'nascimento').split('/')[0]) - parseInt(getVal(b, 'nascimento').split('/')[0]));
     
@@ -713,7 +802,9 @@ function showNiver(m) {
 function showView(v, p = '') {
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    document.getElementById('viewContent').innerHTML = ""; document.getElementById('filterArea').innerHTML = "";
+    document.getElementById('viewContent').innerHTML = ""; 
+    document.getElementById('filterArea').innerHTML = "";
+    
     if(v === 'home') { 
         document.getElementById('home').classList.add('active'); 
         renderHomeNext(); 
@@ -725,11 +816,12 @@ function showView(v, p = '') {
         else if(v === 'participacoes') renderParticipacoes('GERAL');
         else if(v === 'treinos') renderTreinos();
         else if(v === 'painel') renderPainel();
+        else if(v === 'playlist') showPlaylist();            // <-- ADICIONADO
+        else if(v === 'academia') showAcademy(p);            // <-- ADICIONADO
     }
     window.scrollTo(0,0);
 }
-
-// PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO)
+    // PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO)
 function renderPainel() {
     const estaAutenticado = sessaoValida();
     
@@ -851,19 +943,10 @@ function atualizarPainelScout() {
         return matchEscalao && matchJogo && matchAtleta;
     });
 
-    let totalGolos = 0;
-    let totalRemates = 0;
-    let total7mGolos = 0;
-    let total7mTentativas = 0;
-    let totalFora = 0;
-    let totalDefesasSofridas = 0;
-    let totalBlocos = 0;
-    let totalMinutos = 0;
+    let totalGolos = 0, totalRemates = 0, total7mGolos = 0, total7mTentativas = 0;
+    let totalFora = 0, totalDefesasSofridas = 0, totalBlocos = 0, totalMinutos = 0;
 
-    let totalDefesasGR = 0;
-    let totalRematesContraGR = 0;
-    let defesas7mGR = 0;
-    let remates7mContraGR = 0;
+    let totalDefesasGR = 0, totalRematesContraGR = 0, defesas7mGR = 0, remates7mContraGR = 0;
 
     let zonasBaliza = { z1:0, z2:0, z3:0, z4:0, z5:0, z6:0, z7:0, z8:0, z9:0 };
 
@@ -873,16 +956,16 @@ function atualizarPainelScout() {
         const acaoDef = clean(getVal(s, 'Acao_Defensiva'));
         const zbRaw = getVal(s, 'Zona_Baliza');
 
-        // 1. CÁLCULO DE MINUTOS (Diferença entre Saída e Entrada)
+        // Minutos jogados
         const minEntrada = parseInt(getVal(s, 'Minuto_Entrada'));
         const minSaida = parseInt(getVal(s, 'Minuto_Saida'));
         if (!isNaN(minEntrada) && !isNaN(minSaida) && minSaida > minEntrada) {
             totalMinutos += (minSaida - minEntrada);
         }
 
-        // 2. EXTRAÇÃO DA ZONA DE BALIZA (Ex: "7 = Baixo-Esq" -> Pega o número 7)
+        // Zonas de baliza
         if (zbRaw) {
-            const numMatch = zbRaw.match(/\d/); // Encontra o primeiro número na string
+            const numMatch = zbRaw.match(/\d/);
             if (numMatch && res === 'golo') {
                 const zNum = numMatch[0];
                 if (zonasBaliza['z' + zNum] !== undefined) {
@@ -891,7 +974,7 @@ function atualizarPainelScout() {
             }
         }
 
-        // 3. ESTATÍSTICAS DE ATAQUE / REMATES
+        // Ataque
         if (res !== "") {
             totalRemates += 1;
             const is7m = orig.includes('7m') || orig.includes('7 metros');
@@ -910,7 +993,7 @@ function atualizarPainelScout() {
             if (is7m) total7mTentativas += 1;
         }
 
-        // 4. ESTATÍSTICAS DE GUARDA-REDES (Baseado na coluna Acao_Defensiva)
+        // Defesa (Guarda-Redes)
         if (acaoDef.includes('defesa gr')) {
             totalDefesasGR += 1;
             totalRematesContraGR += 1;
@@ -940,7 +1023,6 @@ function atualizarPainelScout() {
             </div>
         </div>
 
-        <!-- SEÇÃO GUARDA-REDES -->
         <div style="background: white; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
             <h4 style="margin: 0 0 12px 0; font-weight: 900; text-align: center; color: var(--eac-dark); font-size: 0.85rem;">🧤 ESTATÍSTICAS GUARDA-REDES</h4>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
@@ -1014,6 +1096,7 @@ function showPlaylist() {
             <button onclick="showView('home')" style="margin-top: 30px; padding: 12px 25px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem;">⬅ VOLTAR AO INÍCIO</button>
         </div>`;
 }
+
 function showAcademy(tipo) {
     showView('custom'); 
     const baseURL = "https://raw.githubusercontent.com/Julio-sp/InfoBaseFem/main/fotos/";
