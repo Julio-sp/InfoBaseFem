@@ -301,6 +301,10 @@ function calcularIdade(nascimento) {
     if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) idade--;
     return idade + " anos";
 }
+/* ==========================================================================
+   SISTEMA INTEGRADO: LEITURA CSV, SCOUTING E MAPA TÁTICO DE ZONAS
+   ========================================================================== */
+
 async function fetchCSV(url) {
     try {
         if (!url) return [];
@@ -330,21 +334,36 @@ async function loadData() {
     try {
         const links = getLinksAtivos();
 
-        // Carrega TODOS os CSVs de forma paralela e segura
-        const [jogos, convocados, scoutAvancadoData, atletasData, scoutData] = await Promise.all([
+        // Carrega TODOS os CSVs em paralelo (incluindo as novas abas)
+        const [
+            jogos, 
+            convocados, 
+            scoutAvancadoData, 
+            atletasData, 
+            scoutData,
+            atletasCampoData,
+            guardaRedesData,
+            atletasZonasData
+        ] = await Promise.all([
             fetchCSV(links.jogos),
             fetchCSV(links.convocados),
             fetchCSV(links.scoutAvancado),
             fetchCSV(links.atletas),
-            fetchCSV(links.scout)
+            fetchCSV(links.scout),
+            fetchCSV(links.dbAtletasCampo || links.atletasCampo),
+            fetchCSV(links.dbGuardaRedes || links.guardaRedes),
+            fetchCSV(links.dbAtletasZonas || links.atletasZonas)
         ]);
 
-        // Atribui os dados ao banco global
-        DB.jogos = jogos;
-        DB.convocados = convocados;
-        DB.scoutAvancado = scoutAvancadoData;
-        DB.atletas = atletasData;
-        DB.scout = scoutData;
+        // Atribui os dados ao banco global DB
+        DB.jogos = jogos || [];
+        DB.convocados = convocados || [];
+        DB.scoutAvancado = scoutAvancadoData || [];
+        DB.atletas = atletasData || [];
+        DB.scout = scoutData || [];
+        DB.atletasCampo = atletasCampoData || [];
+        DB.guardaRedes = guardaRedesData || [];
+        DB.atletasZonas = atletasZonasData || [];
 
         // Executa as renderizações de forma síncrona com os dados prontos
         if (typeof renderHomeNext === "function") renderHomeNext();
@@ -518,6 +537,67 @@ function openJogo(id) {
     document.getElementById('detailPane').classList.add('open');
 }
 
+/* ==========================================================================
+   FUNÇÃO DO MAPA DE ZONAS TÁTICAS (ACERTOS EM VERDE / ERROS EM VERMELHO)
+   ========================================================================== */
+function renderMapaZonas(filtroAtletaOuEscalao = 'TODOS') {
+    if (!DB.atletasZonas || DB.atletasZonas.length === 0) {
+        return `<p style="text-align:center; padding:15px; color:#64748b; font-weight:700;">Sem registos de zonas para este filtro.</p>`;
+    }
+
+    let zonas = {
+        Z1: { golos: 0, falhas: 0 }, Z2: { golos: 0, falhas: 0 },
+        Z3: { golos: 0, falhas: 0 }, Z4: { golos: 0, falhas: 0 },
+        Z5: { golos: 0, falhas: 0 }, Z6: { golos: 0, falhas: 0 },
+        Z7: { golos: 0, falhas: 0 }, Z8: { golos: 0, falhas: 0 }
+    };
+
+    const filtro = clean(filtroAtletaOuEscalao);
+
+    DB.atletasZonas.forEach(row => {
+        const atleta = clean(getVal(row, 'Nome_Atleta') || getVal(row, 'nome') || getVal(row, 'atleta'));
+        const esc = clean(getVal(row, 'Escalao') || getVal(row, 'escalão'));
+
+        if (filtro === 'todos' || filtro === 'geral' || atleta === filtro || esc === filtro) {
+            for (let i = 1; i <= 8; i++) {
+                const g = parseInt(getVal(row, `Z${i}_Gol`) || getVal(row, `Z${i}_Golo`) || getVal(row, `Z${i}_G`) || 0, 10);
+                const f = parseInt(getVal(row, `Z${i}_Falha`) || getVal(row, `Z${i}_Falhado`) || getVal(row, `Z${i}_F`) || 0, 10);
+                zonas[`Z${i}`].golos += g;
+                zonas[`Z${i}`].falhas += f;
+            }
+        }
+    });
+
+    let html = `
+    <div style="margin-top:20px; background:#ffffff; padding:15px; border-radius:12px; border:1px solid #e2e8f0;">
+        <h4 style="margin:0 0 10px 0; font-size:0.9rem; font-weight:900; color:#0f172a; text-transform:uppercase;">🎯 Mapa de Eficácia de Remate (Zonas 1-8)</h4>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px;">`;
+
+    for (let i = 1; i <= 8; i++) {
+        const z = zonas[`Z${i}`];
+        const total = z.golos + z.falhas;
+        
+        // Verde = Mais Golos do que Falhas | Vermelho = Mais ou Igual Falhas do que Golos
+        const isPositivo = z.golos > z.falhas && total > 0;
+        const bg = total === 0 ? '#f8fafc' : (isPositivo ? '#dcfce7' : '#fee2e2');
+        const color = total === 0 ? '#94a3b8' : (isPositivo ? '#15803d' : '#b91c1c');
+        const border = total === 0 ? '#cbd5e1' : (isPositivo ? '#22c55e' : '#ef4444');
+
+        html += `
+            <div style="background:${bg}; border:2px solid ${border}; border-radius:10px; padding:8px 4px; text-align:center;">
+                <span style="font-size:0.7rem; font-weight:900; color:#0f172a; display:block;">Z${i}</span>
+                <strong style="font-size:0.95rem; color:${color}; display:block; margin:2px 0;">${z.golos}G / ${z.falhas}F</strong>
+                <span style="font-size:0.6rem; font-weight:800; color:${color}; display:block;">
+                    ${total === 0 ? '-' : (isPositivo ? '🟢 +Acerto' : '🔴 +Erro')}
+                </span>
+            </div>
+        `;
+    }
+    html += `</div></div>`;
+
+    return html;
+}
+
 function openAtleta(nome, escalaoFiltro = '') {
     const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
     
@@ -578,6 +658,7 @@ function openAtleta(nome, escalaoFiltro = '') {
         }).join('') || '<div style="padding: 15px; text-align: center; color: #94a3b8; font-size: 0.8rem;">Nenhum registro.</div>';
     };
 
+    // Renderiza HTML do perfil + Mapa de Zonas da Atleta
     document.getElementById('detailBody').innerHTML = `
         <div style="background: linear-gradient(180deg, #f8fafc 0%, white 100%); padding: 45px 20px; text-align:center">
             <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:130px; height:130px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1)" onerror="this.src='logo.png'">
@@ -609,6 +690,11 @@ function openAtleta(nome, escalaoFiltro = '') {
                     <span class="stat-val">${totalC}</span>
                     <span class="stat-label" style="font-size:0.5rem;">Cartões ▼</span>
                 </div>
+            </div>
+
+            <!-- INSERÇÃO DO MAPA DE ZONAS DENTRO DO PERFIL -->
+            <div style="max-width: 550px; margin: 0 auto;">
+                ${renderMapaZonas(nome)}
             </div>
 
             <div style="max-width: 550px; margin: 15px auto 0 auto;">
@@ -664,6 +750,7 @@ function renderArt(filtro) {
             </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum golo registado.</p>";
     }
 }
+
 function renderParticipacoes(filtro) {
     document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderParticipacoes('${b}')">${b}</button>`
@@ -770,7 +857,6 @@ function renderHomeNext() {
         </div>`;
     }).join('') || "<p style='color:#94a3b8; text-align:center;'>Sem jogos marcados.</p>";
 }
-
 function renderNiverMenu() { 
     const mNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     document.getElementById('sub-niver').innerHTML = mNames.map((m, i) => `<a onclick="showNiver(${i+1})">${m}</a>`).join(''); 
