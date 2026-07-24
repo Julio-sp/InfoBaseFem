@@ -1,58 +1,59 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EAC Handebol - Painel Oficial & Scout</title>
+    <title>EAC Handebol - Portal Oficial & Scout Avançado</title>
     <style>
         /* ==========================================================================
-           1. VARIÁVEIS GLORAIS E RESET
+           1. VARIÁVEIS E RESET DESIGN SYSTEM EAC
            ========================================================================== */
         :root {
-            --eac-dark: #0f172a;
-            --eac-navy: #1e293b;
-            --azul: #0284c7;
-            --azul-hover: #0369a1;
-            --verde: #16a34a;
-            --verde-hover: #15803d;
-            --vermelho: #dc2626;
-            --amarelo: #eab308;
-            --bg: #f8fafc;
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent-blue: #0284c7;
+            --accent-blue-hover: #0369a1;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
+            --bg-main: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #334155;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
             --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-lg: 24px;
+            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg);
+            background-color: var(--bg-main);
             color: var(--text-main);
-            padding-bottom: 80px;
+            padding-bottom: 90px;
             overflow-x: hidden;
             line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* ==========================================================================
-           2. HEADER E NAVEGAÇÃO
+           2. HEADER E NAVEGAÇÃO PREMIUM
            ========================================================================== */
         header {
-            background: var(--eac-dark);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: #ffffff;
-            padding: 12px 20px;
+            padding: 14px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -60,7 +61,7 @@
             top: 0;
             z-index: 1000;
             box-shadow: var(--shadow-md);
-            border-bottom: 3px solid var(--azul);
+            border-bottom: 3px solid var(--accent-blue);
         }
 
         .logo-container {
@@ -76,37 +77,44 @@
             height: 42px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--azul);
+            border: 2px solid var(--accent-blue);
             background: #ffffff;
+            box-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
         }
 
         .title-text {
             font-weight: 900;
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             letter-spacing: 0.8px;
             color: #ffffff;
             text-transform: uppercase;
+            background: linear-gradient(90deg, #ffffff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .menu-btn {
             font-size: 1.6rem;
-            background: none;
-            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #ffffff;
             cursor: pointer;
-            padding: 5px;
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease;
+            transition: var(--transition-fast);
         }
 
         .menu-btn:active {
-            transform: scale(0.9);
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         /* ==========================================================================
-           3. SIDEBAR E MENU LATERAL
+           3. SIDEBAR E MENU OVERLAY
            ========================================================================== */
         .sidebar-overlay {
             position: fixed;
@@ -114,8 +122,8 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(6px);
             z-index: 1999;
             opacity: 0;
             pointer-events: none;
@@ -130,14 +138,14 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -300px;
-            width: 290px;
+            left: -310px;
+            width: 300px;
             height: 100%;
             background: #ffffff;
             z-index: 2000;
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: var(--shadow-lg);
-            padding: 20px;
+            padding: 24px 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -151,15 +159,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 15px;
+            padding-bottom: 18px;
             border-bottom: 2px solid var(--border-color);
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         .sidebar-title {
-            color: var(--eac-dark);
+            color: var(--primary);
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             letter-spacing: 0.5px;
         }
 
@@ -170,12 +178,17 @@
             cursor: pointer;
             color: var(--text-muted);
             line-height: 1;
+            transition: var(--transition-fast);
+        }
+
+        .close-btn:hover {
+            color: var(--accent-red);
         }
 
         .nav-links {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .nav-item {
@@ -189,21 +202,24 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: background 0.2s ease, color 0.2s ease;
+            transition: var(--transition-fast);
         }
 
         .nav-item:hover, .nav-item:active {
             background: #f1f5f9;
-            color: var(--azul);
+            color: var(--accent-blue);
+            transform: translateX(4px);
         }
 
         .sub-menu {
             display: none;
-            padding-left: 15px;
+            padding-left: 18px;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             margin-top: 4px;
             margin-bottom: 8px;
+            border-left: 2px solid var(--border-color);
+            margin-left: 12px;
         }
 
         .sub-menu.open {
@@ -211,19 +227,20 @@
         }
 
         .sub-menu a {
-            padding: 10px 14px;
+            padding: 9px 12px;
             color: var(--text-muted);
             text-decoration: none;
             font-weight: 600;
             font-size: 0.88rem;
             cursor: pointer;
             border-radius: var(--radius-sm);
-            transition: all 0.2s ease;
+            transition: var(--transition-fast);
         }
 
         .sub-menu a:hover {
-            color: var(--azul);
+            color: var(--accent-blue);
             background: #f8fafc;
+            padding-left: 16px;
         }
 
         /* ==========================================================================
@@ -231,63 +248,64 @@
            ========================================================================== */
         .container {
             display: none;
-            padding: 20px;
+            padding: 20px 16px;
             max-width: 900px;
             margin: 0 auto;
-            animation: fadeIn 0.3s ease-in-out;
+            animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .container.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* BANNER INSPIRADOR (HOME) */
         .hero-banner {
-            background: linear-gradient(135deg, var(--eac-dark) 0%, var(--eac-navy) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: #ffffff;
-            padding: 25px 20px;
+            padding: 28px 22px;
             border-radius: var(--radius-lg);
-            margin-bottom: 25px;
+            margin-bottom: 24px;
             box-shadow: var(--shadow-md);
             position: relative;
             overflow: hidden;
-            border-left: 6px solid var(--azul);
+            border-left: 6px solid var(--accent-blue);
         }
 
         .hero-banner h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 900;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .hero-banner p {
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             color: #cbd5e1;
             font-weight: 500;
         }
 
         /* ==========================================================================
-           5. CARDS E COMPONENTES VISUAIS
+           5. CARDS E COMPONENTES VISUAIS PREMIUM
            ========================================================================== */
         .game-card, .treino-card, .atleta-row, .stat-card {
             background: var(--card-bg);
             border-radius: var(--radius-md);
-            padding: 16px;
+            padding: 18px;
             margin-bottom: 14px;
             box-shadow: var(--shadow-sm);
             border: 1px solid var(--border-color);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: var(--transition-fast);
         }
 
         .game-card:hover, .atleta-row:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
         }
 
         .game-header {
@@ -306,34 +324,36 @@
         .atleta-row {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
             cursor: pointer;
         }
 
         .atleta-img-circle {
-            width: 52px;
-            height: 52px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--border-color);
             background: #f1f5f9;
+            box-shadow: var(--shadow-sm);
         }
 
         .maps-btn {
             display: inline-block;
-            padding: 9px 16px;
+            padding: 10px 18px;
             background: #e0f2fe;
-            color: var(--azul);
+            color: var(--accent-blue);
             border-radius: var(--radius-sm);
             text-decoration: none;
             font-weight: 800;
-            font-size: 0.8rem;
-            margin-top: 10px;
-            transition: background 0.2s ease;
+            font-size: 0.82rem;
+            margin-top: 12px;
+            transition: var(--transition-fast);
         }
 
         .maps-btn:hover {
             background: #bae6fd;
+            transform: translateY(-1px);
         }
 
         /* FILTROS BOTÕES (PILLS) */
@@ -342,7 +362,7 @@
             gap: 10px;
             margin-bottom: 20px;
             overflow-x: auto;
-            padding-bottom: 5px;
+            padding-bottom: 6px;
             scrollbar-width: none;
         }
 
@@ -351,27 +371,64 @@
         }
 
         .pill-btn {
-            padding: 8px 18px;
-            border-radius: 20px;
+            padding: 9px 20px;
+            border-radius: 30px;
             border: none;
             background: #e2e8f0;
             color: #475569;
             font-weight: 800;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             cursor: pointer;
             white-space: nowrap;
-            transition: all 0.2s ease;
+            transition: var(--transition-fast);
         }
 
         .pill-btn.active {
-            background: var(--eac-dark);
+            background: var(--primary);
             color: #ffffff;
             box-shadow: var(--shadow-sm);
         }
 
         /* ==========================================================================
-           6. LOADER ASSÍNCRONO
+           6. MODAL VISUAL E LOADER ASSÍNCRONO
            ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
         #loader {
             position: fixed;
             top: 0;
@@ -383,19 +440,19 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 3000;
+            z-index: 4000;
             font-weight: 800;
-            color: var(--eac-dark);
+            color: var(--primary);
         }
 
         .spinner {
-            width: 48px;
-            height: 48px;
+            width: 50px;
+            height: 50px;
             border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--azul);
+            border-top: 5px solid var(--accent-blue);
             border-radius: 50%;
-            animation: spin 0.9s linear infinite;
-            margin-bottom: 18px;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
         }
 
         @keyframes spin {
@@ -406,10 +463,10 @@
 </head>
 <body>
 
-    <!-- OVERLAY E LOADER -->
+    <!-- LOADER E OVERLAY -->
     <div id="loader">
         <div class="spinner"></div>
-        <span style="letter-spacing:0.5px;">A carregar dados das planilhas EAC...</span>
+        <span style="letter-spacing:0.5px;">A carregar dados do EAC Handebol...</span>
     </div>
 
     <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -423,7 +480,7 @@
         <button class="menu-btn" onclick="toggleMenu()" aria-label="Abrir Menu">☰</button>
     </header>
 
-    <!-- SIDEBAR NAVEGAÇÃO -->
+    <!-- SIDEBAR / MENU LATERAL -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <span class="sidebar-title">MENU PRINCIPAL</span>
@@ -453,36 +510,40 @@
                 <a onclick="showAcademy('mentalidade')">Mentalidade de Jogo</a>
             </div>
             <div class="nav-item" onclick="showPlaylist()">🎧 Ritmo de Jogo</div>
-            <div class="nav-item" onclick="showView('painel')" style="color: var(--azul); border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 15px;">📊 Painel Coordenação</div>
+            <div class="nav-item" onclick="showView('painel')" style="color: var(--accent-blue); border-top: 1px solid var(--border-color); margin-top: 12px; padding-top: 16px;">📊 Painel Coordenação</div>
         </div>
     </div>
 
-    <!-- CONTAINER INÍCIO (HOME) -->
+    <!-- HOME / PÁGINA INICIAL -->
     <div id="home" class="container active">
         <div class="hero-banner">
             <h1>EAC Handebol</h1>
             <p>União, Foco e Alta Performance no Handebol Feminino.</p>
         </div>
-        <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:15px; font-size:1.2rem;">🔥 Próximos Jogos</h2>
+        <h2 style="font-weight:900; color:var(--primary); margin-bottom:16px; font-size:1.25rem;">🔥 Próximos Jogos</h2>
         <div id="homeNextContent"></div>
     </div>
 
-    <!-- CONTAINER PRINCIPAL PARA EXIBIÇÃO DINÂMICA DE VISTAS -->
+    <!-- MAIN VIEW CONTAINER PARA CONTEÚDOS DINÂMICOS -->
     <div id="mainView" class="container">
         <div id="filterArea"></div>
         <div id="viewContent"></div>
     </div>
 
+    <!-- MODAL DETALHES -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-card" id="modalContent"></div>
+    </div>
     <script>
     /* ==========================================================================
-       CONFIGURAÇÃO DOS LINKS DAS ABAS DA PLANILHA GOOGLE SHEETS
+       7. CONFIGURAÇÃO DE DADOS, ENDPOINTS E CACHE (PARSER CSV)
        ========================================================================== */
-    const URL_JOGOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1515663193&single=true&output=csv";
-    const URL_ATLETAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv";
-    const URL_CONVOCATORIAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=179640149&single=true&output=csv";
-    const URL_SCOUT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2008001682&single=true&output=csv";
+    // Substitua os links abaixo pelas URLs de exportação CSV das abas da sua Planilha Google
+    const URL_JOGOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1_EXAMPLE_JOGOS/pub?gid=0&single=true&output=csv";
+    const URL_ATLETAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1_EXAMPLE_ATLETAS/pub?gid=123456&single=true&output=csv";
+    const URL_CONVOCATORIAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1_EXAMPLE_CONVOCATORIAS/pub?gid=654321&single=true&output=csv";
+    const URL_SCOUT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1_EXAMPLE_SCOUT/pub?gid=987654&single=true&output=csv";
 
-    // ESTRUTURA GLOBAL DE DADOS DA APLICAÇÃO
     let DB = {
         jogos: [],
         atletas: [],
@@ -490,35 +551,35 @@
         scoutAvancado: []
     };
 
-    /* ==========================================================================
-       FUNÇÕES UTILITÁRIAS E RESILIENTES DE PARSE
-       ========================================================================== */
+    // Auxiliar para parsing flexível de nomes de colunas (ignora acentos/caixa alta)
     function clean(str) {
-        if (!str) return '';
-        return String(str).toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return (str || "").toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    function getVal(obj, key) {
-        if (!obj) return '';
-        const target = clean(key);
+    function getVal(obj, keyName) {
+        if (!obj) return "";
+        const target = clean(keyName);
         for (let k in obj) {
             if (clean(k) === target) return obj[k];
         }
-        return '';
+        return "";
     }
 
-    function csvToObjects(csvText) {
-        if (!csvText) return [];
-        const lines = csvText.split(/\r\n|\n/);
-        if (lines.length < 2) return [];
-        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    // Parser CSV tolerante a aspas e vírgulas/pontos e vírgula
+    function parseCSV(text) {
+        const lines = text.split(/\r\n|\n/);
+        if (lines.length === 0) return [];
+
+        const delimiter = lines[0].includes(';') ? ';' : ',';
+        const headers = lines[0].split(delimiter).map(h => h.replace(/^"|"$/g, '').trim());
         const result = [];
+
         for (let i = 1; i < lines.length; i++) {
             if (!lines[i].trim()) continue;
-            const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            const currentline = lines[i].split(delimiter);
             const obj = {};
             for (let j = 0; j < headers.length; j++) {
-                let val = currentline[j] ? currentline[j].trim().replace(/^"|"$/g, '') : '';
+                let val = currentline[j] ? currentline[j].replace(/^"|"$/g, '').trim() : "";
                 obj[headers[j]] = val;
             }
             result.push(obj);
@@ -526,53 +587,51 @@
         return result;
     }
 
+    async function loadData() {
+        const loader = document.getElementById('loader');
+        try {
+            const [resJ, resA, resC, resS] = await Promise.all([
+                fetch(URL_JOGOS).then(r => r.text()).catch(() => ""),
+                fetch(URL_ATLETAS).then(r => r.text()).catch(() => ""),
+                fetch(URL_CONVOCATORIAS).then(r => r.text()).catch(() => ""),
+                fetch(URL_SCOUT).then(r => r.text()).catch(() => "")
+            ]);
+
+            DB.jogos = parseCSV(resJ);
+            DB.atletas = parseCSV(resA);
+            DB.convocatorias = parseCSV(resC);
+            DB.scoutAvancado = parseCSV(resS);
+
+            if (loader) loader.style.display = 'none';
+
+            // Renderizar vistas iniciais
+            renderHomeNext();
+            renderNiverMenu();
+        } catch (error) {
+            console.error("Erro ao carregar os dados:", error);
+            if (loader) loader.innerHTML = `<span style="color:var(--accent-red); padding:20px; text-align:center;">⚠️ Falha ao carregar dados. Verifique a ligação à internet.</span>`;
+        }
+    }
+
     function parseDateTime(dataStr, horaStr) {
         if (!dataStr) return new Date(0);
         const parts = dataStr.split('/');
         if (parts.length < 3) return new Date(0);
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1;
-        const year = parseInt(parts[2], 10);
-        let hours = 0, minutes = 0;
-        if (horaStr) {
+        const dia = parseInt(parts[0], 10);
+        const mes = parseInt(parts[1], 10) - 1;
+        const ano = parseInt(parts[2], 10);
+
+        let h = 0, m = 0;
+        if (horaStr && horaStr.includes(':')) {
             const hParts = horaStr.split(':');
-            if (hParts.length >= 2) {
-                hours = parseInt(hParts[0], 10);
-                minutes = parseInt(hParts[1], 10);
-            }
+            h = parseInt(hParts[0], 10) || 0;
+            m = parseInt(hParts[1], 10) || 0;
         }
-        return new Date(year, month, day, hours, minutes);
-    }
-        /* ==========================================================================
-       7. CARREGAMENTO ASSÍNCRONO DOS DADOS (LOAD DATA)
-       ========================================================================== */
-    async function loadData() {
-        const loader = document.getElementById('loader');
-        try {
-            const [resJ, resA, resC, resS] = await Promise.allSettled([
-                fetch(URL_JOGOS).then(r => r.text()),
-                fetch(URL_ATLETAS).then(r => r.text()),
-                fetch(URL_CONVOCATORIAS).then(r => r.text()),
-                fetch(URL_SCOUT).then(r => r.text())
-            ]);
-
-            if (resJ.status === 'fulfilled') DB.jogos = csvToObjects(resJ.value);
-            if (resA.status === 'fulfilled') DB.atletas = csvToObjects(resA.value);
-            if (resC.status === 'fulfilled') DB.convocatorias = csvToObjects(resC.value);
-            if (resS.status === 'fulfilled') DB.scoutAvancado = csvToObjects(resS.value);
-
-            renderNiverMenu();
-            renderHomeNext();
-            
-            if (loader) loader.style.display = 'none';
-        } catch (e) {
-            console.error("Erro ao carregar ficheiros das planilhas:", e);
-            if (loader) loader.style.display = 'none';
-        }
+        return new Date(ano, mes, dia, h, m);
     }
 
     /* ==========================================================================
-       8. RENDERIZAÇÃO: CALENDÁRIO & JOGOS (COM HISTÓRICO E PLACAR)
+       8. RENDERIZAÇÃO: CALENDÁRIO & JOGOS
        ========================================================================== */
     function renderJogos(escFiltro = 'TODOS') {
         const filterArea = document.getElementById('filterArea');
@@ -582,72 +641,71 @@
         if (filterArea) {
             filterArea.innerHTML = `
                 <div class="pills-container">
-                    <button class="pill-btn ${escFiltro==='TODOS'?'active':''}" onclick="renderJogos('TODOS')">TODOS OS JOGOS</button>
-                    <button class="pill-btn ${escFiltro==='SUB16'?'active':''}" onclick="renderJogos('SUB16')">SUB-16</button>
-                    <button class="pill-btn ${escFiltro==='SUB18'?'active':''}" onclick="renderJogos('SUB18')">SUB-18</button>
+                    <button class="pill-btn ${escFiltro==='TODOS'?'active':''}" onclick="renderJogos('TODOS')">TODOS</button>
+                    <button class="pill-btn ${escFiltro==='SUB16'?'active':''}" onclick="renderJogos('SUB16')">EQUIPA SUB-16</button>
+                    <button class="pill-btn ${escFiltro==='SUB18'?'active':''}" onclick="renderJogos('SUB18')">EQUIPA SUB-18</button>
                 </div>
             `;
         }
 
-        const filtrados = DB.jogos.filter(j => escFiltro === 'TODOS' || clean(getVal(j, 'escalao')) === clean(escFiltro));
-
-        // Ordenação cronológica dos jogos
-        filtrados.sort((a,b) => parseDateTime(getVal(b, 'data'), getVal(b, 'hora')) - parseDateTime(getVal(a, 'data'), getVal(a, 'hora')));
+        const filtrados = DB.jogos.filter(j => {
+            if (escFiltro === 'TODOS') return true;
+            return clean(getVal(j, 'escalao') || getVal(j, 'escalão')) === clean(escFiltro);
+        }).sort((a,b) => parseDateTime(getVal(b, 'data'), getVal(b, 'hora')) - parseDateTime(getVal(a, 'data'), getVal(a, 'hora')));
 
         viewContent.innerHTML = filtrados.map(j => {
-            const gEAC = getVal(j, 'gols_eac') || getVal(j, 'golos_eac');
-            const gADV = getVal(j, 'gols_adv') || getVal(j, 'golos_adv');
-            const temRes = (gEAC !== '' && gADV !== '');
-            const isFora = clean(getVal(j, 'local')).includes("fora");
-            const advNome = getVal(j, 'adversario') || getVal(j, 'adversário') || 'Adversário';
-            const esc = getVal(j, 'escalao') || 'EAC';
-            const jId = getVal(j, 'Jogo_ID') || getVal(j, 'id') || getVal(j, 'ID');
+            const idJogo = getVal(j, 'id') || getVal(j, 'id_jogo');
+            const data = getVal(j, 'data');
+            const hora = getVal(j, 'hora');
+            const escalao = getVal(j, 'escalao') || getVal(j, 'escalão');
+            const adversario = getVal(j, 'adversario') || getVal(j, 'adversário');
+            const local = getVal(j, 'local');
+            const golosEac = getVal(j, 'golos_eac') || getVal(j, 'golos_favor');
+            const golosAdv = getVal(j, 'golos_adv') || getVal(j, 'golos_contra');
+            
+            const temResultado = golosEac !== "" && golosAdv !== "";
+            const isFora = clean(local).includes("fora");
 
-            // Cálculo da cor da tag de resultado se houver placar
-            let statusBadge = '';
-            if (temRes) {
-                const numEAC = parseInt(gEAC, 10);
-                const numADV = parseInt(gADV, 10);
-                if (numEAC > numADV) {
-                    statusBadge = `<span style="background:#dcfce7; color:var(--verde); padding:4px 8px; border-radius:6px; font-size:0.7rem; font-weight:900;">VITÓRIA</span>`;
-                } else if (numEAC < numADV) {
-                    statusBadge = `<span style="background:#fee2e2; color:var(--vermelho); padding:4px 8px; border-radius:6px; font-size:0.7rem; font-weight:900;">DERROTA</span>`;
-                } else {
-                    statusBadge = `<span style="background:#fef9c3; color:var(--amarelo); padding:4px 8px; border-radius:6px; font-size:0.7rem; font-weight:900;">EMPATE</span>`;
-                }
-            } else {
-                statusBadge = `<span style="background:#e0f2fe; color:var(--azul); padding:4px 8px; border-radius:6px; font-size:0.7rem; font-weight:900;">AGENDADO</span>`;
+            let badgeCor = "var(--accent-blue)";
+            let resText = "AGENDADO";
+
+            if (temResultado) {
+                const gE = parseInt(golosEac, 10);
+                const gA = parseInt(golosAdv, 10);
+                if (gE > gA) { badgeCor = "var(--accent-green)"; resText = "VITÓRIA"; }
+                else if (gE < gA) { badgeCor = "var(--accent-red)"; resText = "DERROTA"; }
+                else { badgeCor = "var(--accent-amber)"; resText = "EMPATE"; }
             }
 
             return `
-            <div class="game-card">
+            <div class="game-card" onclick="openJogoModal('${idJogo}')">
                 <div class="game-header">
-                    <span>📅 ${getVal(j, 'data')} • 🕒 ${getVal(j, 'hora')}</span>
-                    <div>${statusBadge} <b style="margin-left:5px; color:var(--eac-dark);">${esc}</b></div>
+                    <span>📅 ${data} • 🕒 ${hora}</span>
+                    <span style="background:${badgeCor}; color:#ffffff; padding:4px 10px; border-radius:20px; font-size:0.7rem;">${resText}</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin: 14px 0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin:14px 0;">
                     <div style="text-align:center; flex:1">
-                        <span style="font-weight:900; font-size:1.05rem; display:block; color:var(--eac-dark);">${isFora ? advNome : 'EAC HANDEBOL'}</span>
-                        <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">${isFora ? 'FORA' : 'CASA'}</span>
+                        <strong style="font-size:1.05rem; color:var(--primary); display:block;">${isFora ? adversario : 'EAC HANDEBOL'}</strong>
                     </div>
-                    <div style="background:#f1f5f9; padding:8px 16px; border-radius:var(--radius-md); font-weight:900; font-size:1.2rem; color:var(--eac-dark); border:1px solid var(--border-color);">
-                        ${temRes ? `${isFora ? gADV : gEAC} - ${isFora ? gEAC : gADV}` : 'VS'}
+                    <div style="background:#f1f5f9; padding:8px 16px; border-radius:var(--radius-md); text-align:center; min-width:80px; border:1px solid var(--border-color);">
+                        <strong style="font-size:1.3rem; color:var(--primary); font-weight:900;">
+                            ${temResultado ? `${isFora ? golosAdv : golosEac} - ${isFora ? golosEac : golosAdv}` : 'VS'}
+                        </strong>
                     </div>
                     <div style="text-align:center; flex:1">
-                        <span style="font-weight:900; font-size:1.05rem; display:block; color:var(--eac-dark);">${!isFora ? advNome : 'EAC HANDEBOL'}</span>
-                        <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">${!isFora ? 'FORA' : 'CASA'}</span>
+                        <strong style="font-size:1.05rem; color:var(--primary); display:block;">${!isFora ? adversario : 'EAC HANDEBOL'}</strong>
                     </div>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted); border-top:1px dashed #f1f5f9; padding-top:8px; margin-top:8px;">
-                    <span>📍 ${getVal(j, 'local') || 'Pavilhão'}</span>
-                    ${jId ? `<span style="font-weight:700;">ID: ${jId}</span>` : ''}
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; color:var(--text-muted); font-weight:700;">
+                    <span>📍 ${local || 'Pavilhão'}</span>
+                    <span style="color:var(--accent-blue);">${escalao}</span>
                 </div>
             </div>`;
-        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Sem jogos registados para esta categoria.</p>';
+        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Nenhum jogo encontrado para este filtro.</p>';
     }
 
     /* ==========================================================================
-       9. RENDERIZAÇÃO: MELHORES MARCADORAS (SCOUT + ARTILHARIA)
+       9. RENDERIZAÇÃO: MELHORES MARCADORAS (ARTILHARIA)
        ========================================================================== */
     function renderArt(escFiltro = 'GERAL') {
         const filterArea = document.getElementById('filterArea');
@@ -664,58 +722,50 @@
             `;
         }
 
-        let contagem = {};
-        let fotos = {};
-
-        // Mapeia fotos do cadastro
-        DB.atletas.forEach(a => {
-            const nome = getVal(a, 'nome');
-            const foto = getVal(a, 'foto');
-            if (nome) fotos[clean(nome)] = foto;
-        });
-
-        // Sumariza golos a partir do Scout Avançado
+        // Contagem de golos a partir da tabela de scout ou convocatórias
+        const contagemGolos = {};
+        
         DB.scoutAvancado.forEach(s => {
-            const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado'));
             const nome = getVal(s, 'Atleta_Nome') || getVal(s, 'nome');
-            const escAtleta = clean(getVal(s, 'Escalao') || getVal(s, 'escalao'));
+            const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado'));
+            const esc = clean(getVal(s, 'Escalao') || getVal(s, 'escalao'));
 
             if ((res === 'golo' || res === 'gol') && nome) {
-                if (escFiltro === 'GERAL' || escAtleta === clean(escFiltro)) {
-                    contagem[nome] = (contagem[nome] || 0) + 1;
+                if (escFiltro === 'GERAL' || esc === clean(escFiltro)) {
+                    contagemGolos[nome] = (contagemGolos[nome] || 0) + 1;
                 }
             }
         });
 
-        const lista = Object.keys(contagem)
-            .map(n => ({ nome: n, golos: contagem[n] }))
-            .sort((a,b) => b.golos - a.golos);
+        const ranking = Object.keys(contagemGolos).map(atleta => {
+            const dadosAtleta = DB.atletas.find(a => clean(getVal(a, 'nome')) === clean(atleta));
+            return {
+                nome: atleta,
+                golos: contagemGolos[atleta],
+                foto: dadosAtleta ? getVal(dadosAtleta, 'foto') : '',
+                num: dadosAtleta ? (getVal(dadosAtleta, 'numero') || getVal(dadosAtleta, 'número')) : '-'
+            };
+        }).sort((a,b) => b.golos - a.golos);
 
-        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--eac-dark)">⚽ Melhores Marcadoras</h3>` +
-        (lista.map((a, idx) => {
-            const fotoUrl = fotos[clean(a.nome)] || 'logo.png';
-            let medalha = `#${idx+1}`;
-            if (idx === 0) medalha = '🥇';
-            if (idx === 1) medalha = '🥈';
-            if (idx === 2) medalha = '🥉';
-
-            return `
-            <div class="atleta-row">
-                <span style="font-size:1.2rem; font-weight:900; width:30px; text-align:center; color:var(--azul);">${medalha}</span>
-                <img src="${fotoUrl}" class="atleta-img-circle" onerror="this.src='https://via.placeholder.com/50/0f172a/ffffff?text=EAC'">
-                <div style="flex:1">
-                    <strong style="font-size:1rem; color:var(--eac-dark); display:block;">${a.nome}</strong>
-                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Golos Registados em Scout</span>
+        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--primary)">⚽ Melhores Marcadoras</h3>` +
+        (ranking.map((item, index) => `
+            <div class="atleta-row" style="position:relative;">
+                <div style="font-weight:900; font-size:1.1rem; color:${index < 3 ? 'var(--accent-blue)' : 'var(--text-muted)'}; min-width:24px;">
+                    #${index + 1}
                 </div>
-                <div style="background:#dcfce7; color:var(--verde); padding:6px 14px; border-radius:20px; font-weight:900; font-size:1rem;">
-                    ${a.golos} G
+                <img src="${item.foto || 'logo.png'}" class="atleta-img-circle" onerror="this.src='https://via.placeholder.com/50/0f172a/ffffff?text=EAC'">
+                <div style="flex:1;">
+                    <strong style="font-size:1rem; color:var(--primary); display:block;">${item.nome}</strong>
+                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Camisola Nº ${item.num}</span>
                 </div>
-            </div>`;
-        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Ainda não existem golos validados no Scout para esta categoria.</p>');
+                <div style="background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color:#ffffff; padding:8px 16px; border-radius:var(--radius-md); font-weight:900; font-size:1rem; box-shadow:var(--shadow-sm);">
+                    ${item.golos} <span style="font-size:0.7rem; font-weight:600; opacity:0.8;">GOLOS</span>
+                </div>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Sem registos de golos para esta categoria.</p>');
     }
-
-    /* ==========================================================================
-       10. RENDERIZAÇÃO: PARTICIPAÇÕES & CONVOCATÓRIAS
+        /* ==========================================================================
+       10. RENDERIZAÇÃO: PARTICIPAÇÕES & MINUTAGEM
        ========================================================================== */
     function renderParticipacoes(escFiltro = 'GERAL') {
         const filterArea = document.getElementById('filterArea');
@@ -732,86 +782,120 @@
             `;
         }
 
-        let partidas = {};
-        let fotos = {};
+        const statsAtletas = {};
 
-        DB.atletas.forEach(a => {
-            const nome = getVal(a, 'nome');
-            const foto = getVal(a, 'foto');
-            if (nome) fotos[clean(nome)] = foto;
+        // Processar Convocatórias para Jogos Jogados
+        DB.convocatorias.forEach(c => {
+            const nome = getVal(c, 'Atleta_Nome') || getVal(c, 'nome');
+            const esc = clean(getVal(c, 'Escalao') || getVal(c, 'escalao'));
+            if (!nome) return;
+
+            if (escFiltro === 'GERAL' || esc === clean(escFiltro)) {
+                if (!statsAtletas[nome]) statsAtletas[nome] = { jogos: 0, minutos: 0, remates: 0, golos: 0 };
+                statsAtletas[nome].jogos += 1;
+            }
         });
 
-        DB.convocatorias.forEach(c => {
-            const nome = getVal(c, 'nome') || getVal(c, 'Atleta_Nome');
-            const escAtleta = clean(getVal(c, 'Escalao') || getVal(c, 'escalao'));
+        // Processar Scout para Minutos e Remates
+        DB.scoutAvancado.forEach(s => {
+            const nome = getVal(s, 'Atleta_Nome') || getVal(s, 'nome');
+            const esc = clean(getVal(s, 'Escalao') || getVal(s, 'escalao'));
+            const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado'));
+            const ent = parseInt(getVal(s, 'Minuto_Entrada') || 0, 10);
+            const sai = parseInt(getVal(s, 'Minuto_Saida') || 0, 10);
 
-            if (nome) {
-                if (escFiltro === 'GERAL' || escAtleta === clean(escFiltro)) {
-                    partidas[nome] = (partidas[nome] || 0) + 1;
+            if (!nome) return;
+
+            if (escFiltro === 'GERAL' || esc === clean(escFiltro)) {
+                if (!statsAtletas[nome]) statsAtletas[nome] = { jogos: 0, minutos: 0, remates: 0, golos: 0 };
+                if (sai > ent) statsAtletas[nome].minutos += (sai - ent);
+                if (res !== "") {
+                    statsAtletas[nome].remates += 1;
+                    if (res === 'golo' || res === 'gol') statsAtletas[nome].golos += 1;
                 }
             }
         });
 
-        const lista = Object.keys(partidas)
-            .map(n => ({ nome: n, jogos: partidas[n] }))
-            .sort((a,b) => b.jogos - a.jogos);
+        const lista = Object.keys(statsAtletas).map(nome => {
+            const aData = DB.atletas.find(a => clean(getVal(a, 'nome')) === clean(nome));
+            return {
+                nome,
+                jogos: statsAtletas[nome].jogos,
+                minutos: statsAtletas[nome].minutos,
+                remates: statsAtletas[nome].remates,
+                golos: statsAtletas[nome].golos,
+                foto: aData ? getVal(aData, 'foto') : '',
+                num: aData ? (getVal(aData, 'numero') || getVal(aData, 'número')) : '-'
+            };
+        }).sort((a,b) => b.jogos - a.jogos || b.minutos - a.minutos);
 
-        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--eac-dark)">📊 Presenças em Convocatórias</h3>` +
-        (lista.map((a, idx) => {
-            const fotoUrl = fotos[clean(a.nome)] || 'logo.png';
-
+        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--primary)">📊 Participações e Minutagem</h3>` +
+        (lista.map(item => {
+            const efic = item.remates > 0 ? Math.round((item.golos / item.remates) * 100) : 0;
             return `
-            <div class="atleta-row">
-                <span style="font-size:1rem; font-weight:900; width:28px; color:var(--text-muted);">#${idx+1}</span>
-                <img src="${fotoUrl}" class="atleta-img-circle" onerror="this.src='https://via.placeholder.com/50/0f172a/ffffff?text=EAC'">
-                <div style="flex:1">
-                    <strong style="font-size:1rem; color:var(--eac-dark); display:block;">${a.nome}</strong>
-                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Convocatórias Oficiais</span>
+            <div class="atleta-row" style="flex-wrap:wrap; padding:16px;">
+                <img src="${item.foto || 'logo.png'}" class="atleta-img-circle" onerror="this.src='https://via.placeholder.com/50/0f172a/ffffff?text=EAC'">
+                <div style="flex:1; min-width:140px;">
+                    <strong style="font-size:1rem; color:var(--primary); display:block;">${item.nome}</strong>
+                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Camisola Nº ${item.num}</span>
                 </div>
-                <div style="background:#e0f2fe; color:var(--azul); padding:6px 14px; border-radius:20px; font-weight:900; font-size:0.95rem;">
-                    ${a.jogos} Jogos
+                <div style="display:flex; gap:12px; margin-top:8px; width:100%; justify-content:space-between; background:#f8fafc; padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                    <div style="text-align:center;">
+                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block;">JOGOS</span>
+                        <strong style="font-size:0.95rem; color:var(--primary);">${item.jogos}</strong>
+                    </div>
+                    <div style="text-align:center;">
+                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block;">MINUTOS</span>
+                        <strong style="font-size:0.95rem; color:var(--accent-blue);">${item.minutos}'</strong>
+                    </div>
+                    <div style="text-align:center;">
+                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block;">REMATES</span>
+                        <strong style="font-size:0.95rem; color:var(--primary);">${item.remates}</strong>
+                    </div>
+                    <div style="text-align:center;">
+                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block;">EFICÁCIA</span>
+                        <strong style="font-size:0.95rem; color:${efic >= 50 ? 'var(--accent-green)' : 'var(--accent-amber)'};">${efic}%</strong>
+                    </div>
                 </div>
             </div>`;
-        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Sem registo de convocações até ao momento.</p>');
+        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Sem registos de participação encontrados.</p>');
     }
-        /* ==========================================================================
-       11. RENDERIZAÇÃO: LOCAIS DE TREINO & MAPAS
+
+    /* ==========================================================================
+       11. RENDERIZAÇÃO: LOCAIS DE TREINO & ANIVERSÁRIOS
        ========================================================================== */
     function renderTreinos() {
         const filterArea = document.getElementById('filterArea');
         const viewContent = document.getElementById('viewContent');
-        if (filterArea) filterArea.innerHTML = '';
         if (!viewContent) return;
+        if (filterArea) filterArea.innerHTML = '';
 
-        const locais = [
+        const pavilhoes = [
             {
-                nome: "Pavilhão Gimnodesportivo Municipal de Estarreja",
-                dias: "Segunda, Quarta e Sexta",
-                horario: "18:30 - 20:00",
-                link: "https://maps.google.com/?q=Pavilhao+Gimnodesportivo+Estarreja"
+                nome: "Pavilhão Municipal de Estarreja",
+                morada: "Rua Dr. Manuel Figueiredo, 3860-237 Estarreja",
+                link: "https://maps.google.com/?q=Pavilhao+Municipal+de+Estarreja",
+                desc: "Treinos Oficiais e Jogos em Casa - Sub16 e Sub18"
             },
             {
                 nome: "Pavilhão Complexo Desportivo de Avanca",
-                dias: "Terça e Quinta",
-                horario: "19:00 - 20:30",
-                link: "https://maps.google.com/?q=Pavilhao+Complexo+Desportivo+Avanca"
+                morada: "Rua do Desporto, Avanca",
+                link: "https://maps.google.com/?q=Complexo+Desportivo+Avanca",
+                desc: "Treinos Complementares e Preparação Física"
             }
         ];
 
-        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--eac-dark)">📍 Locais & Horários de Treino</h3>` +
-        locais.map(loc => `
+        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--primary)">📍 Pavilhões e Locais de Treino</h3>` +
+        pavilhoes.map(p => `
             <div class="treino-card">
-                <strong style="font-size:1.1rem; color:var(--eac-dark); display:block; margin-bottom:6px;">${loc.nome}</strong>
-                <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:4px;">📅 ${loc.dias}</p>
-                <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">🕒 ${loc.horario}</p>
-                <a href="${loc.link}" target="_blank" class="maps-btn">📍 Abrir no Google Maps</a>
+                <strong style="font-size:1.1rem; color:var(--primary); display:block; margin-bottom:4px;">${p.nome}</strong>
+                <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:8px;">${p.morada}</p>
+                <p style="font-size:0.8rem; color:var(--accent-blue); font-weight:700; margin-bottom:12px;">ℹ️ ${p.desc}</p>
+                <a href="${p.link}" target="_blank" class="maps-btn">📍 ABRIR NO GOOGLE MAPS</a>
             </div>
         `).join('');
     }
 
-    /* ==========================================================================
-       12. RENDERIZAÇÃO: ANIVERSÁRIOS DO MÊS
-       ========================================================================== */
     function renderNiverMenu() {
         const subNiver = document.getElementById('sub-niver');
         if (!subNiver) return;
@@ -820,169 +904,186 @@
         const mesAtual = hoje.getMonth() + 1;
 
         const aniversariantes = DB.atletas.filter(a => {
-            const dataNasc = getVal(a, 'data_nascimento') || getVal(a, 'nascimento') || getVal(a, 'data_nasc');
+            const dataNasc = getVal(a, 'data_nascimento') || getVal(a, 'nascimento');
             if (!dataNasc) return false;
             const parts = dataNasc.split('/');
-            if (parts.length < 2) return false;
-            return parseInt(parts[1], 10) === mesAtual;
+            return parts.length >= 2 && parseInt(parts[1], 10) === mesAtual;
         });
 
         if (aniversariantes.length === 0) {
-            subNiver.innerHTML = `<span style="padding:10px; font-size:0.8rem; color:var(--text-muted); font-weight:600;">Sem aniversários este mês</span>`;
+            subNiver.innerHTML = `<a style="font-size:0.75rem; color:var(--text-muted);">Sem aniversários este mês 🎉</a>`;
             return;
         }
 
         subNiver.innerHTML = aniversariantes.map(a => {
             const nome = getVal(a, 'nome');
-            const dataNasc = getVal(a, 'data_nascimento') || getVal(a, 'nascimento') || getVal(a, 'data_nasc');
-            const dia = dataNasc.split('/')[0];
-            return `<a onclick="showView('atletas', 'TODOS')">🎉 ${nome} (${dia})</a>`;
+            const dataN = getVal(a, 'data_nascimento') || getVal(a, 'nascimento');
+            const dia = dataN.split('/')[0];
+            return `<a onclick="showView('atletas')">🎉 ${dia} - ${nome}</a>`;
         }).join('');
     }
 
     /* ==========================================================================
-       13. RENDERIZAÇÃO: EAC ACADEMY & PLAYLIST
+       12. PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO E MATRIZ DE BALIZA 3x3)
        ========================================================================== */
-    function showAcademy(topico) {
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (filterArea) filterArea.innerHTML = '';
-        if (!viewContent) return;
-
-        const conteudos = {
-            'prevencao': { titulo: "🎓 Prevenção de Lesões", texto: "Exercícios de mobilidade de tornozelo e fortalecimento do manguito rotador antes de todos os treinos reduzem o risco de lesões no handebol em até 40%." },
-            'recuperacao': { titulo: "🎓 Recuperação Ativa", texto: "Banho de contraste (água fria/quente) e sono regular de 8 horas são cruciais para a reconstrução muscular pós-jogo." },
-            'treino-invisivel': { titulo: "🎓 Treino Invisível", texto: "A alimentação pré e pós-treino, aliada à hidratação contínua (mínimo 2.5L de água por dia), define o rendimento em quadra." },
-            'pos-treino': { titulo: "🎓 Cuidados Pós-Treino", texto: "Reposição de hidratos de carbono e proteínas até 45 minutos após o treino acelera drasticamente a regeneração celular." },
-            'pre-jogo': { titulo: "🎓 Preparação Pré-Jogo", texto: "Foco mental, visualização de jogadas e aquecimento dinâmico individualizado preparam o sistema nervoso para alta intensidade." },
-            'intervalo': { titulo: "🎓 Foco no Intervalo", texto: "Aproveite os 10 minutos para reidratação rápida, escuta ativa das correções táticas e ajuste respiratório." },
-            'mentalidade': { titulo: "🎓 Mentalidade Competitiva", texto: "O erro faz parte do jogo. A velocidade de reação ao erro determina a resiliência e a liderança de uma atleta em campo." }
-        };
-
-        const item = conteudos[topico] || { titulo: "🎓 EAC Academy", texto: "Selecione um tópico no menu lateral para visualizar os conteúdos de formação." };
-
-        viewContent.innerHTML = `
-            <div class="stat-card" style="border-left: 5px solid var(--azul);">
-                <h2 style="color:var(--eac-dark); font-weight:900; margin-bottom:12px;">${item.titulo}</h2>
-                <p style="font-size:0.95rem; color:var(--text-main); line-height:1.6; font-weight:500;">${item.texto}</p>
-            </div>
-        `;
-        showView('mainView');
-    }
-
-    function showPlaylist() {
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (filterArea) filterArea.innerHTML = '';
-        if (!viewContent) return;
-
-        viewContent.innerHTML = `
-            <div class="stat-card" style="border-left: 5px solid var(--verde);">
-                <h2 style="color:var(--eac-dark); font-weight:900; margin-bottom:10px;">🎧 Ritmo de Jogo - EAC Playlist</h2>
-                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px; font-weight:600;">A playlist oficial de balneário para concentração e foco antes das partidas.</p>
-                <div style="background:#f1f5f9; padding:20px; border-radius:var(--radius-md); text-align:center;">
-                    <a href="https://open.spotify.com" target="_blank" class="maps-btn" style="background:var(--verde); color:#fff; font-size:0.9rem;">▶ Abrir Playlist no Spotify</a>
-                </div>
-            </div>
-        `;
-        showView('mainView');
-    }
-
-    /* ==========================================================================
-       14. PAINEL DA COORDENAÇÃO (COM FILTRO CAMPO VS GUARDA-REDES)
-       ========================================================================== */
-    function renderPainelCoord(escFiltro = 'TODOS', posFiltro = 'CAMPO') {
+    function renderPainelCoord(filtroEsc = 'TODOS', tipoPosicao = 'CAMPO') {
         const filterArea = document.getElementById('filterArea');
         const viewContent = document.getElementById('viewContent');
         if (!viewContent) return;
 
         if (filterArea) {
             filterArea.innerHTML = `
-                <div class="pills-container" style="margin-bottom:8px;">
-                    <button class="pill-btn ${escFiltro==='TODOS'?'active':''}" onclick="renderPainelCoord('TODOS', '${posFiltro}')">TODOS</button>
-                    <button class="pill-btn ${escFiltro==='SUB16'?'active':''}" onclick="renderPainelCoord('SUB16', '${posFiltro}')">SUB-16</button>
-                    <button class="pill-btn ${escFiltro==='SUB18'?'active':''}" onclick="renderPainelCoord('SUB18', '${posFiltro}')">SUB-18</button>
-                </div>
                 <div class="pills-container">
-                    <button class="pill-btn ${posFiltro==='CAMPO'?'active':''}" onclick="renderPainelCoord('${escFiltro}', 'CAMPO')" style="border:1px solid var(--azul);">🏃‍♀️ ATLETAS DE CAMPO</button>
-                    <button class="pill-btn ${posFiltro==='GR'?'active':''}" onclick="renderPainelCoord('${escFiltro}', 'GR')" style="border:1px solid var(--verde);">🧤 GUARDA-REDES</button>
+                    <button class="pill-btn ${filtroEsc==='TODOS'?'active':''}" onclick="renderPainelCoord('TODOS', '${tipoPosicao}')">TODOS</button>
+                    <button class="pill-btn ${filtroEsc==='SUB16'?'active':''}" onclick="renderPainelCoord('SUB16', '${tipoPosicao}')">SUB-16</button>
+                    <button class="pill-btn ${filtroEsc==='SUB18'?'active':''}" onclick="renderPainelCoord('SUB18', '${tipoPosicao}')">SUB-18</button>
+                </div>
+                <div style="display:flex; gap:10px; margin-bottom:15px; background:#e2e8f0; padding:4px; border-radius:30px;">
+                    <button style="flex:1; padding:8px; border:none; border-radius:20px; font-weight:800; font-size:0.78rem; cursor:pointer; background:${tipoPosicao==='CAMPO'?'var(--primary)':'transparent'}; color:${tipoPosicao==='CAMPO'?'#fff':'var(--text-main)'};" onclick="renderPainelCoord('${filtroEsc}', 'CAMPO')">🤾 ATLETAS DE CAMPO</button>
+                    <button style="flex:1; padding:8px; border:none; border-radius:20px; font-weight:800; font-size:0.78rem; cursor:pointer; background:${tipoPosicao==='GR'?'var(--primary)':'transparent'}; color:${tipoPosicao==='GR'?'#fff':'var(--text-main)'};" onclick="renderPainelCoord('${filtroEsc}', 'GR')">🧤 GUARDA-REDES</button>
                 </div>
             `;
         }
 
-        // Mapeamento de Posições
-        let posicoes = {};
-        DB.atletas.forEach(a => {
-            const nome = getVal(a, 'nome');
-            const pos = getVal(a, 'posicao') || getVal(a, 'posiçao') || getVal(a, 'posicao_principal');
-            if (nome) posicoes[clean(nome)] = clean(pos);
+        // Filtro de Atletas
+        const atletasFiltradas = DB.atletas.filter(a => {
+            const pos = clean(getVal(a, 'posicao') || getVal(a, 'posição'));
+            const esc = clean(getVal(a, 'escalao') || getVal(a, 'escalão'));
+            const isGR = pos.includes('guarda') || pos.includes('gr');
+
+            const matchPos = tipoPosicao === 'GR' ? isGR : !isGR;
+            const matchEsc = filtroEsc === 'TODOS' ? true : esc === clean(filtroEsc);
+
+            return matchPos && matchEsc;
         });
 
-        // Filtragem dos registros de Scout
-        let rematesTotais = 0;
-        let golosTotais = 0;
-        let defesasGR = 0;
+        viewContent.innerHTML = `
+            <div style="background:var(--primary); color:#ffffff; padding:20px; border-radius:var(--radius-lg); margin-bottom:20px;">
+                <h3 style="font-weight:900; margin-bottom:6px; letter-spacing:0.5px;">📋 Painel da Coordenação Tática</h3>
+                <p style="font-size:0.85rem; color:#cbd5e1;">Análise individualizada de desempenho por jogadora.</p>
+                <div style="margin-top:14px;">
+                    <select id="selectAtletaScout" onchange="atualizarScoutAtleta(this.value)" style="width:100%; padding:12px; border-radius:var(--radius-sm); border:none; font-weight:800; color:var(--primary); background:#ffffff;">
+                        <option value="">-- Selecione uma Atleta --</option>
+                        ${atletasFiltradas.map(a => `<option value="${getVal(a, 'nome')}">${getVal(a, 'nome')} (${getVal(a, 'posicao') || 'Atleta'})</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+            <div id="estatisticasScoutContainer">
+                <p style="text-align:center; padding:40px; color:var(--text-muted); font-weight:700;">Selecione uma atleta acima para visualizar o relatório detalhado.</p>
+            </div>
+        `;
+    }
+
+    /* ==========================================================================
+       13. ATUALIZAÇÃO INDIVIDUAL DO SCOUT & MATRIZ DA BALIZA (3x3)
+       ========================================================================== */
+    function atualizarScoutAtleta(nomeAtleta) {
+        const container = document.getElementById('estatisticasScoutContainer');
+        if (!container || !nomeAtleta) return;
+
+        let totalRemates = 0, totalGolos = 0, total7mTentativas = 0, total7mGolos = 0;
+        let totalDefesasSofridas = 0, totalFora = 0, totalBlocos = 0, totalMinutos = 0;
+        
+        let totalDefesasGR = 0, totalRematesContraGR = 0, defesas7mGR = 0, remates7mContraGR = 0;
+
+        const zonasBaliza = { z1:0, z2:0, z3:0, z4:0, z5:0, z6:0, z7:0, z8:0, z9:0 };
 
         DB.scoutAvancado.forEach(s => {
-            const nomeAtleta = getVal(s, 'Atleta_Nome') || getVal(s, 'nome');
-            const escAtleta = clean(getVal(s, 'Escalao') || getVal(s, 'escalao'));
-            const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado'));
-            const pos = posicoes[clean(nomeAtleta)] || '';
-            const isGR = pos.includes('guarda') || pos.includes('gr') || pos.includes('goleira');
+            const nome = getVal(s, 'Atleta_Nome') || getVal(s, 'nome');
+            if (clean(nome) !== clean(nomeAtleta)) return;
 
-            if (escFiltro === 'TODOS' || escAtleta === clean(escFiltro)) {
-                if (posFiltro === 'CAMPO' && !isGR) {
-                    rematesTotais++;
-                    if (res === 'golo' || res === 'gol') golosTotais++;
-                } else if (posFiltro === 'GR' && isGR) {
-                    if (res === 'defesa' || res === 'defendido') defesasGR++;
-                    if (res === 'golo' || res === 'gol') golosTotais++; // Golos sofridos
-                    rematesTotais++; // Remates efetuados contra a GR
+            const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado'));
+            const orig = clean(getVal(s, 'Origem_Remate') || getVal(s, 'origem'));
+            const zona = clean(getVal(s, 'Zona_Baliza') || getVal(s, 'zona_baliza'));
+            const acaoDef = clean(getVal(s, 'Acao_Defensiva') || getVal(s, 'acao_defensiva'));
+            const ent = parseInt(getVal(s, 'Minuto_Entrada') || 0, 10);
+            const sai = parseInt(getVal(s, 'Minuto_Saida') || 0, 10);
+
+            if (sai > ent) totalMinutos += (sai - ent);
+
+            // Ataque
+            if (res !== "") {
+                totalRemates += 1;
+                const is7m = orig.includes('7m') || orig.includes('7 metros');
+
+                if (res === 'golo' || res === 'gol') {
+                    totalGolos += 1;
+                    if (is7m) total7mGolos += 1;
+                    if (zona && zonasBaliza[zona] !== undefined) {
+                        zonasBaliza[zona] += 1;
+                    }
+                } else if (res.includes('defesa gr')) {
+                    totalDefesasSofridas += 1;
+                } else if (res.includes('fora') || res.includes('poste')) {
+                    totalFora += 1;
+                } else if (res.includes('bloco')) {
+                    totalBlocos += 1;
+                }
+
+                if (is7m) total7mTentativas += 1;
+            }
+
+            // Defesa (Guarda-Redes)
+            if (acaoDef.includes('defesa gr')) {
+                totalDefesasGR += 1;
+                totalRematesContraGR += 1;
+                if (orig.includes('7m')) {
+                    defesas7mGR += 1;
+                    remates7mContraGR += 1;
                 }
             }
         });
 
-        const eficacia = rematesTotais > 0 ? ((golosTotais / rematesTotais) * 100).toFixed(1) : 0;
-        const eficDefesa = (posFiltro === 'GR' && rematesTotais > 0) ? ((defesasGR / rematesTotais) * 100).toFixed(1) : 0;
+        const eficGeral = totalRemates > 0 ? Math.round((totalGolos / totalRemates) * 100) : 0;
+        const efic7m = total7mTentativas > 0 ? Math.round((total7mGolos / total7mTentativas) * 100) : 0;
+        const eficGR = totalRematesContraGR > 0 ? Math.round((totalDefesasGR / totalRematesContraGR) * 100) : 0;
 
-        viewContent.innerHTML = `
-            <div style="margin-bottom:15px;">
-                <h3 style="font-weight:900; color:var(--eac-dark)">📊 Painel da Coordenação Tática</h3>
-                <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">
-                    Filtrado por: ${escFiltro} | ${posFiltro === 'CAMPO' ? 'Atletas de Campo' : 'Guarda-Redes'}
-                </span>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:15px;">
-                <div class="stat-card" style="margin-bottom:0;">
-                    <span style="font-size:0.75rem; font-weight:800; color:var(--text-muted);">
-                        ${posFiltro === 'CAMPO' ? 'REMATES TOTAIS' : 'REMATES RECEBIDOS'}
-                    </span>
-                    <strong style="font-size:1.6rem; display:block; color:var(--eac-dark); font-weight:900;">${rematesTotais}</strong>
+        container.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+                <div style="background: white; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-sm);">
+                    <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block;">Remates Totais</span>
+                    <span style="font-size: 1.8rem; font-weight: 900; color: var(--primary);">${totalGolos} / ${totalRemates}</span>
+                    <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent-green); background: #dcfce7; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 5px;">Eficácia: ${eficGeral}%</span>
                 </div>
-                <div class="stat-card" style="margin-bottom:0;">
-                    <span style="font-size:0.75rem; font-weight:800; color:var(--text-muted);">
-                        ${posFiltro === 'CAMPO' ? 'GOLOS MARCADOS' : 'GOLOS SOFRIDOS'}
-                    </span>
-                    <strong style="font-size:1.6rem; display:block; color:${posFiltro === 'CAMPO' ? 'var(--verde)' : 'var(--vermelho)'}; font-weight:900;">${golosTotais}</strong>
+                <div style="background: white; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-sm);">
+                    <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block;">7 Metros</span>
+                    <span style="font-size: 1.8rem; font-weight: 900; color: var(--accent-blue);">${total7mGolos} / ${total7mTentativas}</span>
+                    <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent-blue); background: #dbeafe; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 5px;">Eficácia: ${efic7m}%</span>
                 </div>
             </div>
 
-            <div class="stat-card" style="border-left:5px solid ${posFiltro === 'CAMPO' ? 'var(--azul)' : 'var(--verde)'}">
-                <span style="font-size:0.8rem; font-weight:800; color:var(--text-muted);">
-                    ${posFiltro === 'CAMPO' ? 'EFICÁCIA DE REMATE' : 'PERCENTAGEM DE DEFESAS'}
-                </span>
-                <strong style="font-size:2rem; display:block; color:var(--eac-dark); font-weight:900; margin-top:4px;">
-                    ${posFiltro === 'CAMPO' ? `${eficacia}%` : `${eficDefesa}%`}
-                </strong>
-                <p style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-top:4px;">
-                    ${posFiltro === 'CAMPO' ? 'Média calculada sobre remates enquadrados.' : `${defesasGR} Defesas efetuadas de ${rematesTotais} remates à baliza.`}
-                </p>
+            ${totalRematesContraGR > 0 ? `
+            <div style="background: white; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: var(--shadow-sm);">
+                <h4 style="margin: 0 0 12px 0; font-weight: 900; text-align: center; color: var(--primary); font-size: 0.85rem;">🧤 RENDIMENTO GUARDA-REDES</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    <div style="background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); text-align: center; border: 1px solid var(--border-color);">
+                        <span style="font-size: 0.65rem; font-weight: 800; color: var(--text-muted); display: block;">DEFESAS TOTAIS</span>
+                        <span style="font-size: 1.4rem; font-weight: 900; color: var(--accent-blue);">${totalDefesasGR} / ${totalRematesContraGR}</span>
+                        <span style="font-size: 0.7rem; font-weight: 800; color: var(--accent-blue); display: block; margin-top: 3px;">${eficGR}% Defendidos</span>
+                    </div>
+                    <div style="background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); text-align: center; border: 1px solid var(--border-color);">
+                        <span style="font-size: 0.65rem; font-weight: 800; color: var(--text-muted); display: block;">DEFESAS 7M</span>
+                        <span style="font-size: 1.4rem; font-weight: 900; color: var(--accent-green);">${defesas7mGR} / ${remates7mContraGR}</span>
+                    </div>
+                </div>
+            </div>` : ''}
+
+            <!-- MATRIZ DA BALIZA (3x3) -->
+            <div style="background: white; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                <h4 style="margin: 0 0 15px 0; font-weight: 900; text-align: center; color: var(--primary); font-size: 0.95rem;">🎯 ZONAS DOS GOLOS (MAPA DA BALIZA)</h4>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #0f172a; padding: 12px; border-radius: var(--radius-sm); border: 4px solid #334155;">
+                    ${[7,8,9,4,5,6,1,2,3].map(z => `
+                        <div style="background: #1e293b; color: white; padding: 16px 6px; border-radius: 6px; text-align: center; border: 1px dashed #475569;">
+                            <span style="font-size: 0.6rem; color: #94a3b8; display: block; font-weight:800;">ZONA ${z}</span>
+                            <span style="font-size: 1.3rem; font-weight: 900; color: #4ade80;">${zonasBaliza['z'+z] || 0}</span>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
         `;
     }
         /* ==========================================================================
-       15. NAVEGAÇÃO ENTRE VISTAS E CONTROLE DE MENUS
+       14. NAVEGAÇÃO E CONTROLO DE VISTAS (SPA)
        ========================================================================== */
     function toggleMenu() {
         const sidebar = document.getElementById('sidebar');
@@ -1000,52 +1101,96 @@
         }
     }
 
-    function showView(viewId, filtro = '') {
+    function hideAllContainers() {
         const containers = document.querySelectorAll('.container');
         containers.forEach(c => c.classList.remove('active'));
+    }
 
+    function showView(view, param = 'TODOS') {
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        if (sidebar && overlay) {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        }
+        if (sidebar && sidebar.classList.contains('active')) toggleMenu();
 
-        if (viewId === 'home') {
-            const home = document.getElementById('home');
-            if (home) home.classList.add('active');
+        hideAllContainers();
+
+        if (view === 'home') {
+            document.getElementById('home').classList.add('active');
+            renderHomeNext();
             return;
         }
 
         const mainView = document.getElementById('mainView');
         if (mainView) mainView.classList.add('active');
 
-        if (viewId === 'jogos') renderJogos(filtro || 'TODOS');
-        else if (viewId === 'artilharia') renderArt(filtro || 'GERAL');
-        else if (viewId === 'participacoes') renderParticipacoes(filtro || 'GERAL');
-        else if (viewId === 'treinos') renderTreinos();
-        else if (viewId === 'painel') renderPainelCoord(filtro || 'TODOS', 'CAMPO');
-        else if (viewId === 'atletas') renderAtletas(filtro || 'SUB16');
+        switch (view) {
+            case 'jogos':
+                renderJogos(param);
+                break;
+            case 'artilharia':
+                renderArt(param);
+                break;
+            case 'participacoes':
+                renderParticipacoes(param);
+                break;
+            case 'treinos':
+                renderTreinos();
+                break;
+            case 'atletas':
+                renderAtletasView(param);
+                break;
+            case 'painel':
+                renderPainelCoord('TODOS', 'CAMPO');
+                break;
+            default:
+                renderJogos('TODOS');
+        }
     }
 
     /* ==========================================================================
-       16. RENDERIZAÇÃO: LISTA DE ATLETAS E IDADE
+       15. HOME NEXT & LISTAGEM DE ATLETAS POR ESCALÃO
        ========================================================================== */
-    function calcularIdade(dataNasc) {
-        if (!dataNasc) return '';
-        const parts = dataNasc.split('/');
-        if (parts.length < 3) return '';
-        const nascimento = new Date(parts[2], parts[1] - 1, parts[0]);
-        const hoje = new Date();
-        let idade = hoje.getFullYear() - nascimento.getFullYear();
-        const m = hoje.getMonth() - nascimento.getMonth();
-        if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
-            idade--;
+    function renderHomeNext() {
+        const container = document.getElementById('homeNextContent');
+        if (!container) return;
+
+        const proximos = DB.jogos.filter(j => {
+            const gE = getVal(j, 'golos_eac') || getVal(j, 'golos_favor');
+            const gA = getVal(j, 'golos_adv') || getVal(j, 'golos_contra');
+            return gE === "" || gA === "";
+        }).sort((a,b) => parseDateTime(getVal(a, 'data'), getVal(a, 'hora')) - parseDateTime(getVal(b, 'data'), getVal(b, 'hora'))).slice(0, 3);
+
+        if (proximos.length === 0) {
+            container.innerHTML = `<p style="text-align:center; color:var(--text-muted); font-weight:700; padding:20px;">Não há jogos agendados no momento.</p>`;
+            return;
         }
-        return `${idade} anos`;
+
+        container.innerHTML = proximos.map(j => {
+            const idJogo = getVal(j, 'id') || getVal(j, 'id_jogo');
+            const data = getVal(j, 'data');
+            const hora = getVal(j, 'hora');
+            const esc = getVal(j, 'escalao') || getVal(j, 'escalão');
+            const adv = getVal(j, 'adversario') || getVal(j, 'adversário');
+            const local = getVal(j, 'local');
+
+            return `
+            <div class="game-card" onclick="openJogoModal('${idJogo}')">
+                <div class="game-header">
+                    <span>📅 ${data} • 🕒 ${hora}</span>
+                    <span style="color:var(--accent-blue);">${esc}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin:12px 0;">
+                    <strong style="font-size:1.05rem; color:var(--primary);">EAC HANDEBOL</strong>
+                    <span style="font-weight:900; color:var(--accent-blue);">VS</span>
+                    <strong style="font-size:1.05rem; color:var(--primary);">${adv}</strong>
+                </div>
+                <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">
+                    📍 ${local || 'Pavilhão'}
+                </div>
+            </div>`;
+        }).join('');
     }
 
-    function renderAtletas(escFiltro = 'SUB16') {
+    function renderAtletasView(escFiltro = 'SUB16') {
         const filterArea = document.getElementById('filterArea');
         const viewContent = document.getElementById('viewContent');
         if (!viewContent) return;
@@ -1053,83 +1198,152 @@
         if (filterArea) {
             filterArea.innerHTML = `
                 <div class="pills-container">
-                    <button class="pill-btn ${escFiltro==='SUB16'?'active':''}" onclick="renderAtletas('SUB16')">EQUIPA SUB-16</button>
-                    <button class="pill-btn ${escFiltro==='SUB18'?'active':''}" onclick="renderAtletas('SUB18')">EQUIPA SUB-18</button>
+                    <button class="pill-btn ${escFiltro==='SUB16'?'active':''}" onclick="renderAtletasView('SUB16')">EQUIPA SUB-16</button>
+                    <button class="pill-btn ${escFiltro==='SUB18'?'active':''}" onclick="renderAtletasView('SUB18')">EQUIPA SUB-18</button>
                 </div>
             `;
         }
 
-        const filtradas = DB.atletas.filter(a => clean(getVal(a, 'escalao') || getVal(a, 'escalão')) === clean(escFiltro));
+        const filtradas = DB.atletas.filter(a => {
+            const esc = clean(getVal(a, 'escalao') || getVal(a, 'escalão'));
+            return esc === clean(escFiltro);
+        });
 
-        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--eac-dark)">👥 Plantel ${escFiltro}</h3>` +
+        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--primary)">👥 Plantel ${escFiltro}</h3>` +
         (filtradas.map(a => {
             const nome = getVal(a, 'nome');
-            const foto = getVal(a, 'foto') || 'logo.png';
-            const num = getVal(a, 'numero') || getVal(a, 'número') || '-';
             const pos = getVal(a, 'posicao') || getVal(a, 'posição') || 'Atleta';
-            const dataNasc = getVal(a, 'data_nascimento') || getVal(a, 'nascimento') || '';
-            const idadeStr = calcularIdade(dataNasc);
+            const num = getVal(a, 'numero') || getVal(a, 'número') || '-';
+            const foto = getVal(a, 'foto');
 
             return `
-            <div class="atleta-row">
-                <img src="${foto}" class="atleta-img-circle" onerror="this.src='https://via.placeholder.com/50/0f172a/ffffff?text=EAC'">
-                <div style="flex:1">
-                    <strong style="font-size:1rem; color:var(--eac-dark); display:block;">${nome}</strong>
-                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">${pos} ${idadeStr ? `• ${idadeStr}` : ''}</span>
+            <div class="atleta-row" onclick="openAtletaModal('${nome}')">
+                <img src="${foto || 'logo.png'}" class="atleta-img-circle" onerror="this.src='https://via.placeholder.com/50/0f172a/ffffff?text=EAC'">
+                <div style="flex:1;">
+                    <strong style="font-size:1rem; color:var(--primary); display:block;">${nome}</strong>
+                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">${pos} • Nº ${num}</span>
                 </div>
-                <div style="background:#f1f5f9; color:var(--eac-dark); padding:6px 12px; border-radius:12px; font-weight:900; font-size:0.9rem; border:1px solid var(--border-color);">
-                    Nº ${num}
-                </div>
+                <div style="font-size:1.2rem; color:var(--accent-blue);">➔</div>
             </div>`;
-        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Sem atletas encontradas para este escalão.</p>');
+        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Nenhuma atleta encontrada para este escalão.</p>');
     }
 
     /* ==========================================================================
-       17. RENDERIZAÇÃO: PRÓXIMO JOGO DA HOME
+       16. MODAIS VISUAIS (FICHA ATLETA & DETALHES DE JOGO)
        ========================================================================== */
-    function renderHomeNext() {
-        const homeNextContent = document.getElementById('homeNextContent');
-        if (!homeNextContent) return;
+    function openJogoModal(idJogo) {
+        const jogo = DB.jogos.find(j => (getVal(j, 'id') || getVal(j, 'id_jogo')) === idJogo);
+        if (!jogo) return;
 
-        const agora = new Date();
-        const jogosFuturos = DB.jogos.filter(j => {
-            const dt = parseDateTime(getVal(j, 'data'), getVal(j, 'hora'));
-            return dt >= agora;
-        }).sort((a,b) => parseDateTime(getVal(a, 'data'), getVal(a, 'hora')) - parseDateTime(getVal(b, 'data'), getVal(b, 'hora')));
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalContent = document.getElementById('modalContent');
+        if (!modalOverlay || !modalContent) return;
 
-        if (jogosFuturos.length === 0) {
-            homeNextContent.innerHTML = `<p style="padding:20px; color:var(--text-muted); font-weight:700;">Nenhum jogo agendado nos próximos dias.</p>`;
-            return;
+        const convocadas = DB.convocatorias.filter(c => (getVal(c, 'id_jogo') || getVal(c, 'id')) === idJogo);
+
+        modalContent.innerHTML = `
+            <button class="close-btn" style="position:absolute; top:18px; right:18px;" onclick="closeModal()">×</button>
+            <h3 style="font-weight:900; color:var(--primary); margin-bottom:6px;">📅 Detalhes do Jogo</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">${getVal(jogo, 'data')} • ${getVal(jogo, 'hora')} (${getVal(jogo, 'escalao')})</p>
+            
+            <div style="background:#f8fafc; padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color); text-align:center; margin-bottom:18px;">
+                <strong style="font-size:1.1rem; color:var(--primary);">${getVal(jogo, 'adversario')}</strong>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">📍 ${getVal(jogo, 'local') || 'Pavilhão Principal'}</p>
+            </div>
+
+            <h4 style="font-weight:900; color:var(--primary); margin-bottom:10px; font-size:0.9rem;">📋 ATLETAS CONVOCADAS (${convocadas.length})</h4>
+            <div style="max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
+                ${convocadas.map(c => `
+                    <div style="padding:8px 12px; background:#ffffff; border-radius:var(--radius-sm); border:1px solid var(--border-color); font-size:0.85rem; font-weight:700; color:var(--primary);">
+                        🤾 ${getVal(c, 'Atleta_Nome') || getVal(c, 'nome')}
+                    </div>
+                `).join('') || '<p style="font-size:0.8rem; color:var(--text-muted);">Convocatória ainda não disponível.</p>'}
+            </div>
+        `;
+        modalOverlay.classList.add('active');
+    }
+
+    function openAtletaModal(nomeAtleta) {
+        const atleta = DB.atletas.find(a => clean(getVal(a, 'nome')) === clean(nomeAtleta));
+        if (!atleta) return;
+
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalContent = document.getElementById('modalContent');
+        if (!modalOverlay || !modalContent) return;
+
+        modalContent.innerHTML = `
+            <button class="close-btn" style="position:absolute; top:18px; right:18px;" onclick="closeModal()">×</button>
+            <div style="text-align:center; margin-bottom:16px;">
+                <img src="${getVal(atleta, 'foto') || 'logo.png'}" style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid var(--accent-blue); margin-bottom:10px;" onerror="this.src='https://via.placeholder.com/90/0f172a/ffffff?text=EAC'">
+                <h3 style="font-weight:900; color:var(--primary);">${getVal(atleta, 'nome')}</h3>
+                <span style="background:#e0f2fe; color:var(--accent-blue); padding:4px 12px; border-radius:20px; font-weight:800; font-size:0.75rem;">${getVal(atleta, 'posicao') || 'Atleta'}</span>
+            </div>
+            
+            <div style="background:#f8fafc; padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color); display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.85rem;">
+                <div><span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.7rem;">NÚMERO</span><strong>#${getVal(atleta, 'numero') || getVal(atleta, 'número') || '-'}</strong></div>
+                <div><span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.7rem;">ESCALÃO</span><strong>${getVal(atleta, 'escalao') || getVal(atleta, 'escalão') || '-'}</strong></div>
+                <div><span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.7rem;">NASCIMENTO</span><strong>${getVal(atleta, 'data_nascimento') || getVal(atleta, 'nascimento') || '-'}</strong></div>
+                <div><span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.7rem;">ANOS</span><strong>${getVal(atleta, 'idade') || '-'} anos</strong></div>
+            </div>
+        `;
+        modalOverlay.classList.add('active');
+    }
+
+    function closeModal(e) {
+        if (!e || e.target.id === 'modalOverlay' || e.target.classList.contains('close-btn')) {
+            const modalOverlay = document.getElementById('modalOverlay');
+            if (modalOverlay) modalOverlay.classList.remove('active');
         }
+    }
 
-        const prox = jogosFuturos[0];
-        const isFora = clean(getVal(prox, 'local')).includes("fora");
-        const advNome = getVal(prox, 'adversario') || getVal(prox, 'adversário') || 'Adversário';
+    /* ==========================================================================
+       17. RECURSOS ADICIONAIS: EAC ACADEMY & RITMO DE JOGO
+       ========================================================================== */
+    function showAcademy(topico) {
+        showView('mainView');
+        const filterArea = document.getElementById('filterArea');
+        const viewContent = document.getElementById('viewContent');
+        if (filterArea) filterArea.innerHTML = '';
 
-        homeNextContent.innerHTML = `
-            <div class="game-card" style="border-left:5px solid var(--azul);">
-                <div class="game-header">
-                    <span>📅 ${getVal(prox, 'data')} • 🕒 ${getVal(prox, 'hora')}</span>
-                    <span style="background:#e0f2fe; color:var(--azul); padding:4px 8px; border-radius:6px; font-weight:900;">PRÓXIMO CONFRONTO</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0;">
-                    <div style="text-align:center; flex:1">
-                        <strong style="font-size:1.1rem; color:var(--eac-dark); display:block;">${isFora ? advNome : 'EAC HANDEBOL'}</strong>
-                    </div>
-                    <div style="background:var(--eac-dark); color:#fff; padding:6px 14px; border-radius:12px; font-weight:900; font-size:1.1rem;">VS</div>
-                    <div style="text-align:center; flex:1">
-                        <strong style="font-size:1.1rem; color:var(--eac-dark); display:block;">${!isFora ? advNome : 'EAC HANDEBOL'}</strong>
-                    </div>
-                </div>
-                <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700; text-align:center;">
-                    📍 ${getVal(prox, 'local') || 'Pavilhão Oficial'} (${getVal(prox, 'escalao') || 'EAC'})
+        const conteudos = {
+            'prevencao': { titulo: '🛡️ Prevenção de Lesões', texto: 'Exercícios de mobilidade de ombros, estabilização de joelhos e fortalecimento do core específicos para o handebol.' },
+            'recuperacao': { titulo: '🧊 Recuperação Ativa', texto: 'Estratégias de libertação miofascial, crioterapia e rotinas de sono para otimizar o tempo de regeneração.' },
+            'treino-invisivel': { titulo: '🥗 Treino Invisível', texto: 'A importância da hidratação diária, alimentação equilibrada e hábitos fora do campo para máxima performance.' },
+            'pos-treino': { titulo: '🔄 Nutrição Pós-Treino', texto: 'Consumo ideal de proteínas e hidratos de carbono nos primeiros 30 minutos pós-esforço.' },
+            'pre-jogo': { titulo: '⚡ Preparação Pré-Jogo', texto: 'Ativação neuromuscular, rotinas mentais e aquecimento progressivo antes de entrar em campo.' },
+            'intervalo': { titulo: '⏱️ Gestão de Intervalo', texto: 'Rehidratação estratégica, feedback tático rápido e manutenção da temperatura corporal no balneário.' },
+            'mentalidade': { titulo: '🧠 Mentalidade Competitiva', texto: 'Foco no processo, resiliência perante os erros e gestão da pressão em momentos decisivos.' }
+        };
+
+        const item = conteudos[topico] || { titulo: '🎓 EAC Academy', texto: 'Conteúdos formativos EAC Handebol.' };
+
+        viewContent.innerHTML = `
+            <div style="background:#ffffff; padding:24px; border-radius:var(--radius-lg); border:1px solid var(--border-color); box-shadow:var(--shadow-sm);">
+                <h3 style="font-weight:900; color:var(--primary); margin-bottom:12px;">${item.titulo}</h3>
+                <p style="color:var(--text-main); font-size:0.95rem; line-height:1.6;">${item.texto}</p>
+            </div>
+        `;
+    }
+
+    function showPlaylist() {
+        showView('mainView');
+        const filterArea = document.getElementById('filterArea');
+        const viewContent = document.getElementById('viewContent');
+        if (filterArea) filterArea.innerHTML = '';
+
+        viewContent.innerHTML = `
+            <div style="background:#ffffff; padding:24px; border-radius:var(--radius-lg); border:1px solid var(--border-color); box-shadow:var(--shadow-sm); text-align:center;">
+                <h3 style="font-weight:900; color:var(--primary); margin-bottom:8px;">🎧 Ritmo de Jogo</h3>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">A playlist oficial de motivação do EAC Handebol para os balneários!</p>
+                <div style="background:#121212; color:#1db954; padding:30px; border-radius:var(--radius-md); font-weight:900; font-size:1.1rem;">
+                    🎵 SPOTIFY PLAYER EAC HANDEBOL
                 </div>
             </div>
         `;
     }
 
     /* ==========================================================================
-       18. INICIALIZAÇÃO DA APLICAÇÃO
+       18. CARREGAMENTO INICIAL AUTOMÁTICO
        ========================================================================== */
     window.addEventListener('DOMContentLoaded', () => {
         loadData();
