@@ -226,8 +226,18 @@ const LINKS_FIXOS = {
     convocados: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=179640149&single=true&output=csv"
 };
 
+// ==========================================
+// CONFIGURAÇÃO DE DADOS DO PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO)
+// ==========================================
+const SPREADSHEET_CONFIG = {
+    urlAtletasCampo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2115424182&single=true&output=csv",
+    urlScoutCampo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=752175872&single=true&output=csv",
+    urlGuardaRedes: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1738670761&single=true&output=csv"
+};
+
 let epocaAtual = "2026/2027";
-let DB = { atletas: [], jogos: [], scout: [], convocados: [], scoutAvancado: [] };
+// Objeto único de base de dados (usado por TODAS as views, incluindo o Painel)
+let DB = { atletas: [], jogos: [], scout: [], convocados: [], scoutAvancado: [], atletasCampo: [], guardaRedes: [] };
 
 // SISTEMA DE SESSÃO COM EXPIRAÇÃO DE 10 MINUTOS
 const SESSION_TIMEOUT = 10 * 60 * 1000; // 10 Minutos em milissegundos
@@ -269,6 +279,11 @@ const getVal = (obj, key) => {
     if (!obj) return "";
     const foundKey = Object.keys(obj).find(k => clean(k) === clean(key));
     return foundKey && obj[foundKey] !== undefined && obj[foundKey] !== null ? String(obj[foundKey]).trim() : "";
+};
+
+const parseNum = val => {
+    const n = parseInt(val, 10);
+    return isNaN(n) ? 0 : n;
 };
 
 function formatParcial(val, isFora) {
@@ -330,13 +345,16 @@ async function loadData() {
     try {
         const links = getLinksAtivos();
 
-        // Carrega TODOS os CSVs de forma paralela e segura
-        const [jogos, convocados, scoutAvancadoData, atletasData, scoutData] = await Promise.all([
+        // Carrega TODOS os CSVs (época ativa + painel da coordenação) de forma paralela e segura
+        const [jogos, convocados, scoutAvancadoData, atletasData, scoutData, atletasCampoData, scoutCampoData, guardaRedesData] = await Promise.all([
             fetchCSV(links.jogos),
             fetchCSV(links.convocados),
             fetchCSV(links.scoutAvancado),
             fetchCSV(links.atletas),
-            fetchCSV(links.scout)
+            fetchCSV(links.scout),
+            fetchCSV(SPREADSHEET_CONFIG.urlAtletasCampo),
+            fetchCSV(SPREADSHEET_CONFIG.urlScoutCampo),
+            fetchCSV(SPREADSHEET_CONFIG.urlGuardaRedes)
         ]);
 
         // Atribui os dados ao banco global
@@ -345,6 +363,9 @@ async function loadData() {
         DB.scoutAvancado = scoutAvancadoData;
         DB.atletas = atletasData;
         DB.scout = scoutData;
+        DB.atletasCampo = atletasCampoData;
+        DB.scoutCampo = scoutCampoData;
+        DB.guardaRedes = guardaRedesData;
 
         // Executa as renderizações de forma síncrona com os dados prontos
         if (typeof renderHomeNext === "function") renderHomeNext();
@@ -352,6 +373,13 @@ async function loadData() {
 
         if (typeof sessaoValida === "function" && sessaoValida()) {
             renovarSessao();
+        }
+
+        // Se o painel da coordenação estiver aberto, atualiza-o também
+        const painelAberto = document.getElementById('conteudo-painel');
+        if (painelAberto && painelAberto.style.display === 'block') {
+            if (typeof carregarOpcoesFiltroPainel === "function") carregarOpcoesFiltroPainel();
+            if (typeof atualizarPainelScout === "function") atualizarPainelScout();
         }
     } catch (e) {
         console.error("Erro no carregamento de dados:", e);
@@ -816,86 +844,10 @@ function showView(v, p = '') {
         else if(v === 'participacoes') renderParticipacoes('GERAL');
         else if(v === 'treinos') renderTreinos();
         else if(v === 'painel') renderPainel();
-        else if(v === 'playlist') showPlaylist();            // <-- ADICIONADO
-        else if(v === 'academia') showAcademy(p);            // <-- ADICIONADO
+        else if(v === 'playlist') showPlaylist();
+        else if(v === 'academia') showAcademy(p);
     }
     window.scrollTo(0,0);
-}
- // ==========================================
-// CONFIGURAÇÃO DE DADOS E LINKS CSV DA PLANILHA
-// ==========================================
-const SPREADSHEET_CONFIG = {
-    urlJogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1794507243&single=true&output=csv",
-    urlAtletasCampo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2115424182&single=true&output=csv",
-    urlScoutCampo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=752175872&single=true&output=csv",
-    urlGuardaRedes: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1738670761&single=true&output=csv"
-};
-
-// Objeto global de base de dados
-window.DB = window.DB || {
-    atletasCampo: [],
-    guardaRedes: [],
-    jogos: [],
-    scoutAvancado: []
-};
-
-// Funções auxiliares para normalização de dados
-const clean = str => String(str || '').trim().toLowerCase();
-const parseNum = val => {
-    const n = parseInt(val, 10);
-    return isNaN(n) ? 0 : n;
-};
-const getVal = (obj, key) => obj && obj[key] !== undefined ? obj[key] : '';
-
-// Carregamento e sincronização dos dados CSV
-async function loadData() {
-    try {
-        console.log("🔄 A carregar dados do Google Sheets...");
-
-        const [resJogos, resAtletasCampo, resScoutCampo, resGR] = await Promise.all([
-            fetch(SPREADSHEET_CONFIG.urlJogos).then(r => r.text()).catch(() => ""),
-            fetch(SPREADSHEET_CONFIG.urlAtletasCampo).then(r => r.text()).catch(() => ""),
-            fetch(SPREADSHEET_CONFIG.urlScoutCampo).then(r => r.text()).catch(() => ""),
-            fetch(SPREADSHEET_CONFIG.urlGuardaRedes).then(r => r.text()).catch(() => "")
-        ]);
-
-        DB.jogos = parseCSV(resJogos);
-        DB.atletasCampo = parseCSV(resAtletasCampo);
-        DB.scoutAvancado = parseCSV(resScoutCampo);
-        DB.guardaRedes = parseCSV(resGR);
-
-        console.log("✅ Dados sincronizados com sucesso!");
-        console.log(`📊 Jogos: ${DB.jogos.length} | Atletas Campo: ${DB.atletasCampo.length} | GR: ${DB.guardaRedes.length}`);
-
-        if (document.getElementById('conteudo-painel') && document.getElementById('conteudo-painel').style.display === 'block') {
-            carregarOpcoesFiltroPainel();
-            atualizarPainelScout();
-        }
-    } catch (error) {
-        console.error("❌ Erro ao carregar dados da planilha:", error);
-    }
-}
-
-// Converte texto CSV recebido da Web em Objetos JavaScript
-function parseCSV(csvText) {
-    if (!csvText) return [];
-    const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
-    if (lines.length === 0) return [];
-
-    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-    const result = [];
-
-    for (let i = 1; i < lines.length; i++) {
-        const currentLine = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        const obj = {};
-        for (let j = 0; j < headers.length; j++) {
-            let val = currentLine[j] !== undefined ? currentLine[j].trim() : '';
-            val = val.replace(/^"|"$/g, '');
-            obj[headers[j]] = val;
-        }
-        result.push(obj);
-    }
-    return result;
 }
 
 // ==========================================
@@ -1171,7 +1123,76 @@ function atualizarPainelScout() {
         </div>
     `;
 }
+
+// ==========================================
+// FUNÇÕES DE INTERFACE (menu, submenus, login)
+// Estas funções são chamadas pelos onclick do HTML acima.
+// ATENÇÃO: se já as tinhas noutra parte do teu ficheiro original
+// (ex.: toggleMenu, toggleSub, handleLogin, validarSenha,
+// toggleStatHistory, showAcademy, showPlaylist, closeDetail),
+// apaga estas e mantém as tuas — não estavam presentes no texto
+// que colaste, por isso adicionei versões funcionais para o site
+// não voltar a "morrer" por falta delas.
+// ==========================================
+
+function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('active');
+}
+
+function toggleSub(id) {
+    document.getElementById(id).classList.toggle('open');
+}
+
+function closeDetail() {
+    document.getElementById('detailPane').classList.remove('open');
+}
+
+function toggleStatHistory(campo) {
+    document.querySelectorAll('.history-panel').forEach(p => {
+        if (p.id === 'hist-' + campo) {
+            p.style.display = (p.style.display === 'block') ? 'none' : 'block';
+        } else {
+            p.style.display = 'none';
+        }
+    });
+}
+
+function handleLogin() {
+    if (sessaoValida()) {
+        localStorage.removeItem('eac_auth_time');
+        document.getElementById('menu-artilharia').style.display = 'none';
+        document.getElementById('lock-btn').innerText = "🔒";
+        alert("Sessão terminada.");
+    } else {
+        showView('painel');
+    }
+}
+
+function validarSenha() {
+    const senha = document.getElementById('senha-input').value;
+    // ⚠️ Substitui 'MUDAR-SENHA' pela senha real da coordenação
+    if (senha === 'MUDAR-SENHA') {
+        renovarSessao();
+        renderPainel();
+    } else {
+        alert('Senha incorreta.');
+    }
+}
+
+function showAcademy(secao) {
+    showView('mainView');
+    document.getElementById('mainView').classList.add('active');
+    document.getElementById('viewContent').innerHTML = `<p style="text-align:center; padding:40px; color:#94a3b8">Conteúdo de "${secao}" por preencher.</p>`;
+}
+
+function showPlaylist() {
+    showView('mainView');
+    document.getElementById('mainView').classList.add('active');
+    document.getElementById('viewContent').innerHTML = `<p style="text-align:center; padding:40px; color:#94a3b8">Playlist por configurar.</p>`;
+}
+
+// Arranque
+loadData();
 </script>
 </body>
 </html>
-
