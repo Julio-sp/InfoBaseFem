@@ -1,1353 +1,1182 @@
-<!DOCTYPE html>
-<html lang="pt-PT">
-<head>
+<!DOCTYPE html><html lang="pt"><head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EAC Handebol - Portal Oficial & Scout Avançado</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAC - Sub16 e Sub18 FEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <!-- Google tag (gtag.js) - COLADO AQUI -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RNDHGL1GM7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-RNDHGL1GM7');
+    </script>
     <style>
-        /* ==========================================================================
-           1. VARIÁVEIS E RESET DESIGN SYSTEM EAC
-           ========================================================================== */
-        :root {
-            --primary: #0f172a;
-            --primary-light: #1e293b;
-            --accent-blue: #0284c7;
-            --accent-blue-hover: #0369a1;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-amber: #f59e0b;
-            --bg-main: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #334155;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 24px;
-            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        :root { --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --bg: #f1f5f9; --eac-dark: #0f172a; }
+        body { margin:0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #1e293b; overflow-x: hidden; }
+        
+        .top-bar { position: fixed; top: 0; width: 100%; height: 65px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        #sidebar { position: fixed; left: -280px; top: 0; width: 280px; height: 100vh; background: var(--eac-dark); color: white; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding-top: 80px; box-shadow: 5px 0 15px rgba(0,0,0,0.2); overflow-y: auto; }
+        #sidebar.active { left: 0; }
+        .sidebar-content { padding-bottom: 120px; }
+
+        #sidebar a { display: block; padding: 18px 25px; color: #94a3b8; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.95rem; font-weight: 600; }
+        #sidebar a:hover { color: white; background: #1e293b; }
+        .submenu { background: #161e2e; display: none; }
+        .submenu.open { display: block; }
+        .submenu a { padding-left: 45px !important; font-size: 0.85rem !important; opacity: 0.8; }
+
+        .container { padding: 20px; max-width: 900px; margin: 85px auto 40px auto; display: none; }
+        .container.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .adn-container { 
+            background: var(--verde); 
+            padding: 25px 15px; 
+            border-radius: 25px; 
+            text-align: center; 
+            margin-bottom: 30px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 10px; 
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            padding-bottom: 90px;
-            overflow-x: hidden;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ==========================================================================
-           2. HEADER E NAVEGAÇÃO PREMIUM
-           ========================================================================== */
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: #ffffff;
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow-md);
-            border-bottom: 3px solid var(--accent-blue);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .logo-img {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--accent-blue);
-            background: #ffffff;
-            box-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
-        }
-
-        .title-text {
-            font-weight: 900;
-            font-size: 1.2rem;
-            letter-spacing: 0.8px;
-            color: #ffffff;
+        .adn-word { 
+            font-size: 1.1rem; 
+            font-weight: 900; 
+            line-height: 1; 
+            letter-spacing: 1px; 
+            margin: 0; 
             text-transform: uppercase;
-            background: linear-gradient(90deg, #ffffff, #93c5fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
-        .menu-btn {
-            font-size: 1.6rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            cursor: pointer;
-            width: 42px;
-            height: 42px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-fast);
+        .w-white { color: white; } 
+        .w-black { color: rgba(0,0,0,0.7); }
+
+        .month-divider { padding: 15px 20px; margin: 15px 0 5px 0; background: white; border-radius: 15px; font-weight: 800; color: var(--eac-dark); font-size: 1rem; text-transform: uppercase; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
+        .month-content { display: none; margin-bottom: 20px; }
+        .month-content.open { display: block; }
+
+        .game-card { background: white; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; border: 1px solid #f1f5f9; }
+        .game-status-bar { width: 12px; }
+        .game-content { flex: 1; padding: 22px; }
+        .game-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; font-weight: 700; margin-bottom: 18px; }
+        .game-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .team { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .team img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 10px; }
+        .team span { font-weight: 800; font-size: 0.85rem; color: var(--eac-dark); }
+        .score-box { text-align: center; min-width: 100px; }
+        .score-main { font-size: 2.2rem; font-weight: 900; color: var(--eac-dark); }
+        .score-parcial { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-top: 5px; background: #f8fafc; padding: 2px 8px; border-radius: 10px; }
+        
+        .btn-row { display: flex; gap: 12px; margin-top: 20px; }
+        .info-btn, .maps-btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: 800; font-size: 0.75rem; cursor: pointer; text-decoration: none; text-align: center; }
+        .info-btn { background: #f1f5f9; color: #475569; }
+        .maps-btn { background: #dcfce7; color: #166534; }
+
+        .conv-container { margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .conv-title { font-size: 0.75rem; font-weight: 800; color: var(--azul); letter-spacing: 1px; margin-bottom: 10px; display: block; text-transform: uppercase; }
+        .conv-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .conv-item { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .conv-num { font-size: 0.7rem; font-weight: 900; background: var(--eac-dark); color: white; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+        .conv-nome { font-size: 0.75rem; font-weight: 700; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .atleta-row { background: white; padding: 18px; margin-bottom: 12px; border-radius: 18px; display: flex; align-items: center; cursor: pointer; border: 1px solid transparent; }
+        .atleta-img-circle { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 18px; border: 2px solid #f1f5f9; }
+
+        #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        #detailPane.open { right:0; }
+        
+        .tab-btn { padding:12px 24px; border-radius:25px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; font-size: 0.85rem; }
+        .tab-btn.active { background: var(--azul); color: white; }
+
+        .stat-card { padding: 12px 5px; border-radius: 15px; color: white; cursor: pointer; transition: 0.3s; text-align: center; }
+        .stat-card:active { transform: scale(0.95); }
+        .stat-val { display: block; font-size: 1.5rem; font-weight: 900; }
+        .stat-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+        
+        .history-panel { display: none; background: #f8fafc; margin-top: 10px; border-radius: 12px; padding: 10px; text-align: left; border: 1px solid #e2e8f0; }
+        .history-item { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+        .history-item:last-child { border: none; }
+
+        .badge-2min { background: var(--vermelho); color: white; padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 0.75rem; }
+        .info-pill { background: #f1f5f9; padding: 10px 15px; border-radius: 12px; font-size: 0.8rem; color: #475569; font-weight: 600; display: inline-block; margin: 5px; }
+        
+        .treino-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border-left: 6px solid var(--azul); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+            70% { transform: scale(0.95); box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
         }
 
-        .menu-btn:active {
-            transform: scale(0.92);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* ==========================================================================
-           3. SIDEBAR E MENU OVERLAY
-           ========================================================================== */
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(6px);
-            z-index: 1999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -310px;
-            width: 300px;
-            height: 100%;
-            background: #ffffff;
-            z-index: 2000;
-            transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: var(--shadow-lg);
-            padding: 24px 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar.active {
-            left: 0;
-        }
-
-        .sidebar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 18px;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 18px;
-        }
-
-        .sidebar-title {
-            color: var(--primary);
-            font-weight: 900;
-            font-size: 1.15rem;
-            letter-spacing: 0.5px;
-        }
-
-        .close-btn {
-            font-size: 1.8rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-muted);
-            line-height: 1;
-            transition: var(--transition-fast);
-        }
-
-        .close-btn:hover {
-            color: var(--accent-red);
-        }
-
-        .nav-links {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .nav-item {
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 0.95rem;
-            text-decoration: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: var(--transition-fast);
-        }
-
-        .nav-item:hover, .nav-item:active {
-            background: #f1f5f9;
-            color: var(--accent-blue);
-            transform: translateX(4px);
-        }
-
-        .sub-menu {
-            display: none;
-            padding-left: 18px;
-            flex-direction: column;
-            gap: 4px;
-            margin-top: 4px;
-            margin-bottom: 8px;
-            border-left: 2px solid var(--border-color);
-            margin-left: 12px;
-        }
-
-        .sub-menu.open {
-            display: flex;
-        }
-
-        .sub-menu a {
-            padding: 9px 12px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.88rem;
-            cursor: pointer;
-            border-radius: var(--radius-sm);
-            transition: var(--transition-fast);
-        }
-
-        .sub-menu a:hover {
-            color: var(--accent-blue);
-            background: #f8fafc;
-            padding-left: 16px;
-        }
-
-        /* ==========================================================================
-           4. CONTAINERS E ESTRUTURA DE PÁGINAS
-           ========================================================================== */
-        .container {
-            display: none;
-            padding: 20px 16px;
-            max-width: 900px;
-            margin: 0 auto;
-            animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .container.active {
-            display: block;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hero-banner {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: #ffffff;
-            padding: 28px 22px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-md);
-            position: relative;
-            overflow: hidden;
-            border-left: 6px solid var(--accent-blue);
-        }
-
-        .hero-banner h1 {
-            font-size: 1.6rem;
-            font-weight: 900;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .hero-banner p {
-            font-size: 0.92rem;
-            color: #cbd5e1;
-            font-weight: 500;
-        }
-
-        /* ==========================================================================
-           5. CARDS E COMPONENTES VISUAIS PREMIUM
-           ========================================================================== */
-        .game-card, .treino-card, .atleta-row, .stat-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-md);
-            padding: 18px;
-            margin-bottom: 14px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-            transition: var(--transition-fast);
-        }
-
-        .game-card:hover, .atleta-row:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: #cbd5e1;
-        }
-
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 8px;
-        }
-
-        .atleta-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            cursor: pointer;
-        }
-
-        .atleta-img-circle {
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-            background: #f1f5f9;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .maps-btn {
+        .pulse-animation {
+            animation: pulse 2s infinite;
             display: inline-block;
-            padding: 10px 18px;
-            background: #e0f2fe;
-            color: var(--accent-blue);
-            border-radius: var(--radius-sm);
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 0.82rem;
-            margin-top: 12px;
-            transition: var(--transition-fast);
-        }
-
-        .maps-btn:hover {
-            background: #bae6fd;
-            transform: translateY(-1px);
-        }
-
-        /* FILTROS BOTÕES (PILLS) */
-        .pills-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            scrollbar-width: none;
-        }
-
-        .pills-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .pill-btn {
-            padding: 9px 20px;
-            border-radius: 30px;
-            border: none;
-            background: #e2e8f0;
-            color: #475569;
-            font-weight: 800;
-            font-size: 0.8rem;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: var(--transition-fast);
-        }
-
-        .pill-btn.active {
-            background: var(--primary);
-            color: #ffffff;
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* ==========================================================================
-           6. MODAL VISUAL E LOADER ASSÍNCRONO
-           ========================================================================== */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(8px);
-            z-index: 3000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-card {
-            background: #ffffff;
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 24px;
-            box-shadow: var(--shadow-lg);
-            animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-        }
-
-        @keyframes modalPop {
-            from { opacity: 0; transform: scale(0.92); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 4000;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--accent-blue);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            background: var(--verde);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
+<div class="top-bar">
+    <div onclick="toggleMenu()" style="font-size:26px; cursor:pointer; color: var(--eac-dark)">☰</div>
+    <img src="logo.png" style="height:42px" onclick="showView('home')">
+    <div id="lock-btn" onclick="handleLogin()" style="font-size: 20px; cursor:pointer">🔒</div>
+</div>
 
-    <!-- LOADER E OVERLAY -->
-    <div id="loader">
-        <div class="spinner"></div>
-        <span style="letter-spacing:0.5px;">A carregar dados do EAC Handebol...</span>
-    </div>
-
-    <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
-
-    <!-- HEADER PRINCIPAL -->
-    <header>
-        <div class="logo-container" onclick="showView('home')">
-            <img src="logo.png" class="logo-img" alt="EAC Logo" onerror="this.src='https://via.placeholder.com/42/0f172a/ffffff?text=EAC'">
-            <span class="title-text">EAC HANDEBOL</span>
+<div id="sidebar">
+    <div class="sidebar-content">
+        <!-- SELECTOR DE ÉPOCA NO TOPO -->
+        <div style="padding: 10px 15px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <label style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 6px; font-weight: bold;">
+                📅 Época Ativa
+            </label>
+            <select onchange="mudarEpoca(this.value)" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background-color: #1e293b; color: #ffffff; font-weight: bold; cursor: pointer; outline: none;">
+                <option value="2026/2027" selected>Época 2026/2027</option>
+                <option value="2025/2026">Época 2025/2026</option>
+            </select>
         </div>
-        <button class="menu-btn" onclick="toggleMenu()" aria-label="Abrir Menu">☰</button>
-    </header>
 
-    <!-- SIDEBAR / MENU LATERAL -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <span class="sidebar-title">MENU PRINCIPAL</span>
-            <button class="close-btn" onclick="toggleMenu()">×</button>
+        <a onclick="showView('home')">🏠 INÍCIO</a>
+        <a id="menu-artilharia" style="display:none" onclick="showView('artilharia')">⚽ ARTILHARIA</a>
+        <a onclick="showView('treinos')">📍 LOCAIS DE TREINO</a>
+        <a onclick="showView('jogos')">📅 CALENDÁRIO & RESULTADOS</a>
+        <a onclick="showView('participacoes')">🏃‍♀️ PARTICIPAÇÕES</a>
+        <a onclick="toggleSub('sub-atlet')">👥 NOSSAS ATLETAS ▼</a>
+        <div id="sub-atlet" class="submenu">
+            <a onclick="showView('atletas', 'SUB16')">🔹 ESCALÃO SUB16</a>
+            <a onclick="showView('atletas', 'SUB18')">🔹 ESCALÃO SUB18</a>
         </div>
-        <div class="nav-links">
-            <div class="nav-item" onclick="showView('home')">🏠 Início</div>
-            <div class="nav-item" onclick="toggleSub('sub-equipa')">👥 Equipas ▾</div>
-            <div class="sub-menu" id="sub-equipa">
-                <a onclick="showView('atletas', 'SUB16')">SUB-16 Feminino</a>
-                <a onclick="showView('atletas', 'SUB18')">SUB-18 Feminino</a>
-            </div>
-            <div class="nav-item" onclick="showView('jogos')">📅 Calendário & Jogos</div>
-            <div class="nav-item" onclick="showView('artilharia')">⚽ Melhores Marcadoras</div>
-            <div class="nav-item" onclick="showView('participacoes')">📊 Participações</div>
-            <div class="nav-item" onclick="showView('treinos')">📍 Locais de Treino</div>
-            <div class="nav-item" onclick="toggleSub('sub-niver')">🎂 Aniversários ▾</div>
-            <div class="sub-menu" id="sub-niver"></div>
-            <div class="nav-item" onclick="toggleSub('sub-academy')">🎓 EAC Academy ▾</div>
-            <div class="sub-menu" id="sub-academy">
-                <a onclick="showAcademy('prevencao')">Prevenção</a>
-                <a onclick="showAcademy('recuperacao')">Recuperação</a>
-                <a onclick="showAcademy('treino-invisivel')">Treino Invisível</a>
-                <a onclick="showAcademy('pos-treino')">Pós-Treino</a>
-                <a onclick="showAcademy('pre-jogo')">Pré-Jogo</a>
-                <a onclick="showAcademy('intervalo')">Intervalo</a>
-                <a onclick="showAcademy('mentalidade')">Mentalidade de Jogo</a>
-            </div>
-            <div class="nav-item" onclick="showPlaylist()">🎧 Ritmo de Jogo</div>
-            <div class="nav-item" onclick="showView('painel')" style="color: var(--accent-blue); border-top: 1px solid var(--border-color); margin-top: 12px; padding-top: 16px;">📊 Painel Coordenação</div>
+        <a onclick="toggleSub('sub-niver')">🎂 ANIVERSARIANTES ▼</a>
+        <div id="sub-niver" class="submenu"></div>
+        <a onclick="toggleSub('sub-academy')">🎓 EAC ACADEMY ▼</a>
+        <div id="sub-academy" class="submenu">
+            <a onclick="showAcademy('prevencao')">🔹 PREVENÇÃO</a>
+            <a onclick="showAcademy('recuperacao')">🔹 RECUPERAÇÃO</a>
+            <a onclick="showAcademy('treino-invisivel')">🔹 TREINO INVISÍVEL</a>
+            <a onclick="showAcademy('pos-treino')">🔹 PÓS-TREINO</a>
+            <a onclick="showAcademy('pre-jogo')">🔹 PRÉ-JOGO</a>
+            <a onclick="showAcademy('intervalo')">🔹 INTERVALO</a>
+            <a onclick="showAcademy('mentalidade')">⚡ MENTALIDADE DE JOGO</a>
+            <a href="https://www.instagram.com/reel/DVbrLmfiEl5/?igsh=MTRpemFiYnlydHJmaQ==" target="_blank" style="color: #60a5fa;">📺 TREINO • MUN. ESTARREJA ↗</a>
+            <a href="https://www.instagram.com/reel/DVeNtCwCKrv/?igsh=MTQyZDM5MXlkamFxdQ==" target="_blank" style="color: #60a5fa;">📺 TREINO • SECUNDÁRIA ↗</a>
+        </div>
+        <a onclick="showPlaylist()">🎧 RITMO DE JOGO</a>
+        <a onclick="toggleSub('sub-restrito')">🔒 COORDENAÇÃO ▼</a>
+        <div id="sub-restrito" class="submenu">
+            <a onclick="showView('painel')">🔹 DADOS PROTEGIDOS</a>
         </div>
     </div>
+</div>
 
-    <!-- HOME / PÁGINA INICIAL -->
-    <div id="home" class="container active">
-        <div class="hero-banner">
-            <h1>EAC Handebol</h1>
-            <p>União, Foco e Alta Performance no Handebol Feminino.</p>
-        </div>
-        <h2 style="font-weight:900; color:var(--primary); margin-bottom:16px; font-size:1.25rem;">🔥 Próximos Jogos</h2>
+<div id="home" class="container active">
+    <div class="adn-container">
+        <div class="adn-word w-black">FOCO</div>
+        <div class="adn-word w-white">COMPROMISSO</div>
+        <div class="adn-word w-black">UNIÃO</div>
+    </div>
+
+    <div id="homeNext">
+        <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
+            <span style="width: 5px; height: 25px; background: var(--verde); display: block; border-radius: 10px"></span>
+            <span id="nextTitle">PRÓXIMOS JOGOS</span>
+        </h3>
         <div id="homeNextContent"></div>
     </div>
+</div>
 
-    <!-- MAIN VIEW CONTAINER PARA CONTEÚDOS DINÂMICOS -->
-    <div id="mainView" class="container">
-        <div id="filterArea"></div>
-        <div id="viewContent"></div>
+<div id="mainView" class="container">
+    <div id="filterArea" style="display:flex; gap:12px; margin-bottom:25px; flex-wrap:wrap"></div>
+    <div id="viewContent"></div>
+</div>
+
+<div id="detailPane">
+    <div style="padding: 22px; font-weight: 800; background: white; cursor:pointer; position:sticky; top:0; z-index:10; display: flex; align-items: center; border-bottom: 1px solid #f1f5f9" onclick="closeDetail()">
+        <span style="margin-right: 15px; font-size: 20px">⬅</span> VOLTAR
     </div>
+    <div id="detailBody"></div>
+</div>
 
-    <!-- MODAL DETALHES -->
-    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-        <div class="modal-card" id="modalContent"></div>
-    </div>
-    <script>
-    /* ==========================================================================
-       7. CONFIGURAÇÃO DE DADOS, ENDPOINTS E CACHE (PARSER CSV)
-       ========================================================================== */
-    // Substitua os links abaixo pelas URLs de exportação CSV das abas da sua Planilha Google
-    const URL_JOGOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1_EXAMPLE_JOGOS/pub?gid=0&single=true&output=csv";
-    const URL_ATLETAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1_EXAMPLE_ATLETAS/pub?gid=123456&single=true&output=csv";
-    const URL_CONVOCATORIAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1_EXAMPLE_CONVOCATORIAS/pub?gid=654321&single=true&output=csv";
-    const URL_SCOUT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1_EXAMPLE_SCOUT/pub?gid=987654&single=true&output=csv";
+<script>
+// Links configurados por época
+const LINKS_EPOCAS = {
+    "2026/2027": {
+        jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1515663193&single=true&output=csv",
+        scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=999011262&single=true&output=csv",
+        scoutAvancado: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2008001682&single=true&output=csv"
+    },
+    "2025/2026": {
+        jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
+        scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv",
+        scoutAvancado: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2008001682&single=true&output=csv"
+    }
+};
 
-    let DB = {
-        jogos: [],
-        atletas: [],
-        convocatorias: [],
-        scoutAvancado: []
+const LINKS_FIXOS = {
+    atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
+    convocados: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=179640149&single=true&output=csv"
+};
+
+let epocaAtual = "2026/2027";
+let DB = { atletas: [], jogos: [], scout: [], convocados: [], scoutAvancado: [] };
+
+// SISTEMA DE SESSÃO COM EXPIRAÇÃO DE 10 MINUTOS
+const SESSION_TIMEOUT = 10 * 60 * 1000; // 10 Minutos em milissegundos
+
+function sessaoValida() {
+    const authTime = localStorage.getItem('eac_auth_time');
+    if (!authTime) return false;
+    if (Date.now() - parseInt(authTime) > SESSION_TIMEOUT) {
+        localStorage.removeItem('eac_auth_time');
+        return false;
+    }
+    return true;
+}
+
+function renovarSessao() {
+    localStorage.setItem('eac_auth_time', Date.now().toString());
+    document.getElementById('menu-artilharia').style.display = 'block';
+    document.getElementById('lock-btn').innerText = "🔓";
+}
+
+function getLinksAtivos() {
+    const epocaConfig = LINKS_EPOCAS[epocaAtual] || LINKS_EPOCAS["2026/2027"];
+    return {
+        ...LINKS_FIXOS,
+        jogos: epocaConfig.jogos,
+        scout: epocaConfig.scout,
+        scoutAvancado: epocaConfig.scoutAvancado
     };
+}
 
-    // Auxiliar para parsing flexível de nomes de colunas (ignora acentos/caixa alta)
-    function clean(str) {
-        return (str || "").toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
+function mudarEpoca(novaEpoca) {
+    epocaAtual = novaEpoca;
+    loadData(); 
+}
 
-    function getVal(obj, keyName) {
-        if (!obj) return "";
-        const target = clean(keyName);
-        for (let k in obj) {
-            if (clean(k) === target) return obj[k];
-        }
-        return "";
-    }
+const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
 
-    // Parser CSV tolerante a aspas e vírgulas/pontos e vírgula
-    function parseCSV(text) {
-        const lines = text.split(/\r\n|\n/);
+const getVal = (obj, key) => {
+    if (!obj) return "";
+    const foundKey = Object.keys(obj).find(k => clean(k) === clean(key));
+    return foundKey && obj[foundKey] !== undefined && obj[foundKey] !== null ? String(obj[foundKey]).trim() : "";
+};
+
+function formatParcial(val, isFora) {
+    if(!val || val.trim() === "" || !val.includes('-')) return "00-00";
+    if(!isFora) return val;
+    const parts = val.split('-');
+    return `${parts[1]}-${parts[0]}`;
+}
+
+function parseDate(str) {
+    if(!str) return new Date(1900,0,1);
+    const p = str.split('/');
+    return new Date(p[2], p[1]-1, p[0]);
+}
+
+function parseDateTime(dataStr, horaStr) {
+    if(!dataStr) return new Date(1900,0,1);
+    const p = dataStr.split('/');
+    const horaClean = horaStr ? horaStr.trim() : "00:00";
+    const [h, m] = horaClean.split(':');
+    return new Date(p[2], p[1]-1, p[0], h || 0, m || 0, 0);
+}
+
+function calcularIdade(nascimento) {
+    if(!nascimento) return "";
+    const hoje = new Date();
+    const dataNasc = parseDate(nascimento);
+    let idade = hoje.getFullYear() - dataNasc.getFullYear();
+    const m = hoje.getMonth() - dataNasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) idade--;
+    return idade + " anos";
+}
+async function fetchCSV(url) {
+    try {
+        if (!url) return [];
+        // Garante que o separador do parâmetro de cache 't' seja correto (? ou &)
+        const separator = url.includes('?') ? '&' : '?';
+        const r = await fetch(url + separator + "t=" + Date.now());
+        if (!r.ok) return [];
+        
+        const text = await r.text();
+        const lines = text.split('\n').filter(l => l.trim() !== "");
         if (lines.length === 0) return [];
 
-        const delimiter = lines[0].includes(';') ? ';' : ',';
-        const headers = lines[0].split(delimiter).map(h => h.replace(/^"|"$/g, '').trim());
-        const result = [];
-
-        for (let i = 1; i < lines.length; i++) {
-            if (!lines[i].trim()) continue;
-            const currentline = lines[i].split(delimiter);
-            const obj = {};
-            for (let j = 0; j < headers.length; j++) {
-                let val = currentline[j] ? currentline[j].replace(/^"|"$/g, '').trim() : "";
-                obj[headers[j]] = val;
-            }
-            result.push(obj);
-        }
-        return result;
-    }
-
-    async function loadData() {
-        const loader = document.getElementById('loader');
-        try {
-            const [resJ, resA, resC, resS] = await Promise.all([
-                fetch(URL_JOGOS).then(r => r.text()).catch(() => ""),
-                fetch(URL_ATLETAS).then(r => r.text()).catch(() => ""),
-                fetch(URL_CONVOCATORIAS).then(r => r.text()).catch(() => ""),
-                fetch(URL_SCOUT).then(r => r.text()).catch(() => "")
-            ]);
-
-            DB.jogos = parseCSV(resJ);
-            DB.atletas = parseCSV(resA);
-            DB.convocatorias = parseCSV(resC);
-            DB.scoutAvancado = parseCSV(resS);
-
-            if (loader) loader.style.display = 'none';
-
-            // Renderizar vistas iniciais
-            renderHomeNext();
-            renderNiverMenu();
-        } catch (error) {
-            console.error("Erro ao carregar os dados:", error);
-            if (loader) loader.innerHTML = `<span style="color:var(--accent-red); padding:20px; text-align:center;">⚠️ Falha ao carregar dados. Verifique a ligação à internet.</span>`;
-        }
-    }
-
-    function parseDateTime(dataStr, horaStr) {
-        if (!dataStr) return new Date(0);
-        const parts = dataStr.split('/');
-        if (parts.length < 3) return new Date(0);
-        const dia = parseInt(parts[0], 10);
-        const mes = parseInt(parts[1], 10) - 1;
-        const ano = parseInt(parts[2], 10);
-
-        let h = 0, m = 0;
-        if (horaStr && horaStr.includes(':')) {
-            const hParts = horaStr.split(':');
-            h = parseInt(hParts[0], 10) || 0;
-            m = parseInt(hParts[1], 10) || 0;
-        }
-        return new Date(ano, mes, dia, h, m);
-    }
-
-    /* ==========================================================================
-       8. RENDERIZAÇÃO: CALENDÁRIO & JOGOS
-       ========================================================================== */
-    function renderJogos(escFiltro = 'TODOS') {
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (!viewContent) return;
-
-        if (filterArea) {
-            filterArea.innerHTML = `
-                <div class="pills-container">
-                    <button class="pill-btn ${escFiltro==='TODOS'?'active':''}" onclick="renderJogos('TODOS')">TODOS</button>
-                    <button class="pill-btn ${escFiltro==='SUB16'?'active':''}" onclick="renderJogos('SUB16')">EQUIPA SUB-16</button>
-                    <button class="pill-btn ${escFiltro==='SUB18'?'active':''}" onclick="renderJogos('SUB18')">EQUIPA SUB-18</button>
-                </div>
-            `;
-        }
-
-        const filtrados = DB.jogos.filter(j => {
-            if (escFiltro === 'TODOS') return true;
-            return clean(getVal(j, 'escalao') || getVal(j, 'escalão')) === clean(escFiltro);
-        }).sort((a,b) => parseDateTime(getVal(b, 'data'), getVal(b, 'hora')) - parseDateTime(getVal(a, 'data'), getVal(a, 'hora')));
-
-        viewContent.innerHTML = filtrados.map(j => {
-            const idJogo = getVal(j, 'id') || getVal(j, 'id_jogo');
-            const data = getVal(j, 'data');
-            const hora = getVal(j, 'hora');
-            const escalao = getVal(j, 'escalao') || getVal(j, 'escalão');
-            const adversario = getVal(j, 'adversario') || getVal(j, 'adversário');
-            const local = getVal(j, 'local');
-            const golosEac = getVal(j, 'golos_eac') || getVal(j, 'golos_favor');
-            const golosAdv = getVal(j, 'golos_adv') || getVal(j, 'golos_contra');
-            
-            const temResultado = golosEac !== "" && golosAdv !== "";
-            const isFora = clean(local).includes("fora");
-
-            let badgeCor = "var(--accent-blue)";
-            let resText = "AGENDADO";
-
-            if (temResultado) {
-                const gE = parseInt(golosEac, 10);
-                const gA = parseInt(golosAdv, 10);
-                if (gE > gA) { badgeCor = "var(--accent-green)"; resText = "VITÓRIA"; }
-                else if (gE < gA) { badgeCor = "var(--accent-red)"; resText = "DERROTA"; }
-                else { badgeCor = "var(--accent-amber)"; resText = "EMPATE"; }
-            }
-
-            return `
-            <div class="game-card" onclick="openJogoModal('${idJogo}')">
-                <div class="game-header">
-                    <span>📅 ${data} • 🕒 ${hora}</span>
-                    <span style="background:${badgeCor}; color:#ffffff; padding:4px 10px; border-radius:20px; font-size:0.7rem;">${resText}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin:14px 0;">
-                    <div style="text-align:center; flex:1">
-                        <strong style="font-size:1.05rem; color:var(--primary); display:block;">${isFora ? adversario : 'EAC HANDEBOL'}</strong>
-                    </div>
-                    <div style="background:#f1f5f9; padding:8px 16px; border-radius:var(--radius-md); text-align:center; min-width:80px; border:1px solid var(--border-color);">
-                        <strong style="font-size:1.3rem; color:var(--primary); font-weight:900;">
-                            ${temResultado ? `${isFora ? golosAdv : golosEac} - ${isFora ? golosEac : golosAdv}` : 'VS'}
-                        </strong>
-                    </div>
-                    <div style="text-align:center; flex:1">
-                        <strong style="font-size:1.05rem; color:var(--primary); display:block;">${!isFora ? adversario : 'EAC HANDEBOL'}</strong>
-                    </div>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; color:var(--text-muted); font-weight:700;">
-                    <span>📍 ${local || 'Pavilhão'}</span>
-                    <span style="color:var(--accent-blue);">${escalao}</span>
-                </div>
-            </div>`;
-        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Nenhum jogo encontrado para este filtro.</p>';
-    }
-
-    /* ==========================================================================
-       9. RENDERIZAÇÃO: MELHORES MARCADORAS (ARTILHARIA)
-       ========================================================================== */
-    function renderArt(escFiltro = 'GERAL') {
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (!viewContent) return;
-
-        if (filterArea) {
-            filterArea.innerHTML = `
-                <div class="pills-container">
-                    <button class="pill-btn ${escFiltro==='GERAL'?'active':''}" onclick="renderArt('GERAL')">GERAL</button>
-                    <button class="pill-btn ${escFiltro==='SUB16'?'active':''}" onclick="renderArt('SUB16')">SUB-16</button>
-                    <button class="pill-btn ${escFiltro==='SUB18'?'active':''}" onclick="renderArt('SUB18')">SUB-18</button>
-                </div>
-            `;
-        }
-
-        // Contagem de golos a partir da tabela de scout ou convocatórias
-        const contagemGolos = {};
-        
-        DB.scoutAvancado.forEach(s => {
-            const nome = getVal(s, 'Atleta_Nome') || getVal(s, 'nome');
-            const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado'));
-            const esc = clean(getVal(s, 'Escalao') || getVal(s, 'escalao'));
-
-            if ((res === 'golo' || res === 'gol') && nome) {
-                if (escFiltro === 'GERAL' || esc === clean(escFiltro)) {
-                    contagemGolos[nome] = (contagemGolos[nome] || 0) + 1;
-                }
-            }
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ""));
+        return lines.slice(1).map(line => {
+            let obj = {};
+            const vals = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            headers.forEach((h, i) => obj[h] = vals[i] ? vals[i].replace(/"/g, "").trim() : "");
+            return obj;
         });
-
-        const ranking = Object.keys(contagemGolos).map(atleta => {
-            const dadosAtleta = DB.atletas.find(a => clean(getVal(a, 'nome')) === clean(atleta));
-            return {
-                nome: atleta,
-                golos: contagemGolos[atleta],
-                foto: dadosAtleta ? getVal(dadosAtleta, 'foto') : '',
-                num: dadosAtleta ? (getVal(dadosAtleta, 'numero') || getVal(dadosAtleta, 'número')) : '-'
-            };
-        }).sort((a,b) => b.golos - a.golos);
-
-        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--primary)">⚽ Melhores Marcadoras</h3>` +
-        (ranking.map((item, index) => `
-            <div class="atleta-row" style="position:relative;">
-                <div style="font-weight:900; font-size:1.1rem; color:${index < 3 ? 'var(--accent-blue)' : 'var(--text-muted)'}; min-width:24px;">
-                    #${index + 1}
-                </div>
-                <img src="${item.foto || 'logo.png'}" class="atleta-img-circle" onerror="this.src='https://via.placeholder.com/50/0f172a/ffffff?text=EAC'">
-                <div style="flex:1;">
-                    <strong style="font-size:1rem; color:var(--primary); display:block;">${item.nome}</strong>
-                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Camisola Nº ${item.num}</span>
-                </div>
-                <div style="background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color:#ffffff; padding:8px 16px; border-radius:var(--radius-md); font-weight:900; font-size:1rem; box-shadow:var(--shadow-sm);">
-                    ${item.golos} <span style="font-size:0.7rem; font-weight:600; opacity:0.8;">GOLOS</span>
-                </div>
-            </div>
-        `).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Sem registos de golos para esta categoria.</p>');
+    } catch(e) { 
+        console.error("Erro ao buscar CSV:", e);
+        return []; 
     }
-        /* ==========================================================================
-       10. RENDERIZAÇÃO: PARTICIPAÇÕES & MINUTAGEM
-       ========================================================================== */
-    function renderParticipacoes(escFiltro = 'GERAL') {
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (!viewContent) return;
+}
 
-        if (filterArea) {
-            filterArea.innerHTML = `
-                <div class="pills-container">
-                    <button class="pill-btn ${escFiltro==='GERAL'?'active':''}" onclick="renderParticipacoes('GERAL')">GERAL</button>
-                    <button class="pill-btn ${escFiltro==='SUB16'?'active':''}" onclick="renderParticipacoes('SUB16')">SUB-16</button>
-                    <button class="pill-btn ${escFiltro==='SUB18'?'active':''}" onclick="renderParticipacoes('SUB18')">SUB-18</button>
-                </div>
-            `;
+async function loadData() {
+    try {
+        const links = getLinksAtivos();
+
+        // Carrega TODOS os CSVs de forma paralela e segura
+        const [jogos, convocados, scoutAvancadoData, atletasData, scoutData] = await Promise.all([
+            fetchCSV(links.jogos),
+            fetchCSV(links.convocados),
+            fetchCSV(links.scoutAvancado),
+            fetchCSV(links.atletas),
+            fetchCSV(links.scout)
+        ]);
+
+        // Atribui os dados ao banco global
+        DB.jogos = jogos;
+        DB.convocados = convocados;
+        DB.scoutAvancado = scoutAvancadoData;
+        DB.atletas = atletasData;
+        DB.scout = scoutData;
+
+        // Executa as renderizações de forma síncrona com os dados prontos
+        if (typeof renderHomeNext === "function") renderHomeNext();
+        if (typeof renderNiverMenu === "function") renderNiverMenu();
+
+        if (typeof sessaoValida === "function" && sessaoValida()) {
+            renovarSessao();
         }
-
-        const statsAtletas = {};
-
-        // Processar Convocatórias para Jogos Jogados
-        DB.convocatorias.forEach(c => {
-            const nome = getVal(c, 'Atleta_Nome') || getVal(c, 'nome');
-            const esc = clean(getVal(c, 'Escalao') || getVal(c, 'escalao'));
-            if (!nome) return;
-
-            if (escFiltro === 'GERAL' || esc === clean(escFiltro)) {
-                if (!statsAtletas[nome]) statsAtletas[nome] = { jogos: 0, minutos: 0, remates: 0, golos: 0 };
-                statsAtletas[nome].jogos += 1;
-            }
-        });
-
-        // Processar Scout para Minutos e Remates
-        DB.scoutAvancado.forEach(s => {
-            const nome = getVal(s, 'Atleta_Nome') || getVal(s, 'nome');
-            const esc = clean(getVal(s, 'Escalao') || getVal(s, 'escalao'));
-            const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado'));
-            const ent = parseInt(getVal(s, 'Minuto_Entrada') || 0, 10);
-            const sai = parseInt(getVal(s, 'Minuto_Saida') || 0, 10);
-
-            if (!nome) return;
-
-            if (escFiltro === 'GERAL' || esc === clean(escFiltro)) {
-                if (!statsAtletas[nome]) statsAtletas[nome] = { jogos: 0, minutos: 0, remates: 0, golos: 0 };
-                if (sai > ent) statsAtletas[nome].minutos += (sai - ent);
-                if (res !== "") {
-                    statsAtletas[nome].remates += 1;
-                    if (res === 'golo' || res === 'gol') statsAtletas[nome].golos += 1;
-                }
-            }
-        });
-
-        const lista = Object.keys(statsAtletas).map(nome => {
-            const aData = DB.atletas.find(a => clean(getVal(a, 'nome')) === clean(nome));
-            return {
-                nome,
-                jogos: statsAtletas[nome].jogos,
-                minutos: statsAtletas[nome].minutos,
-                remates: statsAtletas[nome].remates,
-                golos: statsAtletas[nome].golos,
-                foto: aData ? getVal(aData, 'foto') : '',
-                num: aData ? (getVal(aData, 'numero') || getVal(aData, 'número')) : '-'
-            };
-        }).sort((a,b) => b.jogos - a.jogos || b.minutos - a.minutos);
-
-        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--primary)">📊 Participações e Minutagem</h3>` +
-        (lista.map(item => {
-            const efic = item.remates > 0 ? Math.round((item.golos / item.remates) * 100) : 0;
-            return `
-            <div class="atleta-row" style="flex-wrap:wrap; padding:16px;">
-                <img src="${item.foto || 'logo.png'}" class="atleta-img-circle" onerror="this.src='https://via.placeholder.com/50/0f172a/ffffff?text=EAC'">
-                <div style="flex:1; min-width:140px;">
-                    <strong style="font-size:1rem; color:var(--primary); display:block;">${item.nome}</strong>
-                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Camisola Nº ${item.num}</span>
-                </div>
-                <div style="display:flex; gap:12px; margin-top:8px; width:100%; justify-content:space-between; background:#f8fafc; padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
-                    <div style="text-align:center;">
-                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block;">JOGOS</span>
-                        <strong style="font-size:0.95rem; color:var(--primary);">${item.jogos}</strong>
-                    </div>
-                    <div style="text-align:center;">
-                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block;">MINUTOS</span>
-                        <strong style="font-size:0.95rem; color:var(--accent-blue);">${item.minutos}'</strong>
-                    </div>
-                    <div style="text-align:center;">
-                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block;">REMATES</span>
-                        <strong style="font-size:0.95rem; color:var(--primary);">${item.remates}</strong>
-                    </div>
-                    <div style="text-align:center;">
-                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block;">EFICÁCIA</span>
-                        <strong style="font-size:0.95rem; color:${efic >= 50 ? 'var(--accent-green)' : 'var(--accent-amber)'};">${efic}%</strong>
-                    </div>
-                </div>
-            </div>`;
-        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Sem registos de participação encontrados.</p>');
+    } catch (e) {
+        console.error("Erro no carregamento de dados:", e);
     }
+}
 
-    /* ==========================================================================
-       11. RENDERIZAÇÃO: LOCAIS DE TREINO & ANIVERSÁRIOS
-       ========================================================================== */
-    function renderTreinos() {
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (!viewContent) return;
-        if (filterArea) filterArea.innerHTML = '';
-
-        const pavilhoes = [
-            {
-                nome: "Pavilhão Municipal de Estarreja",
-                morada: "Rua Dr. Manuel Figueiredo, 3860-237 Estarreja",
-                link: "https://maps.google.com/?q=Pavilhao+Municipal+de+Estarreja",
-                desc: "Treinos Oficiais e Jogos em Casa - Sub16 e Sub18"
-            },
-            {
-                nome: "Pavilhão Complexo Desportivo de Avanca",
-                morada: "Rua do Desporto, Avanca",
-                link: "https://maps.google.com/?q=Complexo+Desportivo+Avanca",
-                desc: "Treinos Complementares e Preparação Física"
-            }
-        ];
-
-        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--primary)">📍 Pavilhões e Locais de Treino</h3>` +
-        pavilhoes.map(p => `
-            <div class="treino-card">
-                <strong style="font-size:1.1rem; color:var(--primary); display:block; margin-bottom:4px;">${p.nome}</strong>
-                <p style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-bottom:8px;">${p.morada}</p>
-                <p style="font-size:0.8rem; color:var(--accent-blue); font-weight:700; margin-bottom:12px;">ℹ️ ${p.desc}</p>
-                <a href="${p.link}" target="_blank" class="maps-btn">📍 ABRIR NO GOOGLE MAPS</a>
-            </div>
-        `).join('');
-    }
-
-    function renderNiverMenu() {
-        const subNiver = document.getElementById('sub-niver');
-        if (!subNiver) return;
-
-        const hoje = new Date();
-        const mesAtual = hoje.getMonth() + 1;
-
-        const aniversariantes = DB.atletas.filter(a => {
-            const dataNasc = getVal(a, 'data_nascimento') || getVal(a, 'nascimento');
-            if (!dataNasc) return false;
-            const parts = dataNasc.split('/');
-            return parts.length >= 2 && parseInt(parts[1], 10) === mesAtual;
-        });
-
-        if (aniversariantes.length === 0) {
-            subNiver.innerHTML = `<a style="font-size:0.75rem; color:var(--text-muted);">Sem aniversários este mês 🎉</a>`;
-            return;
-        }
-
-        subNiver.innerHTML = aniversariantes.map(a => {
-            const nome = getVal(a, 'nome');
-            const dataN = getVal(a, 'data_nascimento') || getVal(a, 'nascimento');
-            const dia = dataN.split('/')[0];
-            return `<a onclick="showView('atletas')">🎉 ${dia} - ${nome}</a>`;
-        }).join('');
-    }
-
-    /* ==========================================================================
-       12. PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO E MATRIZ DE BALIZA 3x3)
-       ========================================================================== */
-    function renderPainelCoord(filtroEsc = 'TODOS', tipoPosicao = 'CAMPO') {
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (!viewContent) return;
-
-        if (filterArea) {
-            filterArea.innerHTML = `
-                <div class="pills-container">
-                    <button class="pill-btn ${filtroEsc==='TODOS'?'active':''}" onclick="renderPainelCoord('TODOS', '${tipoPosicao}')">TODOS</button>
-                    <button class="pill-btn ${filtroEsc==='SUB16'?'active':''}" onclick="renderPainelCoord('SUB16', '${tipoPosicao}')">SUB-16</button>
-                    <button class="pill-btn ${filtroEsc==='SUB18'?'active':''}" onclick="renderPainelCoord('SUB18', '${tipoPosicao}')">SUB-18</button>
-                </div>
-                <div style="display:flex; gap:10px; margin-bottom:15px; background:#e2e8f0; padding:4px; border-radius:30px;">
-                    <button style="flex:1; padding:8px; border:none; border-radius:20px; font-weight:800; font-size:0.78rem; cursor:pointer; background:${tipoPosicao==='CAMPO'?'var(--primary)':'transparent'}; color:${tipoPosicao==='CAMPO'?'#fff':'var(--text-main)'};" onclick="renderPainelCoord('${filtroEsc}', 'CAMPO')">🤾 ATLETAS DE CAMPO</button>
-                    <button style="flex:1; padding:8px; border:none; border-radius:20px; font-weight:800; font-size:0.78rem; cursor:pointer; background:${tipoPosicao==='GR'?'var(--primary)':'transparent'}; color:${tipoPosicao==='GR'?'#fff':'var(--text-main)'};" onclick="renderPainelCoord('${filtroEsc}', 'GR')">🧤 GUARDA-REDES</button>
-                </div>
-            `;
-        }
-
-        // Filtro de Atletas
-        const atletasFiltradas = DB.atletas.filter(a => {
-            const pos = clean(getVal(a, 'posicao') || getVal(a, 'posição'));
-            const esc = clean(getVal(a, 'escalao') || getVal(a, 'escalão'));
-            const isGR = pos.includes('guarda') || pos.includes('gr');
-
-            const matchPos = tipoPosicao === 'GR' ? isGR : !isGR;
-            const matchEsc = filtroEsc === 'TODOS' ? true : esc === clean(filtroEsc);
-
-            return matchPos && matchEsc;
-        });
-
-        viewContent.innerHTML = `
-            <div style="background:var(--primary); color:#ffffff; padding:20px; border-radius:var(--radius-lg); margin-bottom:20px;">
-                <h3 style="font-weight:900; margin-bottom:6px; letter-spacing:0.5px;">📋 Painel da Coordenação Tática</h3>
-                <p style="font-size:0.85rem; color:#cbd5e1;">Análise individualizada de desempenho por jogadora.</p>
-                <div style="margin-top:14px;">
-                    <select id="selectAtletaScout" onchange="atualizarScoutAtleta(this.value)" style="width:100%; padding:12px; border-radius:var(--radius-sm); border:none; font-weight:800; color:var(--primary); background:#ffffff;">
-                        <option value="">-- Selecione uma Atleta --</option>
-                        ${atletasFiltradas.map(a => `<option value="${getVal(a, 'nome')}">${getVal(a, 'nome')} (${getVal(a, 'posicao') || 'Atleta'})</option>`).join('')}
-                    </select>
-                </div>
-            </div>
-            <div id="estatisticasScoutContainer">
-                <p style="text-align:center; padding:40px; color:var(--text-muted); font-weight:700;">Selecione uma atleta acima para visualizar o relatório detalhado.</p>
-            </div>
-        `;
-    }
-
-    /* ==========================================================================
-       13. ATUALIZAÇÃO INDIVIDUAL DO SCOUT & MATRIZ DA BALIZA (3x3)
-       ========================================================================== */
-    function atualizarScoutAtleta(nomeAtleta) {
-        const container = document.getElementById('estatisticasScoutContainer');
-        if (!container || !nomeAtleta) return;
-
-        let totalRemates = 0, totalGolos = 0, total7mTentativas = 0, total7mGolos = 0;
-        let totalDefesasSofridas = 0, totalFora = 0, totalBlocos = 0, totalMinutos = 0;
-        
-        let totalDefesasGR = 0, totalRematesContraGR = 0, defesas7mGR = 0, remates7mContraGR = 0;
-
-        const zonasBaliza = { z1:0, z2:0, z3:0, z4:0, z5:0, z6:0, z7:0, z8:0, z9:0 };
-
-        DB.scoutAvancado.forEach(s => {
-            const nome = getVal(s, 'Atleta_Nome') || getVal(s, 'nome');
-            if (clean(nome) !== clean(nomeAtleta)) return;
-
-            const res = clean(getVal(s, 'Resultado_Remate') || getVal(s, 'resultado'));
-            const orig = clean(getVal(s, 'Origem_Remate') || getVal(s, 'origem'));
-            const zona = clean(getVal(s, 'Zona_Baliza') || getVal(s, 'zona_baliza'));
-            const acaoDef = clean(getVal(s, 'Acao_Defensiva') || getVal(s, 'acao_defensiva'));
-            const ent = parseInt(getVal(s, 'Minuto_Entrada') || 0, 10);
-            const sai = parseInt(getVal(s, 'Minuto_Saida') || 0, 10);
-
-            if (sai > ent) totalMinutos += (sai - ent);
-
-            // Ataque
-            if (res !== "") {
-                totalRemates += 1;
-                const is7m = orig.includes('7m') || orig.includes('7 metros');
-
-                if (res === 'golo' || res === 'gol') {
-                    totalGolos += 1;
-                    if (is7m) total7mGolos += 1;
-                    if (zona && zonasBaliza[zona] !== undefined) {
-                        zonasBaliza[zona] += 1;
-                    }
-                } else if (res.includes('defesa gr')) {
-                    totalDefesasSofridas += 1;
-                } else if (res.includes('fora') || res.includes('poste')) {
-                    totalFora += 1;
-                } else if (res.includes('bloco')) {
-                    totalBlocos += 1;
-                }
-
-                if (is7m) total7mTentativas += 1;
-            }
-
-            // Defesa (Guarda-Redes)
-            if (acaoDef.includes('defesa gr')) {
-                totalDefesasGR += 1;
-                totalRematesContraGR += 1;
-                if (orig.includes('7m')) {
-                    defesas7mGR += 1;
-                    remates7mContraGR += 1;
-                }
-            }
-        });
-
-        const eficGeral = totalRemates > 0 ? Math.round((totalGolos / totalRemates) * 100) : 0;
-        const efic7m = total7mTentativas > 0 ? Math.round((total7mGolos / total7mTentativas) * 100) : 0;
-        const eficGR = totalRematesContraGR > 0 ? Math.round((totalDefesasGR / totalRematesContraGR) * 100) : 0;
-
-        container.innerHTML = `
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
-                <div style="background: white; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-sm);">
-                    <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block;">Remates Totais</span>
-                    <span style="font-size: 1.8rem; font-weight: 900; color: var(--primary);">${totalGolos} / ${totalRemates}</span>
-                    <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent-green); background: #dcfce7; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 5px;">Eficácia: ${eficGeral}%</span>
-                </div>
-                <div style="background: white; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-sm);">
-                    <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block;">7 Metros</span>
-                    <span style="font-size: 1.8rem; font-weight: 900; color: var(--accent-blue);">${total7mGolos} / ${total7mTentativas}</span>
-                    <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent-blue); background: #dbeafe; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 5px;">Eficácia: ${efic7m}%</span>
-                </div>
-            </div>
-
-            ${totalRematesContraGR > 0 ? `
-            <div style="background: white; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: var(--shadow-sm);">
-                <h4 style="margin: 0 0 12px 0; font-weight: 900; text-align: center; color: var(--primary); font-size: 0.85rem;">🧤 RENDIMENTO GUARDA-REDES</h4>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                    <div style="background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); text-align: center; border: 1px solid var(--border-color);">
-                        <span style="font-size: 0.65rem; font-weight: 800; color: var(--text-muted); display: block;">DEFESAS TOTAIS</span>
-                        <span style="font-size: 1.4rem; font-weight: 900; color: var(--accent-blue);">${totalDefesasGR} / ${totalRematesContraGR}</span>
-                        <span style="font-size: 0.7rem; font-weight: 800; color: var(--accent-blue); display: block; margin-top: 3px;">${eficGR}% Defendidos</span>
-                    </div>
-                    <div style="background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); text-align: center; border: 1px solid var(--border-color);">
-                        <span style="font-size: 0.65rem; font-weight: 800; color: var(--text-muted); display: block;">DEFESAS 7M</span>
-                        <span style="font-size: 1.4rem; font-weight: 900; color: var(--accent-green);">${defesas7mGR} / ${remates7mContraGR}</span>
-                    </div>
-                </div>
-            </div>` : ''}
-
-            <!-- MATRIZ DA BALIZA (3x3) -->
-            <div style="background: white; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
-                <h4 style="margin: 0 0 15px 0; font-weight: 900; text-align: center; color: var(--primary); font-size: 0.95rem;">🎯 ZONAS DOS GOLOS (MAPA DA BALIZA)</h4>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #0f172a; padding: 12px; border-radius: var(--radius-sm); border: 4px solid #334155;">
-                    ${[7,8,9,4,5,6,1,2,3].map(z => `
-                        <div style="background: #1e293b; color: white; padding: 16px 6px; border-radius: 6px; text-align: center; border: 1px dashed #475569;">
-                            <span style="font-size: 0.6rem; color: #94a3b8; display: block; font-weight:800;">ZONA ${z}</span>
-                            <span style="font-size: 1.3rem; font-weight: 900; color: #4ade80;">${zonasBaliza['z'+z] || 0}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    }
-        /* ==========================================================================
-       14. NAVEGAÇÃO E CONTROLO DE VISTAS (SPA)
-       ========================================================================== */
-    function toggleMenu() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        if (sidebar && overlay) {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-    }
-
-    function toggleSub(id) {
-        const sub = document.getElementById(id);
-        if (sub) {
-            sub.classList.toggle('open');
-        }
-    }
-
-    function hideAllContainers() {
-        const containers = document.querySelectorAll('.container');
-        containers.forEach(c => c.classList.remove('active'));
-    }
-
-    function showView(view, param = 'TODOS') {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        if (sidebar && sidebar.classList.contains('active')) toggleMenu();
-
-        hideAllContainers();
-
-        if (view === 'home') {
-            document.getElementById('home').classList.add('active');
-            renderHomeNext();
-            return;
-        }
-
-        const mainView = document.getElementById('mainView');
-        if (mainView) mainView.classList.add('active');
-
-        switch (view) {
-            case 'jogos':
-                renderJogos(param);
-                break;
-            case 'artilharia':
-                renderArt(param);
-                break;
-            case 'participacoes':
-                renderParticipacoes(param);
-                break;
-            case 'treinos':
-                renderTreinos();
-                break;
-            case 'atletas':
-                renderAtletasView(param);
-                break;
-            case 'painel':
-                renderPainelCoord('TODOS', 'CAMPO');
-                break;
-            default:
-                renderJogos('TODOS');
-        }
-    }
-
-    /* ==========================================================================
-       15. HOME NEXT & LISTAGEM DE ATLETAS POR ESCALÃO
-       ========================================================================== */
-    function renderHomeNext() {
-        const container = document.getElementById('homeNextContent');
-        if (!container) return;
-
-        const proximos = DB.jogos.filter(j => {
-            const gE = getVal(j, 'golos_eac') || getVal(j, 'golos_favor');
-            const gA = getVal(j, 'golos_adv') || getVal(j, 'golos_contra');
-            return gE === "" || gA === "";
-        }).sort((a,b) => parseDateTime(getVal(a, 'data'), getVal(a, 'hora')) - parseDateTime(getVal(b, 'data'), getVal(b, 'hora'))).slice(0, 3);
-
-        if (proximos.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:var(--text-muted); font-weight:700; padding:20px;">Não há jogos agendados no momento.</p>`;
-            return;
-        }
-
-        container.innerHTML = proximos.map(j => {
-            const idJogo = getVal(j, 'id') || getVal(j, 'id_jogo');
-            const data = getVal(j, 'data');
-            const hora = getVal(j, 'hora');
-            const esc = getVal(j, 'escalao') || getVal(j, 'escalão');
-            const adv = getVal(j, 'adversario') || getVal(j, 'adversário');
-            const local = getVal(j, 'local');
-
-            return `
-            <div class="game-card" onclick="openJogoModal('${idJogo}')">
-                <div class="game-header">
-                    <span>📅 ${data} • 🕒 ${hora}</span>
-                    <span style="color:var(--accent-blue);">${esc}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin:12px 0;">
-                    <strong style="font-size:1.05rem; color:var(--primary);">EAC HANDEBOL</strong>
-                    <span style="font-weight:900; color:var(--accent-blue);">VS</span>
-                    <strong style="font-size:1.05rem; color:var(--primary);">${adv}</strong>
-                </div>
-                <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">
-                    📍 ${local || 'Pavilhão'}
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    function renderAtletasView(escFiltro = 'SUB16') {
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (!viewContent) return;
-
-        if (filterArea) {
-            filterArea.innerHTML = `
-                <div class="pills-container">
-                    <button class="pill-btn ${escFiltro==='SUB16'?'active':''}" onclick="renderAtletasView('SUB16')">EQUIPA SUB-16</button>
-                    <button class="pill-btn ${escFiltro==='SUB18'?'active':''}" onclick="renderAtletasView('SUB18')">EQUIPA SUB-18</button>
-                </div>
-            `;
-        }
-
-        const filtradas = DB.atletas.filter(a => {
-            const esc = clean(getVal(a, 'escalao') || getVal(a, 'escalão'));
-            return esc === clean(escFiltro);
-        });
-
-        viewContent.innerHTML = `<h3 style="margin-bottom:15px; font-weight:900; color:var(--primary)">👥 Plantel ${escFiltro}</h3>` +
-        (filtradas.map(a => {
-            const nome = getVal(a, 'nome');
-            const pos = getVal(a, 'posicao') || getVal(a, 'posição') || 'Atleta';
-            const num = getVal(a, 'numero') || getVal(a, 'número') || '-';
-            const foto = getVal(a, 'foto');
-
-            return `
-            <div class="atleta-row" onclick="openAtletaModal('${nome}')">
-                <img src="${foto || 'logo.png'}" class="atleta-img-circle" onerror="this.src='https://via.placeholder.com/50/0f172a/ffffff?text=EAC'">
-                <div style="flex:1;">
-                    <strong style="font-size:1rem; color:var(--primary); display:block;">${nome}</strong>
-                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">${pos} • Nº ${num}</span>
-                </div>
-                <div style="font-size:1.2rem; color:var(--accent-blue);">➔</div>
-            </div>`;
-        }).join('') || '<p style="text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Nenhuma atleta encontrada para este escalão.</p>');
-    }
-
-    /* ==========================================================================
-       16. MODAIS VISUAIS (FICHA ATLETA & DETALHES DE JOGO)
-       ========================================================================== */
-    function openJogoModal(idJogo) {
-        const jogo = DB.jogos.find(j => (getVal(j, 'id') || getVal(j, 'id_jogo')) === idJogo);
-        if (!jogo) return;
-
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalContent = document.getElementById('modalContent');
-        if (!modalOverlay || !modalContent) return;
-
-        const convocadas = DB.convocatorias.filter(c => (getVal(c, 'id_jogo') || getVal(c, 'id')) === idJogo);
-
-        modalContent.innerHTML = `
-            <button class="close-btn" style="position:absolute; top:18px; right:18px;" onclick="closeModal()">×</button>
-            <h3 style="font-weight:900; color:var(--primary); margin-bottom:6px;">📅 Detalhes do Jogo</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">${getVal(jogo, 'data')} • ${getVal(jogo, 'hora')} (${getVal(jogo, 'escalao')})</p>
-            
-            <div style="background:#f8fafc; padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color); text-align:center; margin-bottom:18px;">
-                <strong style="font-size:1.1rem; color:var(--primary);">${getVal(jogo, 'adversario')}</strong>
-                <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">📍 ${getVal(jogo, 'local') || 'Pavilhão Principal'}</p>
-            </div>
-
-            <h4 style="font-weight:900; color:var(--primary); margin-bottom:10px; font-size:0.9rem;">📋 ATLETAS CONVOCADAS (${convocadas.length})</h4>
-            <div style="max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
-                ${convocadas.map(c => `
-                    <div style="padding:8px 12px; background:#ffffff; border-radius:var(--radius-sm); border:1px solid var(--border-color); font-size:0.85rem; font-weight:700; color:var(--primary);">
-                        🤾 ${getVal(c, 'Atleta_Nome') || getVal(c, 'nome')}
-                    </div>
-                `).join('') || '<p style="font-size:0.8rem; color:var(--text-muted);">Convocatória ainda não disponível.</p>'}
-            </div>
-        `;
-        modalOverlay.classList.add('active');
-    }
-
-    function openAtletaModal(nomeAtleta) {
-        const atleta = DB.atletas.find(a => clean(getVal(a, 'nome')) === clean(nomeAtleta));
-        if (!atleta) return;
-
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalContent = document.getElementById('modalContent');
-        if (!modalOverlay || !modalContent) return;
-
-        modalContent.innerHTML = `
-            <button class="close-btn" style="position:absolute; top:18px; right:18px;" onclick="closeModal()">×</button>
-            <div style="text-align:center; margin-bottom:16px;">
-                <img src="${getVal(atleta, 'foto') || 'logo.png'}" style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid var(--accent-blue); margin-bottom:10px;" onerror="this.src='https://via.placeholder.com/90/0f172a/ffffff?text=EAC'">
-                <h3 style="font-weight:900; color:var(--primary);">${getVal(atleta, 'nome')}</h3>
-                <span style="background:#e0f2fe; color:var(--accent-blue); padding:4px 12px; border-radius:20px; font-weight:800; font-size:0.75rem;">${getVal(atleta, 'posicao') || 'Atleta'}</span>
-            </div>
-            
-            <div style="background:#f8fafc; padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color); display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.85rem;">
-                <div><span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.7rem;">NÚMERO</span><strong>#${getVal(atleta, 'numero') || getVal(atleta, 'número') || '-'}</strong></div>
-                <div><span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.7rem;">ESCALÃO</span><strong>${getVal(atleta, 'escalao') || getVal(atleta, 'escalão') || '-'}</strong></div>
-                <div><span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.7rem;">NASCIMENTO</span><strong>${getVal(atleta, 'data_nascimento') || getVal(atleta, 'nascimento') || '-'}</strong></div>
-                <div><span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.7rem;">ANOS</span><strong>${getVal(atleta, 'idade') || '-'} anos</strong></div>
-            </div>
-        `;
-        modalOverlay.classList.add('active');
-    }
-
-    function closeModal(e) {
-        if (!e || e.target.id === 'modalOverlay' || e.target.classList.contains('close-btn')) {
-            const modalOverlay = document.getElementById('modalOverlay');
-            if (modalOverlay) modalOverlay.classList.remove('active');
-        }
-    }
-
-    /* ==========================================================================
-       17. RECURSOS ADICIONAIS: EAC ACADEMY & RITMO DE JOGO
-       ========================================================================== */
-    function showAcademy(topico) {
-        showView('mainView');
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (filterArea) filterArea.innerHTML = '';
-
-        const conteudos = {
-            'prevencao': { titulo: '🛡️ Prevenção de Lesões', texto: 'Exercícios de mobilidade de ombros, estabilização de joelhos e fortalecimento do core específicos para o handebol.' },
-            'recuperacao': { titulo: '🧊 Recuperação Ativa', texto: 'Estratégias de libertação miofascial, crioterapia e rotinas de sono para otimizar o tempo de regeneração.' },
-            'treino-invisivel': { titulo: '🥗 Treino Invisível', texto: 'A importância da hidratação diária, alimentação equilibrada e hábitos fora do campo para máxima performance.' },
-            'pos-treino': { titulo: '🔄 Nutrição Pós-Treino', texto: 'Consumo ideal de proteínas e hidratos de carbono nos primeiros 30 minutos pós-esforço.' },
-            'pre-jogo': { titulo: '⚡ Preparação Pré-Jogo', texto: 'Ativação neuromuscular, rotinas mentais e aquecimento progressivo antes de entrar em campo.' },
-            'intervalo': { titulo: '⏱️ Gestão de Intervalo', texto: 'Rehidratação estratégica, feedback tático rápido e manutenção da temperatura corporal no balneário.' },
-            'mentalidade': { titulo: '🧠 Mentalidade Competitiva', texto: 'Foco no processo, resiliência perante os erros e gestão da pressão em momentos decisivos.' }
-        };
-
-        const item = conteudos[topico] || { titulo: '🎓 EAC Academy', texto: 'Conteúdos formativos EAC Handebol.' };
-
-        viewContent.innerHTML = `
-            <div style="background:#ffffff; padding:24px; border-radius:var(--radius-lg); border:1px solid var(--border-color); box-shadow:var(--shadow-sm);">
-                <h3 style="font-weight:900; color:var(--primary); margin-bottom:12px;">${item.titulo}</h3>
-                <p style="color:var(--text-main); font-size:0.95rem; line-height:1.6;">${item.texto}</p>
-            </div>
-        `;
-    }
-
-    function showPlaylist() {
-        showView('mainView');
-        const filterArea = document.getElementById('filterArea');
-        const viewContent = document.getElementById('viewContent');
-        if (filterArea) filterArea.innerHTML = '';
-
-        viewContent.innerHTML = `
-            <div style="background:#ffffff; padding:24px; border-radius:var(--radius-lg); border:1px solid var(--border-color); box-shadow:var(--shadow-sm); text-align:center;">
-                <h3 style="font-weight:900; color:var(--primary); margin-bottom:8px;">🎧 Ritmo de Jogo</h3>
-                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px;">A playlist oficial de motivação do EAC Handebol para os balneários!</p>
-                <div style="background:#121212; color:#1db954; padding:30px; border-radius:var(--radius-md); font-weight:900; font-size:1.1rem;">
-                    🎵 SPOTIFY PLAYER EAC HANDEBOL
-                </div>
-            </div>
-        `;
-    }
-
-    /* ==========================================================================
-       18. CARREGAMENTO INICIAL AUTOMÁTICO
-       ========================================================================== */
-    window.addEventListener('DOMContentLoaded', () => {
-        loadData();
+function buildConvocatoriaList(idJogo) {
+    if (!DB.convocados || DB.convocados.length === 0) return "";
+    const idJogoLimpo = String(idJogo).trim();
+    
+    const convocadasRaw = DB.convocados.filter(c => {
+        const jogoIdPlanilha = getVal(c, 'jogo_id') || getVal(c, 'Jogo_id') || getVal(c, 'JOGO_ID');
+        return String(jogoIdPlanilha).trim() === idJogoLimpo;
     });
-    </script>
+
+    if (convocadasRaw.length === 0) return "";
+    
+    let listaFinal = convocadasRaw.map(c => {
+        const nomeConvocada = clean(getVal(c, 'nome'));
+        const info = DB.atletas && DB.atletas.length > 0 
+            ? DB.atletas.find(at => clean(getVal(at, 'nome')) === nomeConvocada) 
+            : null;
+            
+        return {
+            nome: getVal(c, 'nome_exibicao') || getVal(c, 'Nome_Exibicao') || getVal(c, 'nome').split(' ')[0],
+            num: info ? (parseInt(getVal(info, 'número')) || 999) : 999
+        };
+    });
+    
+    listaFinal.sort((a, b) => a.num - b.num);
+    
+    const itemsHTML = listaFinal.map(a => `
+        <div class="conv-item">
+            <span class="conv-num">${a.num === 999 ? '?' : a.num}</span>
+            <span class="conv-nome">${a.nome}</span>
+        </div>
+    `).join('');
+    
+    return `
+        <div class="conv-container">
+            <span class="conv-title">📋 Convocadas</span>
+            <div class="conv-list">${itemsHTML}</div>
+        </div>`;
+}
+
+function renderJogos(filtro) {
+    const filterArea = document.getElementById('filterArea');
+    if (filterArea) {
+        filterArea.innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
+            `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
+    }
+
+    let lista = (filtro === 'TODOS') 
+        ? [...DB.jogos] 
+        : DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
+
+    lista.sort((a,b) => parseDate(getVal(b, 'data')) - parseDate(getVal(a, 'data')));
+
+    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    let html = "", ultimoMes = "";
+    let mesId = 0;
+
+    lista.forEach(j => {
+        const d = parseDate(getVal(j, 'data'));
+        const mesAno = d ? `${meses[d.getMonth()]} ${d.getFullYear()}` : "Data Indefinida";
+
+        if(mesAno !== ultimoMes) {
+            if(ultimoMes !== "") html += `</div>`;
+            mesId++;
+            html += `
+                <div class="month-divider" onclick="toggleMonth('month-${mesId}')">
+                    ${mesAno}
+                    <span id="icon-month-${mesId}">▼</span>
+                </div>
+                <div id="month-month-${mesId}" class="month-content">`;
+            ultimoMes = mesAno;
+        }
+
+        const gEAC = parseInt(getVal(j, 'gols_eac'));
+        const gADV = parseInt(getVal(j, 'gols_adv'));
+        const isFora = clean(getVal(j, 'local')).includes("fora");
+
+        let cor = "#cbd5e1"; 
+        if(!isNaN(gEAC) && !isNaN(gADV)) {
+            cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : "var(--azul)";
+        }
+
+        html += `
+        <div class="game-card">
+            <div class="game-status-bar" style="background:${cor}"></div>
+            <div class="game-content">
+                <div class="game-header"><span>${getVal(j, 'data')} • ${getVal(j, 'hora')}</span><span>${getVal(j, 'escalao')}</span></div>
+                <div class="game-main">
+                    <div class="team"><img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${isFora?getVal(j,'adversário'):'EAC'}</span></div>
+                    <div class="score-box">
+                        <div class="score-main">${isNaN(gEAC)?'VS': (isFora ? gADV+'-'+gEAC : gEAC+'-'+gADV)}</div>
+                        ${!isNaN(gEAC)?`<div class="score-parcial">${formatParcial(getVal(j,'res_1p'), isFora)} | ${formatParcial(getVal(j,'res_2p'), isFora)}</div>`:''}
+                    </div>
+                    <div class="team"><img src="${!isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${!isFora?getVal(j,'adversário'):'EAC'}</span></div>
+                </div>
+                <div class="btn-row">
+                    ${!isNaN(gEAC)?`<button class="info-btn" onclick="openJogo('${getVal(j,'id')}')">+ INFO JOGO</button>`:''}
+                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn">📍 VER LOCAL</a>`:''}
+                </div>
+            </div>
+        </div>`;
+    });
+
+    if(html !== "") html += `</div>`;
+    
+    const viewContent = document.getElementById('viewContent');
+    if (viewContent) {
+        viewContent.innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
+    }
+}
+
+function toggleMonth(id) {
+    const content = document.getElementById('month-' + id);
+    const icon = document.getElementById('icon-' + id);
+    if (!content || !icon) return;
+
+    if(content.classList.contains('open')) {
+        content.classList.remove('open');
+        icon.innerText = '▼';
+    } else {
+        content.classList.add('open');
+        icon.innerText = '▲';
+    }
+}
+
+function openJogo(id) {
+    const j = DB.jogos.find(x => getVal(x, 'id') == id);
+    if (!j) return;
+
+    const sc = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
+    
+    document.getElementById('detailBody').innerHTML = `
+        <div style="padding:25px">
+            <h2 style="margin:0; font-weight:900; color:var(--eac-dark)">${getVal(j,'escalao')} vs ${getVal(j,'adversário')}</h2>
+            <p style="color:#94a3b8; font-weight:700">${getVal(j,'data')} • ${getVal(j,'local')}</p>
+            <div style="margin-top:25px">
+                ${sc.map(s => {
+                    const temVermelho = parseInt(getVal(s, 'vermelhos')) > 0;
+                    const temAzul = parseInt(getVal(s, 'azuis')) > 0;
+                    
+                    let cartoes = '';
+                    if (temVermelho) cartoes += '🟥';
+                    if (temAzul) cartoes += '🟦';
+
+                    const exclusoes = parseInt(getVal(s, 'exclusoes')) || 0;
+
+                    return `
+                    <div style="padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; background: white">
+                        <span style="font-weight:700;">${getVal(s, 'nome')}</span>
+                        <div style="display:flex; gap:10px; align-items:center">
+                            <span style="font-weight:900; color:var(--azul)">${getVal(s,'golos') || 0} GOLS</span>
+                            ${exclusoes > 0 ? `<span class="badge-2min">${exclusoes} x 2'</span>` : ''}
+                            ${cartoes !== '' ? `<span style="font-size:1.1rem; line-height:1; display:flex; gap:2px;">${cartoes}</span>` : ''}
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+    document.getElementById('detailPane').classList.add('open');
+}
+
+function openAtleta(nome, escalaoFiltro = '') {
+    const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
+    
+    let sc = DB.scout.filter(s => {
+        const matchesNome = clean(getVal(s, 'nome')) === clean(nome);
+        if (!matchesNome) return false;
+        if (!escalaoFiltro || clean(escalaoFiltro) === 'geral' || clean(escalaoFiltro) === 'todos') return true;
+        const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
+        return jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
+    });
+
+    sc.sort((x, y) => {
+        const jogoX = DB.jogos.find(jg => getVal(jg, 'id') == getVal(x, 'jogo_id'));
+        const jogoY = DB.jogos.find(jg => getVal(jg, 'id') == getVal(y, 'jogo_id'));
+        if (!jogoX || !jogoY) return 0;
+        return parseDate(getVal(jogoY, 'data')) - parseDate(getVal(jogoX, 'data'));
+    });
+
+    const totalG = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
+    const totalE = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
+    const totalV = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'vermelhos')) || 0), 0);
+    const totalA = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'azuis')) || 0), 0); 
+    const totalC = totalV + totalA; 
+    const totalJ = sc.length;
+    const totalMin = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'minutos')) || parseInt(getVal(v, 'min_jogados')) || 0), 0);
+
+    const formatHistList = (lista, campo) => {
+        const filtrada = campo === 'jogos' ? lista : lista.filter(s => {
+            if (campo === 'vermelhos') {
+                return (parseInt(getVal(s, 'vermelhos')) > 0 || parseInt(getVal(s, 'azuis')) > 0);
+            }
+            if (campo === 'minutos') {
+                return (parseInt(getVal(s, 'minutos')) || parseInt(getVal(s, 'min_jogados')) || 0) > 0;
+            }
+            return (parseInt(getVal(s, campo)) || 0) > 0;
+        });
+
+        return filtrada.map(s => {
+            const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
+            let val = campo === 'jogos' ? '✔' : getVal(s, campo);
+            
+            if (campo === 'vermelhos') {
+                let displayCartoes = '';
+                if (parseInt(getVal(s, 'vermelhos')) > 0) displayCartoes += '🟥';
+                if (parseInt(getVal(s, 'azuis')) > 0) displayCartoes += '🟦';
+                val = displayCartoes;
+            } else if (campo === 'minutos') {
+                val = (getVal(s, 'minutos') || getVal(s, 'min_jogados') || 0) + "'";
+            }
+            
+            return `
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; box-sizing: border-box;">
+                    <span style="font-weight: 600; color: #334155;">
+                        <b style="color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; margin-right: 4px;">vs</b>${getVal(j, 'adversário') || 'Jogo'}
+                    </span>
+                    <b style="font-size: 0.9rem; min-width: 40px; text-align: right; flex-shrink: 0; display:flex; gap:2px; justify-content:flex-end;">${val}</b>
+                </div>`;
+        }).join('') || '<div style="padding: 15px; text-align: center; color: #94a3b8; font-size: 0.8rem;">Nenhum registro.</div>';
+    };
+
+    document.getElementById('detailBody').innerHTML = `
+        <div style="background: linear-gradient(180deg, #f8fafc 0%, white 100%); padding: 45px 20px; text-align:center">
+            <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:130px; height:130px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1)" onerror="this.src='logo.png'">
+            <h1 style="margin: 20px 0 5px 0; font-size: 1.6rem; font-weight: 900">${getVal(a, 'nome') || nome}</h1>
+            <div style="margin-bottom: 25px">
+                <span class="info-pill">🎂 ${getVal(a, 'nascimento') || 'N/D'} (${typeof calcularIdade === "function" ? calcularIdade(getVal(a, 'nascimento')) : ''})</span>
+                <span class="info-pill">🏆 ${escalaoFiltro || getVal(a, 'escalão') || 'Geral'}</span>
+                <span class="info-pill">🎽 Nº ${getVal(a, 'número') || '-'}</span>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:6px; max-width: 550px; margin: 0 auto">
+                <div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')">
+                    <span class="stat-val">${totalG}</span>
+                    <span class="stat-label" style="font-size:0.5rem;">Golos ▼</span>
+                </div>
+                <div class="stat-card" style="background: #0284c7" onclick="toggleStatHistory('minutos')">
+                    <span class="stat-val">${totalMin}'</span>
+                    <span class="stat-label" style="font-size:0.5rem;">Minutos ▼</span>
+                </div>
+                <div class="stat-card" style="background: #1e293b" onclick="toggleStatHistory('excl')">
+                    <span class="stat-val">${totalE}</span>
+                    <span class="stat-label" style="font-size:0.5rem;">2 Min ▼</span>
+                </div>
+                <div class="stat-card" style="background: var(--verde)" onclick="toggleStatHistory('jogos')">
+                    <span class="stat-val">${totalJ}</span>
+                    <span class="stat-label" style="font-size:0.5rem;">Jogos ▼</span>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ef4444 50%, #3b82f6 50%)" onclick="toggleStatHistory('vermelhos')">
+                    <span class="stat-val">${totalC}</span>
+                    <span class="stat-label" style="font-size:0.5rem;">Cartões ▼</span>
+                </div>
+            </div>
+
+            <div style="max-width: 550px; margin: 15px auto 0 auto;">
+                <div id="hist-golos" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'golos')}</div>
+                <div id="hist-minutos" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'minutos')}</div>
+                <div id="hist-excl" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'exclusoes')}</div>
+                <div id="hist-jogos" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'jogos')}</div>
+                <div id="hist-vermelhos" class="history-panel" style="width: 100%; display: none; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">${formatHistList(sc, 'vermelhos')}</div>
+            </div>
+        </div>`;
+    
+    document.getElementById('detailPane').classList.add('open');
+}
+
+function renderArt(filtro) {
+    const filterArea = document.getElementById('filterArea');
+    if (filterArea) {
+        filterArea.innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
+            `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
+    }
+
+    let atletasUnicos = new Map();
+    DB.atletas.forEach(atleta => {
+        const nomeChave = clean(getVal(atleta, 'nome'));
+        if (!atletasUnicos.has(nomeChave)) {
+            atletasUnicos.set(nomeChave, { 
+                nome: getVal(atleta, 'nome'), 
+                foto: getVal(atleta, 'foto'), 
+                num: getVal(atleta, 'número') 
+            });
+        }
+    });
+
+    let ranking = Array.from(atletasUnicos.values()).map(atleta => {
+        const golos = DB.scout.filter(s => {
+            if (clean(getVal(s, 'nome')) !== clean(atleta.nome)) return false;
+            if (filtro === 'GERAL') return true;
+            const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
+            return j && clean(getVal(j, 'escalao')) === clean(filtro);
+        }).reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
+
+        return { ...atleta, golos };
+    }).filter(x => x.golos > 0).sort((a,b) => b.golos - a.golos);
+
+    const viewContent = document.getElementById('viewContent');
+    if (viewContent) {
+        viewContent.innerHTML = ranking.map((p, i) => `
+            <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro}')">
+                <div style="font-weight:900; font-size:1.2rem; margin-right:15px; color:var(--azul)">${i+1}º</div>
+                <img src="${p.foto || 'logo.png'}" class="atleta-img-circle" style="width:45px; height:45px" onerror="this.src='logo.png'">
+                <div style="flex:1"><strong style="display:block">${p.nome}</strong><span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span></div>
+                <div style="font-weight:900; font-size:1.3rem">${p.golos}</div>
+            </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum golo registado.</p>";
+    }
+}
+function renderParticipacoes(filtro) {
+    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
+        `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderParticipacoes('${b}')">${b}</button>`
+    ).join('');
+
+    let atletasUnicos = new Map();
+    DB.atletas.forEach(atleta => {
+        const nomeChave = clean(getVal(atleta, 'nome'));
+        if (!atletasUnicos.has(nomeChave)) {
+            atletasUnicos.set(nomeChave, { 
+                nome: getVal(atleta, 'nome'), 
+                foto: getVal(atleta, 'foto'), 
+                num: getVal(atleta, 'número') 
+            });
+        }
+    });
+
+    let ranking = Array.from(atletasUnicos.values()).map(atleta => {
+        const totalJogos = DB.scout.filter(s => {
+            if (clean(getVal(s, 'nome')) !== clean(atleta.nome)) return false;
+            if (filtro === 'GERAL') return true;
+            const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
+            return j && clean(getVal(j, 'escalao')) === clean(filtro);
+        }).length;
+        return { ...atleta, totalJogos };
+    }).filter(x => x.totalJogos > 0).sort((a,b) => b.totalJogos - a.totalJogos);
+
+    document.getElementById('viewContent').innerHTML = ranking.map((p, i) => `
+        <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro}')">
+            <div style="font-weight:900; font-size:1.2rem; margin-right:15px; color:var(--verde)">${i+1}º</div>
+            <img src="${p.foto || 'logo.png'}" class="atleta-img-circle" style="width:45px; height:45px" onerror="this.src='logo.png'">
+            <div style="flex:1">
+                <strong style="display:block">${p.nome}</strong>
+                <span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span>
+            </div>
+            <div style="font-weight:900; font-size:1.1rem; color:var(--eac-dark)">${p.totalJogos} <span style="font-size:0.7rem; font-weight:600">JOGOS</span></div>
+        </div>
+    `).join('') || "<p style='text-align:center; padding:20px'>Nenhum jogo registado.</p>";
+}
+
+function renderTreinos() {
+    document.getElementById('viewContent').innerHTML = `
+        <h2 style="font-weight:900; margin-bottom:25px">📍 Locais de Treino</h2>
+        <div class="treino-card">
+            <b style="display:block; font-size:1.1rem; color:var(--azul)">🏟️ Pavilhão Municipal de Estarreja</b>
+            <p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Quarta: 19:00 - 20:30</p>
+            <a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a>
+        </div>
+        <div class="treino-card" style="border-left-color: var(--verde)">
+            <b style="display:block; font-size:1.1rem; color:var(--verde)">🏟️ Pavilhão Escola Secundária</b>
+            <p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">Terça e Sexta: 19:00 - 20:30</p>
+            <a href="https://maps.app.goo.gl/95pXmYqD7iR8iWw97" target="_blank" class="maps-btn">VER NO MAPA</a>
+        </div>`;
+}
+
+function renderAtletas(esc) {
+    const list = DB.atletas.filter(a => clean(getVal(a, 'escalão')) === clean(esc));
+    document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:20px; font-weight:900">${esc}</h3>` + 
+    list.map(a => `
+        <div class="atleta-row" onclick="openAtleta('${getVal(a, 'nome')}', '${esc}')">
+            <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" onerror="this.src='logo.png'">
+            <div>
+                <strong style="font-size:1.05rem; display:block">${getVal(a, 'nome')}</strong>
+                <span style="color:#64748b; font-weight:800; font-size: 0.75rem">🎽 ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderHomeNext() {
+    if(!DB.jogos.length) return;
+    const agora = new Date(); 
+    
+    const proximos = DB.jogos
+        .filter(j => {
+            const dataHoraJogo = parseDateTime(getVal(j, 'data'), getVal(j, 'hora'));
+            return dataHoraJogo >= agora && !getVal(j, 'gols_eac');
+        })
+        .sort((a,b) => {
+            const dtA = parseDateTime(getVal(a, 'data'), getVal(a, 'hora'));
+            const dtB = parseDateTime(getVal(b, 'data'), getVal(b, 'hora'));
+            return dtA - dtB;
+        })
+        .slice(0, 2);
+
+    document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
+        const isFora = clean(getVal(j, 'local')).includes("fora");
+        const mapsLink = getVal(j, 'Link_maps');
+        return `
+        <div class="game-card" style="border-left: 6px solid var(--azul); flex-direction:column">
+            <div class="game-content" style="padding: 15px;">
+                <div class="game-header"><span>${getVal(j, 'data')} • ${getVal(j,'hora')}</span><span>${getVal(j, 'escalao')}</span></div>
+                <div class="game-main">
+                    <div class="team"><img src="${isFora ? getVal(j, 'logo_adversario') : 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px;"><span>${isFora ? getVal(j, 'adversário') : 'EAC'}</span></div>
+                    <div class="score-box"><div class="score-main" style="font-size: 1.2rem; color: #94a3b8;">VS</div></div>
+                    <div class="team"><img src="${!isFora ? getVal(j, 'logo_adversario') : 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px;"><span>${!isFora ? getVal(j, 'adversário') : 'EAC'}</span></div>
+                </div>
+                <div style="margin-top: 10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 700;">📍 ${getVal(j, 'local')}</span>
+                    ${mapsLink ? `<a href="${mapsLink}" target="_blank" style="font-size:0.7rem; color:var(--verde); font-weight:800; text-decoration:none">VER NO MAPA ↗</a>` : ''}
+                </div>
+                ${buildConvocatoriaList(getVal(j, 'id'))}
+            </div>
+        </div>`;
+    }).join('') || "<p style='color:#94a3b8; text-align:center;'>Sem jogos marcados.</p>";
+}
+
+function renderNiverMenu() { 
+    const mNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    document.getElementById('sub-niver').innerHTML = mNames.map((m, i) => `<a onclick="showNiver(${i+1})">${m}</a>`).join(''); 
+}
+
+function showNiver(m) {
+    showView('custom');
+    const nomesVistos = new Set();
+    const listaUnica = DB.atletas.filter(a => {
+        const mPart = getVal(a, 'nascimento').split('/');
+        if(mPart.length < 2) return false;
+        const mesNasc = parseInt(mPart[1]);
+        if (mesNasc === m && !nomesVistos.has(clean(getVal(a, 'nome')))) { 
+            nomesVistos.add(clean(getVal(a, 'nome'))); 
+            return true; 
+        }
+        return false;
+    }).sort((a, b) => parseInt(getVal(a, 'nascimento').split('/')[0]) - parseInt(getVal(b, 'nascimento').split('/')[0]));
+    
+    document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:25px; font-weight:900">Aniversariantes 🎂</h3>` + 
+    (listaUnica.map(n => `
+        <div class="atleta-row" onclick="openAtleta('${getVal(n,'nome')}', '')">
+            <img src="${getVal(n, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:45px; height:45px" onerror="this.src='logo.png'">
+            <div style="flex:1"><b>${getVal(n,'nome')}</b></div>
+            <b style="color:var(--verde)">Dia ${getVal(n,'nascimento').split('/')[0]}</b>
+        </div>`).join('') || "<p style='text-align:center; padding:20px'>Sem aniversários este mês.</p>");
+}
+
+function showView(v, p = '') {
+    if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
+    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+    document.getElementById('viewContent').innerHTML = ""; 
+    document.getElementById('filterArea').innerHTML = "";
+    
+    if(v === 'home') { 
+        document.getElementById('home').classList.add('active'); 
+        renderHomeNext(); 
+    } else { 
+        document.getElementById('mainView').classList.add('active'); 
+        if(v === 'jogos') renderJogos('TODOS'); 
+        else if(v === 'atletas') renderAtletas(p); 
+        else if(v === 'artilharia') renderArt('GERAL');
+        else if(v === 'participacoes') renderParticipacoes('GERAL');
+        else if(v === 'treinos') renderTreinos();
+        else if(v === 'painel') renderPainel();
+        else if(v === 'playlist') showPlaylist();            // <-- ADICIONADO
+        else if(v === 'academia') showAcademy(p);            // <-- ADICIONADO
+    }
+    window.scrollTo(0,0);
+}
+    // PAINEL DA COORDENAÇÃO (SCOUT AVANÇADO)
+function renderPainel() {
+    const estaAutenticado = sessaoValida();
+    
+    document.getElementById('viewContent').innerHTML = `
+        <div id="login-form" style="text-align:center; padding: 20px; display: ${estaAutenticado ? 'none' : 'block'};">
+            <h3>🔒 ACESSO RESTRITO - COORDENAÇÃO</h3>
+            <input type="password" id="senha-input" placeholder="Senha de acesso..." 
+                   onkeydown="if(event.key === 'Enter') validarSenha()" 
+                   style="padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 10px; width: 80%; max-width: 300px;">
+            <br>
+            <button onclick="validarSenha()" style="padding: 10px 20px; background: var(--eac-dark); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">ENTRAR</button>
+        </div>
+        <div id="conteudo-painel" style="display: ${estaAutenticado ? 'block' : 'none'}; padding: 10px;">
+            <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:20px; text-align:center;">📊 PAINEL SCOUT AVANÇADO</h2>
+            
+            <div style="background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 120px;">
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">ESCALÃO</label>
+                        <select id="filtro-escalao" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
+                            <option value="TODOS">Todos</option>
+                            <option value="SUB16">SUB16</option>
+                            <option value="SUB18">SUB18</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 130px;">
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">JOGO</label>
+                        <select id="filtro-jogo" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
+                            <option value="TODOS">Todos os Jogos</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 130px;">
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px;">ATLETA</label>
+                        <select id="filtro-atleta" onchange="atualizarPainelScout()" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; font-size: 0.8rem;">
+                            <option value="TODOS">Todas as Atletas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="estatisticas-scout"></div>
+        </div>
+    `;
+
+    if (estaAutenticado) {
+        carregarOpcoesFiltroPainel();
+        atualizarPainelScout();
+    }
+}
+
+function validarSenha() {
+    const senha = document.getElementById('senha-input').value;
+    if (senha === "eac2026") { 
+        renovarSessao();
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('conteudo-painel').style.display = 'block';
+        carregarOpcoesFiltroPainel();
+        atualizarPainelScout();
+    } else {
+        alert("Senha incorreta!");
+    }
+}
+
+function carregarOpcoesFiltroPainel() {
+    const selJogo = document.getElementById('filtro-jogo');
+    const selAtleta = document.getElementById('filtro-atleta');
+
+    if (!selJogo || !selAtleta) return;
+
+    selJogo.innerHTML = '<option value="TODOS">Todos os Jogos</option>';
+    selAtleta.innerHTML = '<option value="TODOS">Todas as Atletas</option>';
+
+    DB.jogos.forEach(j => {
+        const id = getVal(j, 'id');
+        const adv = getVal(j, 'adversário');
+        const esc = getVal(j, 'escalao');
+        if (id) selJogo.innerHTML += `<option value="${id}">${esc} vs ${adv}</option>`;
+    });
+
+    let nomesProcessados = new Set();
+    let atletasUnicas = [];
+
+    DB.atletas.forEach(a => {
+        const nomeLimpo = clean(getVal(a, 'nome'));
+        if (nomeLimpo && !nomesProcessados.has(nomeLimpo)) {
+            nomesProcessados.add(nomeLimpo);
+            atletasUnicas.push(getVal(a, 'nome'));
+        }
+    });
+
+    atletasUnicas.sort((a,b) => a.localeCompare(b));
+    atletasUnicas.forEach(nome => {
+        selAtleta.innerHTML += `<option value="${clean(nome)}">${nome}</option>`;
+    });
+}
+
+function atualizarPainelScout() {
+    const escalaoSel = document.getElementById('filtro-escalao').value;
+    const idJogoSel = document.getElementById('filtro-jogo').value;
+    const atletaSel = document.getElementById('filtro-atleta').value;
+
+    let scoutFiltrado = DB.scoutAvancado.filter(s => {
+        const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'Jogo_ID'));
+        const matchEscalao = (escalaoSel === 'TODOS') || (jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoSel));
+        const matchJogo = (idJogoSel === 'TODOS') || (getVal(s, 'Jogo_ID') == idJogoSel);
+        
+        const nomeAtletaScout = clean(getVal(s, 'Atleta_Nome') || getVal(s, 'nome'));
+        const idAtletaScout = clean(getVal(s, 'Atleta_ID') || getVal(s, 'atleta_id'));
+        
+        let matchAtleta = (atletaSel === 'TODOS');
+        if (!matchAtleta) {
+            const atletaObj = DB.atletas.find(a => clean(getVal(a, 'nome')) === atletaSel);
+            const idAtletaObj = atletaObj ? clean(getVal(atletaObj, 'Atleta_ID') || getVal(atletaObj, 'id')) : '';
+            
+            matchAtleta = (nomeAtletaScout === atletaSel) || 
+                          (idAtletaScout !== '' && idAtletaScout === idAtletaObj);
+        }
+
+        return matchEscalao && matchJogo && matchAtleta;
+    });
+
+    let totalGolos = 0, totalRemates = 0, total7mGolos = 0, total7mTentativas = 0;
+    let totalFora = 0, totalDefesasSofridas = 0, totalBlocos = 0, totalMinutos = 0;
+
+    let totalDefesasGR = 0, totalRematesContraGR = 0, defesas7mGR = 0, remates7mContraGR = 0;
+
+    let zonasBaliza = { z1:0, z2:0, z3:0, z4:0, z5:0, z6:0, z7:0, z8:0, z9:0 };
+
+    scoutFiltrado.forEach(s => {
+        const res = clean(getVal(s, 'Resultado_Remate'));
+        const orig = clean(getVal(s, 'Zona_Origem'));
+        const acaoDef = clean(getVal(s, 'Acao_Defensiva'));
+        const zbRaw = getVal(s, 'Zona_Baliza');
+
+        // Minutos jogados
+        const minEntrada = parseInt(getVal(s, 'Minuto_Entrada'));
+        const minSaida = parseInt(getVal(s, 'Minuto_Saida'));
+        if (!isNaN(minEntrada) && !isNaN(minSaida) && minSaida > minEntrada) {
+            totalMinutos += (minSaida - minEntrada);
+        }
+
+        // Zonas de baliza
+        if (zbRaw) {
+            const numMatch = zbRaw.match(/\d/);
+            if (numMatch && res === 'golo') {
+                const zNum = numMatch[0];
+                if (zonasBaliza['z' + zNum] !== undefined) {
+                    zonasBaliza['z' + zNum] += 1;
+                }
+            }
+        }
+
+        // Ataque
+        if (res !== "") {
+            totalRemates += 1;
+            const is7m = orig.includes('7m') || orig.includes('7 metros');
+
+            if (res === 'golo') {
+                totalGolos += 1;
+                if (is7m) total7mGolos += 1;
+            } else if (res.includes('defesa gr')) {
+                totalDefesasSofridas += 1;
+            } else if (res.includes('fora') || res.includes('poste')) {
+                totalFora += 1;
+            } else if (res.includes('bloco')) {
+                totalBlocos += 1;
+            }
+
+            if (is7m) total7mTentativas += 1;
+        }
+
+        // Defesa (Guarda-Redes)
+        if (acaoDef.includes('defesa gr')) {
+            totalDefesasGR += 1;
+            totalRematesContraGR += 1;
+            if (orig.includes('7m')) {
+                defesas7mGR += 1;
+                remates7mContraGR += 1;
+            }
+        }
+    });
+
+    const eficGeral = totalRemates > 0 ? Math.round((totalGolos / totalRemates) * 100) : 0;
+    const efic7m = total7mTentativas > 0 ? Math.round((total7mGolos / total7mTentativas) * 100) : 0;
+    const eficGR = totalRematesContraGR > 0 ? Math.round((totalDefesasGR / totalRematesContraGR) * 100) : 0;
+    const efic7mGR = remates7mContraGR > 0 ? Math.round((defesas7mGR / remates7mContraGR) * 100) : 0;
+
+    document.getElementById('estatisticas-scout').innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+            <div style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; display: block;">Remates Totais</span>
+                <span style="font-size: 1.8rem; font-weight: 900; color: var(--eac-dark);">${totalGolos} / ${totalRemates}</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: var(--verde); background: #dcfce7; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 5px;">Eficácia: ${eficGeral}%</span>
+            </div>
+            <div style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; display: block;">7 Metros</span>
+                <span style="font-size: 1.8rem; font-weight: 900; color: var(--azul);">${total7mGolos} / ${total7mTentativas}</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: var(--azul); background: #dbeafe; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 5px;">Eficácia: ${efic7m}%</span>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+            <h4 style="margin: 0 0 12px 0; font-weight: 900; text-align: center; color: var(--eac-dark); font-size: 0.85rem;">🧤 ESTATÍSTICAS GUARDA-REDES</h4>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <div style="background: #f8fafc; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0;">
+                    <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">DEFESAS TOTAIS</span>
+                    <span style="font-size: 1.4rem; font-weight: 900; color: var(--azul);">${totalDefesasGR} / ${totalRematesContraGR}</span>
+                    <span style="font-size: 0.7rem; font-weight: 800; color: var(--azul); display: block; margin-top: 3px;">${eficGR}% Eficiência</span>
+                </div>
+                <div style="background: #f8fafc; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0;">
+                    <span style="font-size: 0.65rem; font-weight: 800; color: #64748b; display: block;">DEFESAS 7M</span>
+                    <span style="font-size: 1.4rem; font-weight: 900; color: var(--verde);">${defesas7mGR} / ${remates7mContraGR}</span>
+                    <span style="font-size: 0.7rem; font-weight: 800; color: var(--verde); display: block; margin-top: 3px;">${efic7mGR}% Eficiência</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px;">
+            <div style="background: white; padding: 10px 4px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block;">Min. Jogados</span>
+                <span style="font-size: 1.1rem; font-weight: 900; color: #0284c7;">${totalMinutos}'</span>
+            </div>
+            <div style="background: white; padding: 10px 4px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block;">Fora / Poste</span>
+                <span style="font-size: 1.1rem; font-weight: 900; color: var(--vermelho);">${totalFora}</span>
+            </div>
+            <div style="background: white; padding: 10px 4px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block;">Def. Sofridas</span>
+                <span style="font-size: 1.1rem; font-weight: 900; color: #eab308;">${totalDefesasSofridas}</span>
+            </div>
+            <div style="background: white; padding: 10px 4px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center;">
+                <span style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block;">Blocos</span>
+                <span style="font-size: 1.1rem; font-weight: 900; color: #64748b;">${totalBlocos}</span>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <h4 style="margin: 0 0 15px 0; font-weight: 900; text-align: center; color: var(--eac-dark); font-size: 0.95rem;">🎯 ZONAS DOS GOLOS (MAPA BALIZA)</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #0f172a; padding: 12px; border-radius: 12px; border: 4px solid #334155;">
+                ${[1,2,3,4,5,6,7,8,9].map(z => `
+                    <div style="background: #1e293b; color: white; padding: 15px 5px; border-radius: 8px; text-align: center; border: 1px dashed #475569;">
+                        <span style="font-size: 0.6rem; color: #94a3b8; display: block;">ZONA ${z}</span>
+                        <span style="font-size: 1.2rem; font-weight: 900; color: #4ade80;">${zonasBaliza['z'+z]}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function toggleStatHistory(type) { 
+    const el = document.getElementById(`hist-${type}`); 
+    const isVisible = el.style.display === 'block';
+    document.querySelectorAll('.history-panel').forEach(p => p.style.display = 'none');
+    el.style.display = isVisible ? 'none' : 'block'; 
+}
+
+function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }
+function closeDetail() { document.getElementById('detailPane').classList.remove('open'); } 
+
+function showPlaylist() {
+    showView('custom'); 
+    const playlistEmbedUrl = "https://open.spotify.com/embed/playlist/06ejdeZNzhkBOSN5oaeKX3?utm_source=generator&theme=0";
+    document.getElementById('viewContent').innerHTML = `
+        <div style="text-align: center; animation: fadeIn 0.5s ease; padding: 10px;">
+            <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:10px;">🎧 RITMO DE JOGO</h2>
+            <p style="color:#64748b; font-size:0.85rem; margin-bottom:20px; font-weight:600;">A vibe oficial das nossas Sub18! 💚🤍</p>
+            <div style="border-radius:25px; overflow:hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.2); max-width: 450px; margin: 0 auto; background: #000; min-height: 452px;">
+                <iframe style="border-radius:12px" src="${playlistEmbedUrl}" width="100%" height="452" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+            <button onclick="showView('home')" style="margin-top: 30px; padding: 12px 25px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem;">⬅ VOLTAR AO INÍCIO</button>
+        </div>`;
+}
+
+function showAcademy(tipo) {
+    showView('custom'); 
+    const baseURL = "https://raw.githubusercontent.com/Julio-sp/InfoBaseFem/main/fotos/";
+    const dados = {
+        'prevencao': { tit: 'Prevenção', img: 'Prevencao.jpg', desc: 'Ativação e estabilidade para proteger as tuas articulações.' },
+        'recuperacao': { tit: 'Recuperação', img: 'Recuperacao.jpg', desc: 'Protocolos essenciais para estares a 100% no próximo treino.' },
+        'treino-invisivel': { tit: 'Treino Invisível', img: 'Treino%20invisivel.jpg', desc: 'O que fazes fora de campo determina o teu nível em campo.' },
+        'pos-treino': { tit: 'Pós-Treino', img: 'pos%20treino.jpg', desc: 'Acelera a regeneração muscular após o esforço intenso.' },
+        'pre-jogo': { tit: 'Pré-Jogo', img: 'pre%20jogo.jpg', desc: 'Foco total e energia certa para o momento da decisão.' },
+        'intervalo': { tit: 'Intervalo', img: 'intervalo.jpg', desc: 'Recarga rápida para manter a intensidade na 2ª parte.' },
+        'mentalidade': { tit: 'Mentalidade de Jogo', img: 'Mentalidade.jpg', desc: 'A psicologia por trás dos atos: foco, resiliência e atitude vencedora.' }
+    };
+    const item = dados[tipo];
+    document.getElementById('viewContent').innerHTML = `
+        <div style="text-align: center; animation: fadeIn 0.5s ease; padding: 10px;">
+            <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:20px; text-transform: uppercase;">${item.tit}</h2>
+            <div style="background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; max-width: 450px; margin: 0 auto;">
+                <img src="${baseURL}${item.img}" style="width: 100%; display: block;" onerror="this.src='logo.png'">
+                <div style="padding: 20px; background: #f8fafc;">
+                    <p style="color: #475569; font-weight: 600; line-height: 1.5; margin: 0; font-size: 0.9rem;">${item.desc}</p>
+                </div>
+            </div>
+            <button onclick="showView('home')" style="margin-top: 30px; padding: 15px 35px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">⬅ VOLTAR AO INÍCIO</button>
+        </div>`;
+}
+
+function handleLogin() { 
+    if(prompt("Senha:") === "eac2026") { 
+        renovarSessao();
+        alert("Acesso restrito concedido por 10 minutos!");
+    } else {
+        alert("Senha incorreta!");
+    }
+}
+
+const frasesEAC = [
+    "A vitória começa no treino de hoje! 💪",
+    "Honra a camisola em cada lance. Raça, EAC!",
+    "O teu esforço de hoje é o teu sucesso de amanhã. 🚀",
+    "O talento ganha jogos, o trabalho em equipa ganha campeonatos. 🏆",
+    "Foco no processo, o resultado será uma consequência.",
+    "A tua melhor versão é aquela que ajuda a equipa a crescer."
+];
+
+function mostrarFraseInspiradora() {
+    const fraseAleatoria = frasesEAC[Math.floor(Math.random() * frasesEAC.length)];
+    const banner = document.createElement('div');
+    banner.style = `
+        position: fixed; bottom: 25px; left: 20px; right: 20px; 
+        background: #0f172a; color: white; padding: 18px; 
+        border-radius: 18px; z-index: 3000; box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+        font-weight: 600; font-size: 0.85rem; text-align: center; 
+        border-left: 5px solid #16a34a; animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex; align-items: center; justify-content: space-between;
+    `;
+    banner.innerHTML = `
+        <span style="flex: 1;">✨ ${fraseAleatoria}</span>
+        <span onclick="this.parentElement.remove()" style="margin-left: 15px; cursor: pointer; font-size: 1.2rem; opacity: 0.5;">×</span>
+    `;
+    document.body.appendChild(banner);
+
+    setTimeout(() => {
+        if (banner && banner.parentElement) {
+            banner.style.animation = "fadeOutDown 0.6s ease forwards";
+            setTimeout(() => banner.remove(), 600);
+        }
+    }, 7000);
+}
+
+const styleFrase = document.createElement('style');
+styleFrase.innerHTML = `
+    @keyframes slideInUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes fadeOutDown { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100px); opacity: 0; } }
+`;
+document.head.appendChild(styleFrase);
+
+window.onload = () => {
+    loadData();
+    setTimeout(mostrarFraseInspiradora, 2000); 
+};
+</script>
 </body>
 </html>
